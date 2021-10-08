@@ -1,0 +1,32 @@
+{
+  "name": "simpler-fetch",
+  "version": "1.0.0",
+  "description": "Easy to use abstraction over window.fetch with no dependencies",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "minify": "npx uglifyjs --compress --mangle -o ./dist/index.js -- index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enkel-Digital/simpler-fetch.git"
+  },
+  "keywords": [
+    "fetch",
+    "easy",
+    "simple",
+    "oop",
+    "functional"
+  ],
+  "author": "JJ",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Enkel-Digital/simpler-fetch/issues"
+  },
+  "homepage": "https://github.com/Enkel-Digital/simpler-fetch#readme",
+  "devDependencies": {
+    "uglify-js": "^3.14.2"
+  }
+}
