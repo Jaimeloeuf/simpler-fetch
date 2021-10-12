@@ -33,9 +33,34 @@ export const fcf =
  * This object oriented approach gives users a familiar chainable interface to build their API calls
  */
 export class oof {
+  /*
+    The below is commented away in v1.0.1 bug fix
+    
+    tl;dr
+    As of 12 October 2021, this feature is a tc39 stage 3 proposal despite browsers like chrome shipping it already.
+    And due to the new babel upgrade, projects that use this babel and this library like Vue 2 projects, will get the
+    error unable to parse module and for user to get a loader for this as babel removed some plugins by default.
+    Thus they will get a compile error. To make it easier for users to use, this is now changed to fallback code.
+    
+    These are resources on the feature and its current proposal stage
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static
+    https://github.com/tc39/proposal-static-class-features
+    
+    This are resources specifically talking about babel's removal of stage 2/3 plugins
+    https://babeljs.io/blog/2018/07/27/removing-babels-stage-presets
+    https://babeljs.io/docs/en/v7-migration#switch-to--proposal--for-tc39-proposalsblog20171227nearing-the-70-releasehtmlrenames-proposal
+    
+    This are some alternatives for users who face this issue
+    https://stackoverflow.com/questions/40367392/static-class-property-not-working-with-babel
+    https://babeljs.io/docs/en/babel-plugin-proposal-class-properties
+    
+    However since asking users to install additional plugins to configure babel is alot harder.
+    It is easier to just use es5 compatible code here straight up.
+    The "static" variable will now be bounded and initialized with "" right after the class definition.
+  */
   // Must be initialized with empty string
   // So if user does not set any baseUrl, _baseUrl + this.path will not result in undefined + this.path
-  static _baseUrl = "";
+  // static _baseUrl = "";
 
   /**
    * Base/Common/Low level constructor that generally isnt used.
@@ -182,3 +207,6 @@ export class oof {
     );
   }
 }
+
+// See top for explaination on why this is initialized this way instead of using a class static variable.
+oof._baseUrl = "";
