@@ -206,6 +206,11 @@ export class oof {
       this._data
     );
   }
+
+  /** Wrapper around `run` method to auto parse return data as JSON before returning */
+  runJSON() {
+    return this.run().then((response) => response.json());
+  }
 }
 
 // See top for explaination on why this is initialized this way instead of using a class static variable.
