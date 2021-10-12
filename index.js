@@ -146,7 +146,7 @@ export class oof {
 
   /**
    * Set options for the fetch method call.
-   * Note that any headers object here will override all headers passed in via the 'headers' method.
+   * Note that passing in a header object here will override all headers passed in via the 'header' method.
    * This is generally not used unless you have specific options to pass in e.g. cache: "no-cache".
    *
    * Note that the options merging is a shallow merge not a deepmerge.
@@ -165,10 +165,10 @@ export class oof {
    * Functions passed in will be called right before the API call to generate a header object,
    * to delay generating certain header values like a time limited auth token or recaptcha.
    * This method can be called multiple times, and all the header objects will be combined.
-   * @param {object | Function} headers
+   * @param {object | Function} header
    */
-  headers(headers) {
-    this._headers.push(headers);
+  header(header) {
+    this._headers.push(header);
 
     // Return 'this' to allow user to chain their methods
     return this;
