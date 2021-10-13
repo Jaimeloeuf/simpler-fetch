@@ -35,25 +35,25 @@ export const fcf =
 export class oof {
   /*
     The below is commented away in v1.0.1 bug fix
-    
+
     tl;dr
     As of 12 October 2021, this feature is a tc39 stage 3 proposal despite browsers like chrome shipping it already.
     And due to the new babel upgrade, projects that use this babel and this library like Vue 2 projects, will get the
     error unable to parse module and for user to get a loader for this as babel removed some plugins by default.
     Thus they will get a compile error. To make it easier for users to use, this is now changed to fallback code.
-    
+
     These are resources on the feature and its current proposal stage
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static
     https://github.com/tc39/proposal-static-class-features
-    
+
     This are resources specifically talking about babel's removal of stage 2/3 plugins
     https://babeljs.io/blog/2018/07/27/removing-babels-stage-presets
     https://babeljs.io/docs/en/v7-migration#switch-to--proposal--for-tc39-proposalsblog20171227nearing-the-70-releasehtmlrenames-proposal
-    
+
     This are some alternatives for users who face this issue
     https://stackoverflow.com/questions/40367392/static-class-property-not-working-with-babel
     https://babeljs.io/docs/en/babel-plugin-proposal-class-properties
-    
+
     However since asking users to install additional plugins to configure babel is alot harder.
     It is easier to just use es5 compatible code here straight up.
     The "static" variable will now be bounded and initialized with "" right after the class definition.
@@ -186,17 +186,25 @@ export class oof {
   }
 
   /** Call method after constructing the API call object to make the API call */
-  run() {
+  async run() {
     return _fetch(
       oof._baseUrl + this._path,
       {
         method: this._method,
 
-        // Run all the header functions if any to ensure array of headers is now an array of header objects
-        // Reduce the array of header objects into a single header object
-        headers: this._headers
-          .map((header) => (typeof header === "function" ? header() : header))
-          .reduce((obj, item) => ({ ...obj, ...item }), {}),
+        // Run header functions if any to ensure array of headers is now an array of header objects,
+        // The array of headers have the type of `object | Promise<object>` because header generator
+        // functions can be an async, to let users delay generating headers until `run` time.
+        //
+        // `await Promise.all` on the array of headers to ensure all are resolved to `object` type,
+        // before reducing the array of header objects into a single header object.
+        headers: (
+          await Promise.all(
+            this._headers.map((header) =>
+              typeof header === "function" ? header() : header
+            )
+          )
+        ).reduce((obj, item) => ({ ...obj, ...item }), {}),
 
         // Add and/or Override defaults if any
         // If there is a headers property in this options object, it will override the headers entirely
@@ -207,7 +215,10 @@ export class oof {
     );
   }
 
-  /** Wrapper around `run` method to auto parse return data as JSON before returning */
+  /**
+   * Wrapper around `run` method to auto parse return data as JSON before returning
+   * @returns {Promise<object>} The parsed JSON response
+   */
   runJSON() {
     return this.run().then((response) => response.json());
   }

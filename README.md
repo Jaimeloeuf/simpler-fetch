@@ -1,5 +1,5 @@
 # simpler-fetch
-`simpler-fetch` is an abstraction on top of the `window.fetch` method with ZERO dependencies.
+`simpler-fetch` is an abstraction on top of the `window.fetch` method with ZERO dependencies of around 1.1kb and around 0.5kb with level 6 gzip.
 
 It DOES NOT introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers.
 
@@ -58,8 +58,12 @@ import { oof } from "simpler-fetch";
 
   const response = await oof
     .POST("/test")
-    .header(() => ({ randomHeader: true, anotherHeader: "value" })) // Can be a synchronous function that returns a header object
-    .header({ lastHeader: 1 }) // Can also just directly pass in a header object. Header method can be called multiple times
+    // Can be a synchronous function that returns a header object
+    .header(() => ({ randomHeader: true, anotherHeader: "value" }))
+    // Can be an asynchronous function that returns a header Promise<object>
+    .header(async () => ({ asyncHeader: await Promise.resolve("value") }))
+    // Can also just directly pass in a header object. Header method can be called multiple times
+    .header({ lastHeader: 1 })
     .data({ test: true, anotherTest: "testing" })
     .run()
     .then((response) => response.json());
@@ -68,7 +72,6 @@ import { oof } from "simpler-fetch";
   // Only use this if you expect API to always give a JSON response
   const response = await oof
     .POST("/test")
-    .header(() => ({ randomHeader: true, anotherHeader: "value" }))
     .header({ lastHeader: 1 })
     .data({ test: true, anotherTest: "testing" })
     .runJSON();
