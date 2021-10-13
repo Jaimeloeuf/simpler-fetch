@@ -1,9 +1,11 @@
 # simpler-fetch
 `simpler-fetch` is an abstraction on top of the `window.fetch` method with ZERO dependencies.
 
-It DOES NOT introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to with with baseUrls and by providing a method to delay generating headers.
+It DOES NOT introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers.
 
 This library is a JS module, which can be tree shaked when using with a bundler.
+
+***Note that this does not test if `window.fetch` is available to save that few bytes. If `window.fetch` is not available, do not load this library directly, load a [polyfill](https://github.com/github/fetch) first before loading this library.***
 
 
 ## API
@@ -13,6 +15,8 @@ Below are examples of how to use them, where all will achieve the same result.
 
 ### \_fetch
 Simple fetch abstraction to refactor the API and does body stringification if needed.
+
+This is the bare minimum abstraction and used by `oof` and `fcf` under the hood, not recommended unless you have a very specific use case. The `oof` and `fcf` abstractions are alot nicer to work with.
 
 ```javascript
 import { _fetch } from "simpler-fetch";
@@ -46,7 +50,7 @@ This object oriented approach gives users a familiar chainable interface to buil
 import { oof } from "simpler-fetch";
 
 (async function () {
-  // Base URL can be set like this if using a bundler
+  // Base URL can be set like this if using a bundler that injects NODE_ENV in
   oof._baseUrl =
     process.env.NODE_ENV === "production"
       ? "https://deployed-api.com"
@@ -54,11 +58,20 @@ import { oof } from "simpler-fetch";
 
   const response = await oof
     .POST("/test")
-    .headers(() => ({ randomHeader: true, anotherHeader: "value" }))
-    .headers({ lastHeader: 1 })
+    .header(() => ({ randomHeader: true, anotherHeader: "value" })) // Can be a synchronous function that returns a header object
+    .header({ lastHeader: 1 }) // Can also just directly pass in a header object. Header method can be called multiple times
     .data({ test: true, anotherTest: "testing" })
     .run()
     .then((response) => response.json());
+
+  // Alternatively use runJSON() to parse response as JSON directly
+  // Only use this if you expect API to always give a JSON response
+  const response = await oof
+    .POST("/test")
+    .header(() => ({ randomHeader: true, anotherHeader: "value" }))
+    .header({ lastHeader: 1 })
+    .data({ test: true, anotherTest: "testing" })
+    .runJSON();
 
   console.log("Response", response);
 })();
