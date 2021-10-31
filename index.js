@@ -218,9 +218,19 @@ export class oof {
   /**
    * Wrapper around `run` method to auto parse return data as JSON before returning
    * @returns {Promise<object>} The parsed JSON response
+   *
+   * When API server responds with a status code of anything outside of 200-299 Response.ok is auto set to false
+   * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#checking_that_the_fetch_was_successful
+   * https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
+   *
+   * Thus instead of making API servers include an 'ok' data prop in response body,
+   * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
+   * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
    */
   runJSON() {
-    return this.run().then((response) => response.json());
+    return this.run().then((response) =>
+      response.json().then((parsedJSON) => ({ ok: response.ok, ...parsedJSON }))
+    );
   }
 }
 
