@@ -57,6 +57,10 @@ export class oof {
     However since asking users to install additional plugins to configure babel is alot harder.
     It is easier to just use es5 compatible code here straight up.
     The "static" variable will now be bounded and initialized with "" right after the class definition.
+
+
+    Just like the comment above, all static methods returning a value directly can be converted to
+    arrow functions assigned to a static field once the tc39 proposal passes to optimize for lib size.
   */
   // Must be initialized with empty string
   // So if user does not set any baseUrl, _baseUrl + this.path will not result in undefined + this.path
@@ -80,22 +84,27 @@ export class oof {
   }
 
   /**
+   * Wrapper function over constructor to make the constructor API more ergonomic.
+   *
    * This exposed static method allows users to use HTTP methods that are not provided by default.
-   * This method is meant for HTTP methods (e.g. GET) that do not allow entity bodies
+   * This method is meant for HTTP methods like GET that do not allow entity bodies.
+   * Although the provided GET and DEL methods can use this method internally,
+   * they do not use this so as to optimize away the additional function call.
    * @param {String} method The CAPITALISED verb string of the HTTP method
    * @param {String} path
-   * @returns {oof} Returns 'this' to allow user to chain their methods
+   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
   static _METHODS_WO_DATA(method, path) {
     return new oof({ method, path });
   }
 
   /**
-   * This exposed static method allows users to use HTTP methods that are not provided by default.
-   * This method is meant for HTTP methods (e.g. POST) that support a entity body with JSON encoding.
+   * Wrapper function over constructor to make the constructor API more ergonomic.
+   *
+   * This static method allows users to use HTTP methods like POST that have JSON entity bodies
    * @param {String} method The CAPITALISED verb string of the HTTP method
    * @param {String} path
-   * @returns {oof} Returns 'this' to allow user to chain their methods
+   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
   static _METHODS_WITH_DATA(method, path) {
     return new oof({
@@ -105,18 +114,42 @@ export class oof {
     });
   }
 
+  /**
+   * Wrapper function over constructor to construct a new `oof` instance for a `GET` API call
+   *
+   * @param {String} path Path of your API
+   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
+   */
   static GET(path) {
     return new oof({ method: "GET", path });
   }
 
+  /**
+   * Wrapper function over constructor to construct a new `oof` instance for a `POST` API call
+   *
+   * @param {String} path Path of your API
+   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
+   */
   static POST(path) {
     return oof._METHODS_WITH_DATA("POST", path);
   }
 
+  /**
+   * Wrapper function over constructor to construct a new `oof` instance for a `PUT` API call
+   *
+   * @param {String} path Path of your API
+   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
+   */
   static PUT(path) {
     return oof._METHODS_WITH_DATA("PUT", path);
   }
 
+  /**
+   * Wrapper function over constructor to construct a new `oof` instance for a `DEL` API call
+   *
+   * @param {String} path Path of your API
+   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
+   */
   static DEL(path) {
     return new oof({ method: "DEL", path });
   }
@@ -136,11 +169,10 @@ export class oof {
   /**
    * Set the path of the API call. Path will be appended to the 'baseUrl'
    * @param {String} path
+   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
    */
   path(path) {
     this._path = path;
-
-    // Return 'this' to allow user to chain their methods
     return this;
   }
 
@@ -151,11 +183,10 @@ export class oof {
    *
    * Note that the options merging is a shallow merge not a deepmerge.
    * @param {object} opts
+   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
    */
   options(opts) {
     this._opts = opts;
-
-    // Return 'this' to allow user to chain their methods
     return this;
   }
 
@@ -166,22 +197,20 @@ export class oof {
    * to delay generating certain header values like a time limited auth token or recaptcha.
    * This method can be called multiple times, and all the header objects will be combined.
    * @param {object | Function} header
+   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
    */
   header(header) {
     this._headers.push(header);
-
-    // Return 'this' to allow user to chain their methods
     return this;
   }
 
   /**
    * Set data/object to be sent to server in API calls for methods such as POST/PUT
    * @param {object} data
+   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
    */
   data(data) {
     this._data = data;
-
-    // Return 'this' to allow user to chain their methods
     return this;
   }
 
@@ -228,6 +257,7 @@ export class oof {
    * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
    */
   runJSON() {
+    // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
     return this.run().then((response) =>
       response.json().then((parsedJSON) => ({ ok: response.ok, ...parsedJSON }))
     );
