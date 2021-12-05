@@ -176,7 +176,7 @@ export class oof {
    * This WILL NOT AFFECT the base API URL for other instances of `oof` and future API calls
    * as this is a one off override only.
    * @param {String} url
-   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
+   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   baseUrl(url) {
     this._baseUrl = url;
@@ -184,13 +184,19 @@ export class oof {
   }
 
   /**
-   * Set options for the fetch method call.
-   * Note that passing in a header object here will override all headers passed in via the 'header' method.
+   * Set options for the fetch method call. Usually used to set custom RequestInit parameters.
    * This is generally not used unless you have specific options to pass in e.g. cache: "no-cache".
    *
-   * Note that the options merging is a shallow merge not a deepmerge.
-   * @param {object} opts
-   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
+   * Note that passing in a header object here will override all headers passed in via the 'header' method.
+   * Because these options are merged with the header object using a shallow merge.
+   *
+   * This method directly assigns the arguement to `this._opts` which means calling this method overrides
+   * whatever options that is already set previously. Because it does not make sense for the user to call
+   * this repeatedly since there is no default options set by this library anyways. Thus it is a direct
+   * assignment instead of a merge like `this._opts = { ...this._opts, ...opts }`
+   *
+   * @param {RequestInit} opts Options object used as the RequestInit object
+   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   options(opts) {
     this._opts = opts;
@@ -198,13 +204,16 @@ export class oof {
   }
 
   /**
-   * Header objects to include in the API call.
-   * Accepts plain header objects, and also functions.
+   * Add Headers to include in the API call.
+   *
+   * Accepts plain header objects, functions and async functions.
+   *
    * Functions passed in will be called right before the API call to generate a header object,
    * to delay generating certain header values like a time limited auth token or recaptcha.
+   *
    * This method can be called multiple times, and all the header objects will be combined.
-   * @param {object | Function} header
-   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
+   * @param {Header} header
+   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   header(header) {
     this._headers.push(header);
@@ -214,7 +223,7 @@ export class oof {
   /**
    * Set data/object to be sent to server in API calls for methods such as POST/PUT
    * @param {object} data
-   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
+   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   data(data) {
     this._data = data;
