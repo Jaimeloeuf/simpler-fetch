@@ -184,16 +184,6 @@ export class oof {
   }
 
   /**
-   * Set the path of the API call. Path will be appended to the 'baseUrl'
-   * @param {String} path
-   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
-   */
-  path(path) {
-    this._path = path;
-    return this;
-  }
-
-  /**
    * Set options for the fetch method call.
    * Note that passing in a header object here will override all headers passed in via the 'header' method.
    * This is generally not used unless you have specific options to pass in e.g. cache: "no-cache".
