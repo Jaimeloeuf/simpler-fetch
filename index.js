@@ -169,15 +169,18 @@ export class oof {
   }
 
   /**
-   * NOTE THAT CALLING THIS WILL SET BASE URL FOR ALL FUTURE CALLS
+   * Set base API URL for the CURRENT `oof` INSTANCE ONLY to do a one of base URL override.
+   * This is usually used where you need to make a one off API call to another API/domain,
+   * that is not the one you already set using `oof._baseUrl`.
+   *
+   * This WILL NOT AFFECT the base API URL for other instances of `oof` and future API calls
+   * as this is a one off override only.
    * @param {String} url
-   * @returns {oof} Returns the class for you to start calling a static method like GET/POST
+   * @returns {oof} Returns the current instance of `oof` to let you to chain method calls
    */
-  static baseUrl(url) {
-    oof._baseUrl = url;
-
-    // Returns the class for user to chain another static method call
-    return oof;
+  baseUrl(url) {
+    this._baseUrl = url;
+    return this;
   }
 
   /**
@@ -231,7 +234,8 @@ export class oof {
   /** Call method after constructing the API call object to make the API call */
   async run() {
     return _fetch(
-      oof._baseUrl + this._path,
+      // Allow `this._baseUrl` to do a one off override over the default base url if it is set
+      (this._baseUrl || oof._baseUrl) + this._path,
       {
         method: this._method,
 
