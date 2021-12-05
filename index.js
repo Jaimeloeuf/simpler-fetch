@@ -28,6 +28,11 @@ export const fcf =
     _fetch(baseUrl + path, typeof opts === "function" ? opts() : opts, body);
 
 /**
+ * Header can either be an object or a function that return an object or a function that returns a Promise that resolves to an object
+ * @typedef {Object | Function} Header
+ */
+
+/**
  * oof: Object Oriented Fetch abstraction over `_fetch`
  *
  * This object oriented approach gives users a familiar chainable interface to build their API calls
@@ -67,16 +72,25 @@ export class oof {
   // static _baseUrl = "";
 
   /**
-   * Base/Common/Low level constructor that generally isnt used.
+   * Low level constructor API that generally isnt used.
    * Stick with the provided static methods for a cleaner API.
+   *
+   * @param {{
+   *    method: String,
+   *    path: String,
+   *    opts?: RequestInit,
+   *    header?: Header | Array<Header>,
+   * }} options
    */
-  constructor({ method, path, opts = {}, headers }) {
+  constructor({ method, path, opts = {}, headers = [] }) {
     this._method = method;
     this._path = path;
     this._opts = opts;
 
-    // Headers defaults to an empty array unless given a header object
-    this._headers = headers ? [headers] : [];
+    // Ensure that this._headers is always an array regardless of what the user passes in
+    // Users can pass in a single header object/function or an array of header objects/functions
+    // If an array is passed in, leave it as it is, else wrap the single header object/function in a array
+    this._headers = Array.isArray(headers) ? headers : [headers];
 
     // This is always undefined unless user passes in something using the data() setter method
     // This used to be set here to provide type inference in some situations
