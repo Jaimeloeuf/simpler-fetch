@@ -91,10 +91,6 @@ export class oof {
     // Users can pass in a single header object/function or an array of header objects/functions
     // If an array is passed in, leave it as it is, else wrap the single header object/function in a array
     this._headers = Array.isArray(headers) ? headers : [headers];
-
-    // This is always undefined unless user passes in something using the data() setter method
-    // This used to be set here to provide type inference in some situations
-    // this._data = undefined;
   }
 
   /**
