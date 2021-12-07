@@ -21,10 +21,10 @@ export const _fetch = (url, opts = {}, body) =>
  * to be generated just before the call like a time limited auth token or recaptcha token.
  */
 export const fcf =
-  (baseUrl) =>
-  (path) =>
-  (opts = {}) =>
-  (body) =>
+  (/** @type {String} */ baseUrl) =>
+  (/** @type {String} */ path) =>
+  (/** @type {RequestInit} */ opts = {}) =>
+  (/** @type {object | String | undefined} */ body) =>
     _fetch(baseUrl + path, typeof opts === "function" ? opts() : opts, body);
 
 /**
