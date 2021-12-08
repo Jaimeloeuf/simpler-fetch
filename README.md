@@ -16,7 +16,7 @@ Below are examples of how to use them, where all will achieve the same result.
 ### \_fetch
 Simple fetch abstraction to refactor the API and does body stringification if needed.
 
-This is the bare minimum abstraction and used by `oof` and `fcf` under the hood, not recommended unless you have a very specific use case. The `oof` and `fcf` abstractions are alot nicer to work with.
+This is the bare minimum abstraction and used by `oof` and `fcf` under the hood, not recommended unless you have a very specific use case. The [`oof`](#oof) and [`fcf`](#fcf) abstractions are alot nicer to work with.
 
 ```javascript
 import { _fetch } from "simpler-fetch";
@@ -46,16 +46,39 @@ import { _fetch } from "simpler-fetch";
 oof: Object Oriented Fetch abstraction over `_fetch`.
 This object oriented approach gives users a familiar chainable interface to build their API calls.
 
+#### Basic GET Example using es6 import syntax with bundlers
 ```javascript
 import { oof } from "simpler-fetch";
 
 (async function () {
+  // Set Base URL once and all subsequent API calls with use this base API url
+  oof._baseUrl = "https://deployed-api.com";
+  
   // Base URL can be set like this if using a bundler that injects NODE_ENV in
-  oof._baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://deployed-api.com"
-      : "http://localhost:3000";
+  // oof._baseUrl =
+  //   process.env.NODE_ENV === "production"
+  //     ? "https://deployed-api.com"
+  //     : "http://localhost:3000";
 
+  // Make a GET request to https://deployed-api.com/test and parse the response as JSON
+  const response = await oof
+    .GET("/test")
+    .runJSON();
+
+  console.log("Response", response);
+})();
+```
+
+#### Basic POST Example
+```javascript
+import { oof } from "simpler-fetch";
+
+(async function () {
+  oof._baseUrl = "https://deployed-api.com";
+
+  // Make a POST request and use a bunch of different ways to generate header values
+  // Manually parse the response as JSON, the shortform `runJSON` can also be used
+  // Use the `run` method if you need to parse the response as something else like text
   const response = await oof
     .POST("/test")
     // Can be a synchronous function that returns a header object
@@ -68,12 +91,23 @@ import { oof } from "simpler-fetch";
     .run()
     .then((response) => response.json());
 
-  // Alternatively use runJSON() to parse response as JSON directly
-  // Only use this if you expect API to always give a JSON response
+  console.log("Response", response);
+})();
+```
+
+#### Using a different base URL for one off API call
+```javascript
+import { oof } from "simpler-fetch";
+
+(async function () {
+  oof._baseUrl = "https://deployed-api.com";
+
+  // Make a API call to a different API domain, but only change the base URL for this single request
+  // Any subsequent API calls will still use the default "https://deployed-api.com" as base URL
+  // `baseUrl` is a method on the `oof` object does it can only be used after the GET static method call
   const response = await oof
-    .POST("/test")
-    .header({ lastHeader: 1 })
-    .data({ test: true, anotherTest: "testing" })
+    .GET("/test")
+    .baseUrl("https://other-api-integration.com")
     .runJSON();
 
   console.log("Response", response);
