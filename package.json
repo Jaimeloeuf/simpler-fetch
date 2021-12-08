@@ -1,7 +1,7 @@
 {
   "name": "simpler-fetch",
-  "version": "5.0.0",
-  "description": "Easy to use abstraction over window.fetch with no dependencies",
+  "version": "6.0.0",
+  "description": "Easy to use, zero dependency abstraction over window.fetch",
   "main": "dist/index.js",
   "type": "module",
   "files": [
@@ -19,7 +19,8 @@
     "easy",
     "simple",
     "oop",
-    "functional"
+    "functional",
+    "curried"
   ],
   "author": "JJ",
   "license": "MIT",

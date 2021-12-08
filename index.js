@@ -165,21 +165,6 @@ export class oof {
   }
 
   /**
-   * Set base API URL for the CURRENT `oof` INSTANCE ONLY to do a one of base URL override.
-   * This is usually used where you need to make a one off API call to another API/domain,
-   * that is not the one you already set using `oof._baseUrl`.
-   *
-   * This WILL NOT AFFECT the base API URL for other instances of `oof` and future API calls
-   * as this is a one off override only.
-   * @param {String} url
-   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
-   */
-  baseUrl(url) {
-    this._baseUrl = url;
-    return this;
-  }
-
-  /**
    * Set options for the fetch method call. Usually used to set custom RequestInit parameters.
    * This is generally not used unless you have specific options to pass in e.g. cache: "no-cache".
    *
@@ -229,8 +214,12 @@ export class oof {
   /** Call method after constructing the API call object to make the API call */
   async run() {
     return _fetch(
-      // Allow `this._baseUrl` to do a one off override over the default base url if it is set
-      (this._baseUrl || oof._baseUrl) + this._path,
+      // Check if `this._path` contains any http protocol identifier using a case-insensitive regex match
+      // If found, assume user passed in full URL to skip using base URL, thus use `this._path` directly as full URL
+      // Else prepend base URL to `this._path` to get the full URL
+      this._path.match(/https:\/\/|http:\/\//i)
+        ? this._path
+        : oof._baseUrl + this._path,
       {
         method: this._method,
 

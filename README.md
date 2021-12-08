@@ -102,12 +102,17 @@ import { oof } from "simpler-fetch";
 (async function () {
   oof._baseUrl = "https://deployed-api.com";
 
-  // Make a API call to a different API domain, but only change the base URL for this single request
+  // Make a API call to a different API domain, but only for this single request by using a full URL path
+  // The library will check if http:// or https:// is included in the URL, and skip base URL if included
   // Any subsequent API calls will still use the default "https://deployed-api.com" as base URL
-  // `baseUrl` is a method on the `oof` object does it can only be used after the GET static method call
+  const response = await oof
+    .GET("https://other-api-integration.com/test")
+    .runJSON();
+
+  // Subsequent API calls with just the path and not a full URL will have the base URL appended,
+  // So in this case, this is a GET request to https://deployed-api.com/test
   const response = await oof
     .GET("/test")
-    .baseUrl("https://other-api-integration.com")
     .runJSON();
 
   console.log("Response", response);
