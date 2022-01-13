@@ -146,3 +146,11 @@ import { fcf } from "simpler-fetch";
   console.log("Response", response);
 })();
 ```
+
+## License, Author and Contributing
+This project is developed and made available under the [MIT License](./LICENSE). Feel free to use it however you like!
+
+If you have any questions, open a github issue!
+
+Authors:
+- [JJ](https://github.com/Jaimeloeuf)
