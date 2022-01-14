@@ -147,6 +147,11 @@ import { fcf } from "simpler-fetch";
 })();
 ```
 
+
+## Using with firebase auth
+[See documentation for using this lib with firebase authentication](./firebase-auth.md)
+
+
 ## License, Author and Contributing
 This project is developed and made available under the [MIT License](./LICENSE). Feel free to use it however you like!
 
