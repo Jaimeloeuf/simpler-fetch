@@ -79,7 +79,7 @@ export class oof {
    *    method: String,
    *    path: String,
    *    opts?: RequestInit,
-   *    header?: Header | Array<Header>,
+   *    headers?: Header | Array<Header>,
    * }} options
    */
   constructor({ method, path, opts = {}, headers = [] }) {
@@ -212,6 +212,7 @@ export class oof {
   }
 
   /** Call method after constructing the API call object to make the API call */
+  // @todo Wrap this in a try/catch and return {res, err} to force user to check instead of letting caller handle any throws
   async run() {
     return _fetch(
       // Check if `this._path` contains any http protocol identifier using a case-insensitive regex match
