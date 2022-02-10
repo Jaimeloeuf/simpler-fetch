@@ -262,7 +262,11 @@ export class oof {
   runJSON() {
     // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
     return this.run().then((response) =>
-      response.json().then((parsedJSON) => ({ ok: response.ok, ...parsedJSON }))
+      response.json().then((parsedJSON) => ({
+        ok: response.ok,
+        status: response.status,
+        ...parsedJSON,
+      }))
     );
   }
 }
