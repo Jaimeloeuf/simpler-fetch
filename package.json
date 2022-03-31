@@ -2,16 +2,15 @@
   "name": "simpler-fetch",
   "version": "6.1.1",
   "description": "Easy to use, zero dependency abstraction over window.fetch",
-  "main": "dist/index.js",
   "type": "module",
+  "main": "dist/index.js",
   "files": [
-    "dist",
-    "index.d.ts"
+    "dist"
   ],
-  "types": "index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "generate-types": "tsc index.js --declaration --allowJs --emitDeclarationOnly",
-    "minify": "npx uglifyjs --compress --mangle -o ./dist/index.js -- index.js"
+    "build": "npx tsc",
+    "build:watch": "npx tsc -w"
   },
   "repository": {
     "type": "git",
@@ -32,7 +31,7 @@
   },
   "homepage": "https://github.com/Enkel-Digital/simpler-fetch#readme",
   "devDependencies": {
-    "typescript": "^4.5.5",
-    "uglify-js": "^3.14.2"
+    "@types/node": "^17.0.23",
+    "typescript": "^4.6.3"
   }
 }
