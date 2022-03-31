@@ -1,0 +1,11 @@
+{
+  "name": "test-server",
+  "main": "index.js",
+  "scripts": {
+    "serve": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
+  }
+}
