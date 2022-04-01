@@ -1,9 +1,17 @@
 import { _fetch } from "./_fetch";
 
-/**
- * Header can either be an object or a function that return an object or a function that returns a Promise that resolves to an object
- * @typedef {Object | Function} Header
- */
+// Header can either be an object or a function that return an object or a function that returns a Promise that resolves to an object
+type Header = Object | Function;
+
+// Add supported HTTP methods
+type HTTPMethod =
+  | "HEAD"
+  | "OPTIONS"
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "PATCH"
+  | "DELETE";
 
 /**
  * oof: Object Oriented Fetch abstraction over `_fetch`
@@ -74,10 +82,9 @@ export class oof {
    * Although the provided GET and DEL methods can use this method internally,
    * they do not use this so as to optimize away the additional function call.
    * @param {String} method The CAPITALISED verb string of the HTTP method
-   * @param {String} path
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static _METHODS_WO_DATA(method, path) {
+  static _METHODS_WO_DATA(method: HTTPMethod, path: string): oof {
     return new oof({ method, path });
   }
 
@@ -86,10 +93,9 @@ export class oof {
    *
    * This static method allows users to use HTTP methods like POST that have JSON entity bodies
    * @param {String} method The CAPITALISED verb string of the HTTP method
-   * @param {String} path
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static _METHODS_WITH_DATA(method, path) {
+  static _METHODS_WITH_DATA(method: HTTPMethod, path: string): oof {
     return new oof({
       method,
       path,
@@ -103,7 +109,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static GET(path) {
+  static GET(path: string) {
     return new oof({ method: "GET", path });
   }
 
@@ -113,7 +119,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static POST(path) {
+  static POST(path: string): oof {
     return oof._METHODS_WITH_DATA("POST", path);
   }
 
@@ -123,7 +129,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static PUT(path) {
+  static PUT(path: string): oof {
     return oof._METHODS_WITH_DATA("PUT", path);
   }
 
@@ -133,8 +139,8 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static DEL(path) {
-    return new oof({ method: "DEL", path });
+  static DEL(path: string): oof {
+    return new oof({ method: "DELETE", path });
   }
 
   /**
@@ -152,7 +158,7 @@ export class oof {
    * @param {RequestInit} opts Options object used as the RequestInit object
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  options(opts) {
+  options(opts: RequestInit): oof {
     this._opts = opts;
     return this;
   }
@@ -169,7 +175,7 @@ export class oof {
    * @param {Header} header
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  header(header) {
+  header(header: Header): oof {
     this._headers.push(header);
     return this;
   }
@@ -179,14 +185,14 @@ export class oof {
    * @param {object} data
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  data(data) {
+  data(data: object): oof {
     this._data = data;
     return this;
   }
 
   /** Call method after constructing the API call object to make the API call */
   // @todo Wrap this in a try/catch and return {res, err} to force user to check instead of letting caller handle any throws
-  async run() {
+  async run(): Promise<Response> {
     return _fetch(
       // Check if `this._path` contains any http protocol identifier using a case-insensitive regex match
       // If found, assume user passed in full URL to skip using base URL, thus use `this._path` directly as full URL
@@ -232,7 +238,7 @@ export class oof {
    * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
    * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
    */
-  runJSON() {
+  runJSON(): Promise<object> {
     // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
     return this.run().then((response) =>
       response.json().then((parsedJSON) => ({
