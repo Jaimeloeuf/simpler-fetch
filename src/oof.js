@@ -1,3 +1,5 @@
+import { _fetch } from "./_fetch";
+
 /**
  * Header can either be an object or a function that return an object or a function that returns a Promise that resolves to an object
  * @typedef {Object | Function} Header
