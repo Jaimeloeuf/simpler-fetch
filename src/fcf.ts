@@ -8,8 +8,8 @@ import { _fetch } from "./_fetch";
  * to be generated just before the call like a time limited auth token or recaptcha token.
  */
 export const fcf =
-  (/** @type {String} */ baseUrl) =>
-  (/** @type {String} */ path) =>
-  (/** @type {RequestInit} */ opts = {}) =>
-  (/** @type {object | String | undefined} */ body) =>
+  (baseUrl: string) =>
+  (path: string) =>
+  (opts: RequestInit | Function = {}) =>
+  (body?: object | string) =>
     _fetch(baseUrl + path, typeof opts === "function" ? opts() : opts, body);
