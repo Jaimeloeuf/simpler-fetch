@@ -19,59 +19,37 @@ type HTTPMethod =
  * This object oriented approach gives users a familiar chainable interface to build their API calls
  */
 export class oof {
-  /*
-    The below is commented away in v1.0.1 bug fix
-
-    tl;dr
-    As of 12 October 2021, this feature is a tc39 stage 3 proposal despite browsers like chrome shipping it already.
-    And due to the new babel upgrade, projects that use this babel and this library like Vue 2 projects, will get the
-    error unable to parse module and for user to get a loader for this as babel removed some plugins by default.
-    Thus they will get a compile error. To make it easier for users to use, this is now changed to fallback code.
-
-    These are resources on the feature and its current proposal stage
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static
-    https://github.com/tc39/proposal-static-class-features
-
-    This are resources specifically talking about babel's removal of stage 2/3 plugins
-    https://babeljs.io/blog/2018/07/27/removing-babels-stage-presets
-    https://babeljs.io/docs/en/v7-migration#switch-to--proposal--for-tc39-proposalsblog20171227nearing-the-70-releasehtmlrenames-proposal
-
-    This are some alternatives for users who face this issue
-    https://stackoverflow.com/questions/40367392/static-class-property-not-working-with-babel
-    https://babeljs.io/docs/en/babel-plugin-proposal-class-properties
-
-    However since asking users to install additional plugins to configure babel is alot harder.
-    It is easier to just use es5 compatible code here straight up.
-    The "static" variable will now be bounded and initialized with "" right after the class definition.
-
-
-    Just like the comment above, all static methods returning a value directly can be converted to
-    arrow functions assigned to a static field once the tc39 proposal passes to optimize for lib size.
-  */
   // Must be initialized with empty string
   // So if user does not set any baseUrl, _baseUrl + this.path will not result in undefined + this.path
-  // static _baseUrl = "";
+  static _baseUrl = "";
 
-  /**
-   * Low level constructor API that generally isnt used.
-   * Stick with the provided static methods for a cleaner API.
-   *
-   * @param {{
-   *    method: String,
-   *    path: String,
-   *    opts?: RequestInit,
-   *    headers?: Header | Array<Header>,
-   * }} options
-   */
-  constructor({ method, path, opts = {}, headers = [] }) {
-    this._method = method;
-    this._path = path;
-    this._opts = opts;
+  /* Private Instance variables that are only accessible internally */
+  #method: HTTPMethod;
+  #headers: Array<Header>;
+  #path: string;
+  #opts: any;
+  #data?: object;
 
-    // Ensure that this._headers is always an array regardless of what the user passes in
+  /** Low level constructor API that generally isnt used. Stick with the provided static methods for a cleaner API. */
+  constructor({
+    method,
+    path,
+    opts = {},
+    headers = [],
+  }: {
+    method: HTTPMethod;
+    path: string;
+    opts?: RequestInit;
+    headers?: Header | Array<Header>;
+  }) {
+    this.#method = method;
+    this.#path = path;
+    this.#opts = opts;
+
+    // Ensure that this.#headers is always an array regardless of what the user passes in
     // Users can pass in a single header object/function or an array of header objects/functions
     // If an array is passed in, leave it as it is, else wrap the single header object/function in a array
-    this._headers = Array.isArray(headers) ? headers : [headers];
+    this.#headers = Array.isArray(headers) ? headers : [headers];
   }
 
   /**
@@ -140,16 +118,16 @@ export class oof {
    * Note that passing in a header object here will override all headers passed in via the 'header' method.
    * Because these options are merged with the header object using a shallow merge.
    *
-   * This method directly assigns the arguement to `this._opts` which means calling this method overrides
+   * This method directly assigns the arguement to `this.#opts` which means calling this method overrides
    * whatever options that is already set previously. Because it does not make sense for the user to call
    * this repeatedly since there is no default options set by this library anyways. Thus it is a direct
-   * assignment instead of a merge like `this._opts = { ...this._opts, ...opts }`
+   * assignment instead of a merge like `this.#opts = { ...this.#opts, ...opts }`
    *
    * @param {RequestInit} opts Options object used as the RequestInit object
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   options(opts: RequestInit): oof {
-    this._opts = opts;
+    this.#opts = opts;
     return this;
   }
 
@@ -166,7 +144,7 @@ export class oof {
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   header(header: Header): oof {
-    this._headers.push(header);
+    this.#headers.push(header);
     return this;
   }
 
@@ -176,7 +154,7 @@ export class oof {
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   data(data: object): oof {
-    this._data = data;
+    this.#data = data;
     return this;
   }
 
@@ -184,14 +162,16 @@ export class oof {
   // @todo Wrap this in a try/catch and return {res, err} to force user to check instead of letting caller handle any throws
   async run(): Promise<Response> {
     return _fetch(
-      // Check if `this._path` contains any http protocol identifier using a case-insensitive regex match
-      // If found, assume user passed in full URL to skip using base URL, thus use `this._path` directly as full URL
-      // Else prepend base URL to `this._path` to get the full URL
-      this._path.match(/https:\/\/|http:\/\//i)
-        ? this._path
-        : oof._baseUrl + this._path,
+      // Check if `this.#path` contains any http protocol identifier using a case-insensitive regex match
+      // If found, assume user passed in full URL to skip using base URL, thus use `this.#path` directly as full URL
+      // Else prepend base URL to `this.#path` to get the full URL
+      // @todo Alternatively, check for / as first character, if so, assume it is a relative URL...?
+      // Then if it does not start with / means full URL
+      this.#path.match(/https:\/\/|http:\/\//i)
+        ? this.#path
+        : oof._baseUrl + this.#path,
       {
-        method: this._method,
+        method: this.#method,
 
         // Run header functions if any to ensure array of headers is now an array of header objects,
         // The array of headers have the type of `object | Promise<object>` because header generator
@@ -201,7 +181,7 @@ export class oof {
         // before reducing the array of header objects into a single header object.
         headers: (
           await Promise.all(
-            this._headers.map((header) =>
+            this.#headers.map((header) =>
               typeof header === "function" ? header() : header
             )
           )
@@ -210,9 +190,9 @@ export class oof {
         // Add and/or Override defaults if any
         // If there is a headers property in this options object, it will override the headers entirely
         // Also options merging is a shallow merge not a deepmerge
-        ...this._opts,
+        ...this.#opts,
       },
-      this._data
+      this.#data
     );
   }
 
@@ -239,6 +219,3 @@ export class oof {
     );
   }
 }
-
-// See top for explaination on why this is initialized this way instead of using a class static variable.
-oof._baseUrl = "";
