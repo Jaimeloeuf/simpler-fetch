@@ -198,7 +198,8 @@ export class oof {
 
   /**
    * Wrapper around `run` method to auto parse return data as JSON before returning
-   * @returns {Promise<object>} The parsed JSON response
+   * Returns the parsed JSON response.
+   * Return type will always union with { ok: boolean; status: number; } as these will always be injected in
    *
    * When API server responds with a status code of anything outside of 200-299 Response.ok is auto set to false
    * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#checking_that_the_fetch_was_successful
@@ -208,7 +209,9 @@ export class oof {
    * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
    * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
    */
-  runJSON(): Promise<object> {
+  runJSON<T extends Record<string, any> = Record<string, any>>(): Promise<
+    T & { ok: boolean; status: number }
+  > {
     // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
     return this.run().then((response) =>
       response.json().then((parsedJSON) => ({
