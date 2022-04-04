@@ -27,8 +27,10 @@ export class oof {
   #method: HTTPMethod;
   #headers: Array<Header>;
   #path: string;
-  #opts: any;
-  #data?: object;
+  #opts: RequestInit;
+
+  // data can be any type as JSON.stringify accepts any type that is serializable
+  #data?: any;
 
   /** Low level constructor API that generally isnt used. Stick with the provided static methods for a cleaner API. */
   constructor({
@@ -150,10 +152,9 @@ export class oof {
 
   /**
    * Set data/object to be sent to server in API calls for methods such as POST/PUT
-   * @param {object} data
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  data(data: object): oof {
+  data(data: any): oof {
     this.#data = data;
     return this;
   }
