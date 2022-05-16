@@ -9,35 +9,51 @@ import { oof } from "../../dist/index.js";
   oof._baseUrl = "http://localhost:3000";
   console.log("oof._baseUrl: ", oof._baseUrl);
 
+  /* ================================= GET ================================= */
+
+  // API call to registered API server
   await oof
     .GET("/test")
     .runJSON()
     .then((res) => console.log("res 0", res));
+
+  // API call to registered API server with header set in multiple ways
+  await oof
+    .GET("/test")
+    // Fixed header object
+    .header({ headerOne: 1 })
+    // Synchronous function that returns a header object
+    .header(() => ({ headerTwo: 1 }))
+    // Asynchronous function that returns a promise that resolves to a header object
+    .header(async () => ({ headerThree: 3 }))
+    .runJSON()
+    .then((res) => console.log("res 1", res));
+
+  // API call to local API server with full path
   await oof
     .GET("http://localhost:3000/test")
     .runJSON()
-    .then((res) => console.log("res 1", res));
+    .then((res) => console.log("res 2", res));
+
+  // API call to external API server with full path
   await oof
     .GET("https://jsonplaceholder.typicode.com/todos/1")
     .runJSON()
-    .then((res) => console.log("res 2", res));
+    .then((res) => console.log("res 3", res));
 
-  // const response = await oof
-  //     .GET("/test")
-  //     .header({ lastHeader: 1 })
-  //     .runJSON()
+  /* ================================= POST ================================= */
 
-  // const response2 = await oof
-  //     .POST("/test")
-  //     // Can be a synchronous function that returns a header object
-  //     .header(() => ({ randomHeader: true, anotherHeader: "value" }))
-  //     // Can be an asynchronous function that returns a header Promise<object>
-  //     .header(async () => ({ asyncHeader: await Promise.resolve("value") }))
-  //     // Can also just directly pass in a header object. Header method can be called multiple times
-  //     .header({ lastHeader: 1 })
-  //     .data({ test: true, anotherTest: "testing" })
-  //     .run()
-  //     .then((response) => response.json());
+  // POST request to registered API server
+  await oof
+    .POST("/test")
+    .data({ some: "data" })
+    .runJSON()
+    .then((res) => console.log("res 4", res));
 
-  // console.log(response, response2);
+  // POST request to local API server with full path
+  await oof
+    .POST("http://localhost:3000/test")
+    .data({ some: "data" })
+    .runJSON()
+    .then((res) => console.log("res 5", res));
 })();
