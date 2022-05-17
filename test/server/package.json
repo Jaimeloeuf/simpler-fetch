@@ -2,7 +2,7 @@
   "name": "test-server",
   "main": "index.js",
   "scripts": {
-    "serve": "node index.js"
+    "serve": "npx nodemon index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
