@@ -1,16 +1,24 @@
 # simpler-fetch
 `simpler-fetch` is an abstraction on top of the `window.fetch` method with ZERO dependencies of around 1.1kb and around 0.5kb with level 6 gzip.
 
-It DOES NOT introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers.
+It **DOES NOT** introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers.
 
-This library is a JS module, which can be tree shaked when using with a bundler.
+This library is a JS ES6 module, which can be tree shaked when using with a bundler.
 
 ***Note that this does not test if `window.fetch` is available to save that few bytes. If `window.fetch` is not available, do not load this library directly, load a [polyfill](https://github.com/github/fetch) first before loading this library.***
 
 
+## Intended use
+This library is intended for any projects that want a simple to use and lightweight API library without resorting to deal with the low level and cumbersome fetch API.
+
+This library is designed to make working with JSON APIs extremely easy, and it also provides TypeScript support to improve the development experience.
+
+
 ## API
-This library exposes the functions, `_fetch`, `fcf`, `oof`.
-Below are examples of how to use them, where all will achieve the same result.
+This library exposes the functions, [`_fetch`](#_fetch), [`fcf`](#fcf), [`oof`](#oof). Where [`oof`](#oof) is the recommended way for most users using this library.
+
+See the [sample project provided](./test/) to learn more about it and to play around with it.
+Below are simple examples of how to use them, where all will achieve the same result.
 
 
 ### \_fetch
@@ -45,6 +53,8 @@ import { _fetch } from "simpler-fetch";
 ### oof
 oof: Object Oriented Fetch abstraction over `_fetch`.
 This object oriented approach gives users a familiar chainable interface to build their API calls.
+
+This is also the recommended way to use this library as a end user.
 
 #### Basic GET Example using es6 import syntax with bundlers
 ```javascript
