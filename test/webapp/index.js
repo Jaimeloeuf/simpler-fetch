@@ -1,5 +1,6 @@
 import { oof } from "../../dist/index.js";
 
+// async IIFE to use async await without using top level await as older browsers dont support it
 (async function () {
   // Change this to use dist/oof so the .then dont have to destructure it out
   // import("../../dist/index.js")
