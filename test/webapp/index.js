@@ -57,4 +57,14 @@ import { oof } from "../../dist/index.js";
     .data({ some: "data" })
     .runJSON()
     .then((res) => console.log("res 5", res));
+
+  /* ================================= Error Handling ================================= */
+
+  // API call to a definitely not available site to similiar API call failed
+  await oof
+    .GET("https://hopefully-this-not-registered.com/some/invalid/path")
+    .runJSON()
+    .then((res) => console.log("res 0", res))
+    // Catch error and handle here to prevent the error from bubbling up
+    .catch((err) => console.error("API call failed\n", err));
 })();
