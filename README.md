@@ -17,7 +17,7 @@ This library is designed to make working with JSON APIs extremely easy, and it a
 ## API
 This library exposes the functions, [`_fetch`](#_fetch), [`fcf`](#fcf), [`oof`](#oof). Where [`oof`](#oof) is the recommended way for most users using this library.
 
-See the [sample project provided](./test/) to learn more about it and to play around with it.
+See the [sample project provided](./sample/) to learn more about it and to play around with it.
 Below are simple examples of how to use them, where all will achieve the same result.
 
 
@@ -54,7 +54,9 @@ import { _fetch } from "simpler-fetch";
 oof: Object Oriented Fetch abstraction over `_fetch`.
 This object oriented approach gives users a familiar chainable interface to build their API calls.
 
-This is also the recommended way to use this library as a end user.
+This is also **the recommended way** to use this library as a end user.
+
+See the [sample project provided](./sample/) for a more in depth example on using `oof`
 
 #### Basic GET Example using es6 import syntax with bundlers
 ```javascript
