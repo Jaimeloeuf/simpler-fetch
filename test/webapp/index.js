@@ -2,11 +2,8 @@ import { oof } from "../../dist/index.js";
 
 // async IIFE to use async await without using top level await as older browsers dont support it
 (async function () {
-  // Change this to use dist/oof so the .then dont have to destructure it out
-  // import("../../dist/index.js")
-  //     .then(({ oof }) => oof.GET("https://jsonplaceholder.typicode.com/todos/1").runJSON())
-  //     .then(res => console.log("res", res));
-
+  // Set base URL of your API, leave out the trailing '/'
+  // if you plan to use a starting '/' for every API call.
   oof._baseUrl = "http://localhost:3000";
   console.log("oof._baseUrl: ", oof._baseUrl);
 
@@ -60,6 +57,8 @@ import { oof } from "../../dist/index.js";
 
   /* ================================= Error Handling ================================= */
 
+  console.log("Next API call will fail to show case error handling.");
+
   // API call to a definitely not available site to similiar API call failed
   await oof
     .GET("https://hopefully-this-not-registered.com/some/invalid/path")
@@ -67,4 +66,16 @@ import { oof } from "../../dist/index.js";
     .then((res) => console.log("res 0", res))
     // Catch error and handle here to prevent the error from bubbling up
     .catch((err) => console.error("API call failed\n", err));
+
+  /* ================================= Lazily Loaded ================================= */
+
+  // Import the API library lazily into your application.
+  // Only do this if your entire application only needs this library for a
+  // small number of API calls only such as a landing page's contact form.
+  // For all other purposes, import the API library at top level first.
+  import("../../dist/index.js")
+    .then(({ oof }) =>
+      oof.GET("https://jsonplaceholder.typicode.com/todos/1").runJSON()
+    )
+    .then((res) => console.log("res lazy", res));
 })();
