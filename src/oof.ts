@@ -1,4 +1,4 @@
-import { _fetch } from "./_fetch";
+import { _fetch } from "./_fetch.js";
 
 // Header can either be an object or a function that return an object or a function that returns a Promise that resolves to an object
 type Header =

@@ -1,4 +1,4 @@
-import { _fetch } from "./_fetch";
+import { _fetch } from "./_fetch.js";
 
 /**
  * fcf: Functional, Curried, Fetch abstraction over `_fetch`

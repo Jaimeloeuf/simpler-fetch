@@ -17,10 +17,12 @@
     "url": "git+https://github.com/Enkel-Digital/simpler-fetch.git"
   },
   "keywords": [
+    "simpler",
     "fetch",
     "easy",
     "simple",
     "oop",
+    "chainable",
     "functional",
     "curried"
   ],

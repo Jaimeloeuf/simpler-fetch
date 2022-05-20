@@ -164,6 +164,17 @@ import { fcf } from "simpler-fetch";
 [See documentation for using this lib with firebase authentication](./firebase-auth.md)
 
 
+## Technical Details
+- Import paths in TS source files are always written with the `.js` extension
+  - This is because TS will not modify the file extension as it generates the JS files,
+  - And when used in node js, module import paths require the full file extension to be used.
+  - Therefore this is needed to work on node.js runtimes.
+  - Reference
+    - https://stackoverflow.com/questions/68928008/cant-import-module-without-the-js-extension-in-nodejs
+    - https://nodejs.org/api/esm.html#esm_import_specifiers
+    - https://github.com/microsoft/TypeScript/issues/40878
+
+
 ## License, Author and Contributing
 This project is developed and made available under the [MIT License](./LICENSE). Feel free to use it however you like!
 
