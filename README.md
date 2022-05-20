@@ -24,7 +24,7 @@ Below are simple examples of how to use them, where all will achieve the same re
 ### \_fetch
 Simple fetch abstraction to refactor the API and does body stringification if needed.
 
-This is the bare minimum abstraction and used by `oof` and `fcf` under the hood, not recommended unless you have a very specific use case. The [`oof`](#oof) and [`fcf`](#fcf) abstractions are alot nicer to work with.
+This is the bare minimum abstraction and used by `oof` and `fcf` under the hood, **not recommended** unless you have a very specific use case. The [`oof`](#oof) and [`fcf`](#fcf) abstractions are alot nicer to work with.
 
 ```javascript
 import { _fetch } from "simpler-fetch";
@@ -75,7 +75,7 @@ import { oof } from "simpler-fetch";
   // Make a GET request to https://deployed-api.com/test and parse the response as JSON
   const response = await oof
     .GET("/test")
-    .runJSON();
+    .runJSON(); // Make the API call and parse the response as JSON
 
   console.log("Response", response);
 })();
@@ -119,13 +119,13 @@ import { oof } from "simpler-fetch";
   // Any subsequent API calls will still use the default "https://deployed-api.com" as base URL
   const response = await oof
     .GET("https://other-api-integration.com/test")
-    .runJSON();
+    .runJSON(); // Make the API call and parse the response as JSON
 
   // Subsequent API calls with just the path and not a full URL will have the base URL appended,
   // So in this case, this is a GET request to https://deployed-api.com/test
   const response = await oof
     .GET("/test")
-    .runJSON();
+    .runJSON(); // Make the API call and parse the response as JSON
 
   console.log("Response", response);
 })();

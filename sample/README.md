@@ -1,5 +1,7 @@
-# test
-Sample webapp and corresponding API server to demonstrate the use of this library.
+# Sample
+Sample project with a webapp and corresponding API server to demonstrate the use of this library.
+
+The webapp demonstrates the use of `oof` in particular as that is **the recommended way** to use this library.
 
 
 ## API server
