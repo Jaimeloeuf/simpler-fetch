@@ -19,11 +19,11 @@ import { oof } from "../../dist/index.js";
   await oof
     .GET("/test")
     // Fixed header object
-    .header({ headerOne: 1 })
+    .header({ someAuthenticationToken: "superSecureTokenString" })
     // Synchronous function that returns a header object
-    .header(() => ({ headerTwo: 1 }))
+    .header(() => ({ anotherAuthenticationToken: "secret" }))
     // Asynchronous function that returns a promise that resolves to a header object
-    .header(async () => ({ headerThree: 3 }))
+    .header(async () => ({ yetAnotherHeaderValue: 123456789 }))
     .runJSON()
     .then((res) => console.log("res 1", res));
 

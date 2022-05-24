@@ -96,9 +96,9 @@ import { oof } from "simpler-fetch";
     // Can be a synchronous function that returns a header object
     .header(() => ({ randomHeader: true, anotherHeader: "value" }))
     // Can be an asynchronous function that returns a header Promise<object>
-    .header(async () => ({ asyncHeader: await Promise.resolve("value") }))
+    .header(async () => ({ asyncAuthToken: await Promise.resolve("secret") }))
     // Can also just directly pass in a header object. Header method can be called multiple times
-    .header({ lastHeader: 1 })
+    .header({ someAuthenticationToken: "superSecureTokenString" })
     .data({ test: true, anotherTest: "testing" })
     .run()
     .then((response) => response.json());
