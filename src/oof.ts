@@ -156,10 +156,13 @@ export class oof {
   }
 
   /**
-   * Set data/object to be sent to server in API calls for methods such as POST/PUT
+   * Set data/object to be sent to server in API calls for methods such as POST/PUT.
+   *
+   * For TS users, this method accepts a generic type that extends the Header type.
+   *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  data(data: any): oof {
+  data<T = any>(data: T): oof {
     this.#data = data;
     return this;
   }
