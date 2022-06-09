@@ -22,6 +22,15 @@ type HTTPMethod =
   | "DELETE";
 
 /**
+ * JsonResponse type is used as the base type for what can be returned from the server when using `runJSON()`.
+ *
+ * Note that this type is not a JSON type as this only support `{}` based types and all the other JSON string forms are not supported such as arrays or single strings.
+ *
+ * The reason why the other types are not supported is because the runJSON method actually injects the values of `ok` and `status` into the response before returning it.
+ */
+type JsonResponse = Record<string | number | symbol, any>;
+
+/**
  * oof: Object Oriented Fetch abstraction over `_fetch`
  *
  * This object oriented approach gives users a easy to use chainable interface to build their API calls
@@ -224,15 +233,14 @@ export class oof {
    * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
    * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
    *
-   * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
-   *
    * Function can be async as it returns a Promise, but it is not necessary as no await is used within.
    *
+   * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
    * For TS users, this method accepts a generic type to type the returned object.
    */
-  runJSON<
-    T extends Record<string | number | symbol, any> = Record<string, any>
-  >(): Promise<T & { ok: boolean; status: number }> {
+  runJSON<T extends JsonResponse = JsonResponse>(): Promise<
+    T & { ok: boolean; status: number }
+  > {
     // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
     return this.run().then((response) =>
       response.json().then((parsedJSON) => ({
@@ -242,7 +250,7 @@ export class oof {
       }))
     );
 
-    // Alternative clearer way to write this with async/await but cost extra bytes.
+    // Alternatively, a clearer way to write this is with async/await but it cost extra bytes.
     // const response = await this.run();
     // const parsedJSON = await response.json();
     // return { ok: response.ok, status: response.status, ...parsedJSON };
