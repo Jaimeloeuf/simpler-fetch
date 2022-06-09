@@ -1,12 +1,17 @@
 import { _fetch } from "./_fetch.js";
 
-// Header can either be an object or a function that return an object or a function that returns a Promise that resolves to an object
+/**
+ * Header can either be,
+ * 1. An object
+ * 2. A function that return an object
+ * 3. A function that returns a Promise that resolves to an object
+ */
 type Header =
   | Record<string, any>
   | (() => Record<string, any>)
   | (() => Promise<Record<string, any>>);
 
-// Add supported HTTP methods
+/** All the supported HTTP methods */
 type HTTPMethod =
   | "HEAD"
   | "OPTIONS"
@@ -19,7 +24,7 @@ type HTTPMethod =
 /**
  * oof: Object Oriented Fetch abstraction over `_fetch`
  *
- * This object oriented approach gives users a familiar chainable interface to build their API calls
+ * This object oriented approach gives users a easy to use chainable interface to build their API calls
  */
 export class oof {
   // Must be initialized with empty string
@@ -158,6 +163,9 @@ export class oof {
   /**
    * Set data/object to be sent to server in API calls for methods such as POST/PUT.
    *
+   * The type of data that can be passed in, is any JS value that can be JSON serialized with `JSON.stringify()`.
+   * See this [MDN link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description) on what type of data can be passed in.
+   *
    * For TS users, this method accepts a generic type that extends the Header type.
    *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
@@ -174,8 +182,6 @@ export class oof {
       // Check if `this.#path` contains any http protocol identifier using a case-insensitive regex match
       // If found, assume user passed in full URL to skip using base URL, thus use `this.#path` directly as full URL
       // Else prepend base URL to `this.#path` to get the full URL
-      // @todo Alternatively, check for / as first character, if so, assume it is a relative URL...?
-      // Then if it does not start with / means full URL
       this.#path.match(/https:\/\/|http:\/\//i)
         ? this.#path
         : oof._baseUrl + this.#path,
@@ -221,6 +227,8 @@ export class oof {
    * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
    *
    * Function can be async as it returns a Promise, but it is not necessary as no await is used within.
+   *
+   * For TS users, this method accepts a generic type to type the returned object.
    */
   runJSON<
     T extends Record<string | number | symbol, any> = Record<string, any>
