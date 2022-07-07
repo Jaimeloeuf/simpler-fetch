@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // This tsconfig extends the original config and just transpiles for JS files without comments
+    // https://github.com/microsoft/TypeScript/issues/14619#issuecomment-784973548
+    "declaration": false,
+    "removeComments": true
+  }
+}

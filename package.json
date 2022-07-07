@@ -9,8 +9,10 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npx tsc",
-    "build:watch": "npx tsc -w"
+    "build:watch": "npx tsc -w",
+    "build:default": "npx tsc",
+    "build:nocomments": "npx tsc -p ./tsconfig.nocomments.json",
+    "build": "npm run build:default && npm run build:nocomments"
   },
   "repository": {
     "type": "git",
