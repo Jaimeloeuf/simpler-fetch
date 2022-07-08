@@ -133,31 +133,9 @@ import { oof } from "simpler-fetch";
 
 
 ### fcf
-fcf: Functional, Curried, Fetch abstraction over `_fetch`.
-This is for users who prefer a more functional approach to building API data before calling the API.
+In older versions of this library, there was another abstraction on top of `_fetch` built for functional programming. But because it was not very practical and generally not really used.
 
-```javascript
-import { fcf } from "simpler-fetch";
-
-(async function () {
-  const fetch = fcf("http://localhost:3000");
-
-  const response = await fetch("/test")({
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-
-      randomHeader: true,
-      anotherHeader: "value",
-      lastHeader: 1,
-    },
-  })({ test: true, anotherTest: "testing" }).then((response) =>
-    response.json()
-  );
-
-  console.log("Response", response);
-})();
-```
+You can find its source code and documentation [here](./archive/fcf/)
 
 
 ## Using with firebase auth
