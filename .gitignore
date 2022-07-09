@@ -1,3 +1,5 @@
 node_modules/
 dist/
-tsconfig.tsbuildinfo
+
+# Ignore files for TypeScript incremental build
+*.tsbuildinfo
