@@ -100,7 +100,7 @@ export class oof {
    * @param {String} method The CAPITALISED verb string of the HTTP method
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static _METHODS_WO_DATA = (method: HTTPMethod, path: string): oof =>
+  static _WO_DATA = (method: HTTPMethod, path: string): oof =>
     new oof({ method, path });
 
   /**
@@ -110,12 +110,8 @@ export class oof {
    * @param {String} method The CAPITALISED verb string of the HTTP method
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static _METHODS_WITH_DATA = (method: HTTPMethod, path: string): oof =>
-    new oof({
-      method,
-      path,
-      headers: { "Content-Type": "application/json" },
-    });
+  static _W_DATA = (method: HTTPMethod, path: string): oof =>
+    new oof({ method, path, headers: { "Content-Type": "application/json" } });
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `GET` API call
@@ -131,7 +127,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static POST = (path: string): oof => oof._METHODS_WITH_DATA("POST", path);
+  static POST = (path: string): oof => oof._W_DATA("POST", path);
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `PUT` API call
@@ -139,7 +135,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static PUT = (path: string): oof => oof._METHODS_WITH_DATA("PUT", path);
+  static PUT = (path: string): oof => oof._W_DATA("PUT", path);
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `DEL` API call
