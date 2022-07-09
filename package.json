@@ -12,7 +12,8 @@
     "build:watch": "npx tsc -w",
     "build:default": "npx tsc",
     "build:nocomments": "npx tsc -p ./tsconfig.nocomments.json",
-    "build": "npm run build:default && npm run build:nocomments"
+    "build:minify": "npx terser --compress --mangle --comments all --output ./dist/index.js -- ./dist/index.js",
+    "build": "npm run build:default && npm run build:nocomments && npm run build:minify"
   },
   "repository": {
     "type": "git",
@@ -36,6 +37,7 @@
   "homepage": "https://github.com/Enkel-Digital/simpler-fetch#readme",
   "devDependencies": {
     "@types/node": "^17.0.23",
+    "terser": "^5.14.1",
     "typescript": "^4.6.3"
   }
 }
