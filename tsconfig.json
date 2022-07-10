@@ -45,6 +45,7 @@
     "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
     "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
     "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
+    // Comments are removed in tsconfig.nocomments.json
     // "removeComments": true,                           /* Disable emitting comments. */
     // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
     // "importsNotUsedAsValues": "remove",               /* Specify emit/checking behavior for imports that are only used for types */
