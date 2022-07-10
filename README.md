@@ -15,43 +15,14 @@ This library is designed to make working with JSON APIs extremely easy, and it a
 
 
 ## API
-This library exposes the functions, [`_fetch`](#_fetch), [`fcf`](#fcf), [`oof`](#oof). Where [`oof`](#oof) is the recommended way for most users using this library.
+This library exposes the [`_fetch`](#_fetch) function and the [`oof`](#oof) class. Where [`oof`](#oof) is the recommended way for most users using this library.
 
 See the [sample project provided](./sample/) to learn more about it and to play around with it.
 Below are simple examples of how to use them, where all will achieve the same result.
 
 
-### \_fetch
-Simple fetch abstraction to refactor the API and does body stringification if needed.
-
-This is the bare minimum abstraction and used by `oof` and `fcf` under the hood, **not recommended** unless you have a very specific use case. The [`oof`](#oof) and [`fcf`](#fcf) abstractions are alot nicer to work with.
-
-```javascript
-import { _fetch } from "simpler-fetch";
-
-(async function () {
-  const response = await _fetch(
-    "http://localhost:3000/test",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-
-        randomHeader: true,
-        anotherHeader: "value",
-        lastHeader: 1,
-      },
-    },
-    { test: true, anotherTest: "testing" }
-  ).then((response) => response.json());
-
-  console.log("Response", response);
-})();
-```
-
-
 ### oof
-oof: Object Oriented Fetch abstraction over `_fetch`.
+oof: Object Oriented Fetch abstraction over [`_fetch`](#_fetch).
 This object oriented approach gives users a familiar chainable interface to build their API calls.
 
 This is also **the recommended way** to use this library as a end user.
@@ -126,6 +97,35 @@ import { oof } from "simpler-fetch";
   const response = await oof
     .GET("/test")
     .runJSON(); // Make the API call and parse the response as JSON
+
+  console.log("Response", response);
+})();
+```
+
+
+### \_fetch
+Simple fetch abstraction to refactor the API and does body stringification if needed.
+
+This is the bare minimum abstraction and used by `oof` and `fcf` under the hood, **not recommended** unless you have a very specific use case. The [`oof`](#oof) abstraction is alot nicer to work with.
+
+```javascript
+import { _fetch } from "simpler-fetch";
+
+(async function () {
+  const response = await _fetch(
+    "http://localhost:3000/test",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+
+        randomHeader: true,
+        anotherHeader: "value",
+        lastHeader: 1,
+      },
+    },
+    { test: true, anotherTest: "testing" }
+  ).then((response) => response.json());
 
   console.log("Response", response);
 })();
