@@ -31,11 +31,11 @@ if (!global.fetch) {
   await oof
     .GET("/test")
     // Fixed header object
-    .header({ headerOne: 1 })
+    .header({ someAuthenticationToken: "superSecureTokenString" })
     // Synchronous function that returns a header object
-    .header(() => ({ headerTwo: 1 }))
+    .header(() => ({ anotherAuthenticationToken: "secret" }))
     // Asynchronous function that returns a promise that resolves to a header object
-    .header(async () => ({ headerThree: 3 }))
+    .header(async () => ({ yetAnotherHeaderValue: 123456789 }))
     .runJSON()
     .then((res) => console.log("res 1", res));
 
@@ -69,7 +69,7 @@ if (!global.fetch) {
 
   /* ================================= Error Handling ================================= */
 
-  console.log("\n\nNext API call will fail to show case error handling.\n");
+  console.log("Next API call will fail to show case error handling.");
 
   // API call to a definitely not available site to similiar API call failed
   await oof
@@ -78,4 +78,16 @@ if (!global.fetch) {
     .then((res) => console.log("res", res))
     // Catch error and handle here to prevent the error from bubbling up
     .catch((err) => console.error("API call failed\n", err));
+
+  /* ================================= Lazily Loaded ================================= */
+
+  // Import the API library lazily into your application.
+  // Only do this if your entire application only needs this library for a
+  // small number of API calls only such as a landing page's contact form.
+  // For all other purposes, import the API library at top level first.
+  import("../../dist/index.js")
+    .then(({ oof }) =>
+      oof.GET("https://jsonplaceholder.typicode.com/todos/1").runJSON()
+    )
+    .then((res) => console.log("res lazy", res));
 })();
