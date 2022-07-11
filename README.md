@@ -1,11 +1,11 @@
 # simpler-fetch
-`simpler-fetch` is an abstraction on top of the `window.fetch` method with ZERO dependencies of around 1.1kb and around 0.5kb with level 6 gzip.
+`simpler-fetch` is a super simple to use [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) abstraction with ZERO dependencies, making it super small at just 0.4kb with brotli compression!
 
-It **DOES NOT** introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers.
+It **DOES NOT** introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers. Since this is just a wrapper over fetch, this library **can be used in an isomorphic context**, as long as a fetch function is available in the global scope as it is not tied to any specific fetch implementation.
 
-This library is a JS ES6 module, which can be tree shaked when using with a bundler.
+This library only exports a JS ES6 module, which means that it can be tree shaked when used with a bundler. However this also means that NodeJS users need to `import` instead of `require`, see [sample project](./sample/node/).
 
-***Note that this does not test if `window.fetch` is available to save that few bytes. If `window.fetch` is not available, do not load this library directly, load a [polyfill](https://github.com/github/fetch) first before loading this library.***
+***Note that this does not test if `fetch` is available to save that few bytes. If `fetch` is not available globally, DO NOT load this library directly, load a [polyfill](https://github.com/github/fetch) first before loading this library.***
 
 
 ## Intended use
@@ -139,7 +139,7 @@ You can find its source code and documentation [here](./archive/fcf/)
 
 
 ## Using with firebase auth
-[See documentation for using this lib with firebase authentication](./firebase-auth.md)
+[See documentation for using this library with firebase authentication](./firebase-auth.md)
 
 
 ## Technical Details
@@ -147,16 +147,15 @@ You can find its source code and documentation [here](./archive/fcf/)
   - This is because TS will not modify the file extension as it generates the JS files,
   - And when used in node js, module import paths require the full file extension to be used.
   - Therefore this is needed to work on node.js runtimes.
-  - Reference
-    - https://stackoverflow.com/questions/68928008/cant-import-module-without-the-js-extension-in-nodejs
-    - https://nodejs.org/api/esm.html#esm_import_specifiers
-    - https://github.com/microsoft/TypeScript/issues/40878
+  - References
+    - <https://stackoverflow.com/questions/68928008/cant-import-module-without-the-js-extension-in-nodejs>
+    - <https://nodejs.org/api/esm.html#esm_import_specifiers>
+    - <https://github.com/microsoft/TypeScript/issues/40878>
 
 
 ## License, Author and Contributing
 This project is developed and made available under the [MIT License](./LICENSE). Feel free to use it however you like!
-
-If you have any questions, open a github issue!
+Please open a github issue if you have any questions or problems.
 
 Authors:
 - [JJ](https://github.com/Jaimeloeuf)
