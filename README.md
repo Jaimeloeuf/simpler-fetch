@@ -14,6 +14,10 @@ This library is intended for any projects that want a simple to use and lightwei
 This library is designed to make working with JSON APIs extremely easy, and it also provides TypeScript support to improve the development experience.
 
 
+## Changes
+[See CHANGELOG for more details!](./CHANGELOG.md)
+
+
 ## API
 This library exposes the [`_fetch`](#_fetch) function and the [`oof`](#oof) class. Where [`oof`](#oof) is the recommended way for most users using this library.
 
