@@ -18,6 +18,28 @@ This library is designed to make working with JSON APIs extremely easy, and it a
 [See CHANGELOG for more details!](./CHANGELOG.md)
 
 
+## Get started
+1. Install this library from npm or github using
+    ```shell
+    # Install from npm
+    npm i simpler-fetch
+
+    # Install from github
+    npm i https://github.com/Enkel-Digital/simpler-fetch/
+    ```
+1. Import this library directly from a CDN link
+    ```javascript
+    // Or use any other CDN you prefer!
+    import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch/dist/index.js";
+    
+    // Start using it!
+    oof
+      .GET("https://jsonplaceholder.typicode.com/todos/1")
+      .runJSON()
+      .then(console.log);
+    ```
+
+
 ## API
 This library exposes the [`_fetch`](#_fetch) function and the [`oof`](#oof) class. Where [`oof`](#oof) is the recommended way for most users using this library.
 
