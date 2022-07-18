@@ -29,9 +29,12 @@ This library is designed to make working with JSON APIs extremely easy, and it a
     ```
 1. Import this library directly from a CDN link
     ```javascript
-    // Or use any other CDN you prefer!
+    // You can use any provider, however jsDelivr is shown here as it can be used in China and it is backed by multiple CDNs
     import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch/dist/index.js";
-    
+
+    // For CDN use, YOU ARE ADVISED to peg your code to a specific version to ensure it does not break between upgrades, e.g.
+    // import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@7.0.1/dist/index.js";
+
     // Start using it!
     oof
       .GET("https://jsonplaceholder.typicode.com/todos/1")
