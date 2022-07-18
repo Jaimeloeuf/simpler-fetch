@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 -
 
+## [7.0.1] - 2022-07-17
+### Changed
+- Update README to include docs on using with CDN
+- Change package keywords in package.json
+- Update dependencies
+
+
 ## [7.0.0] - 2022-07-12
 ### Changed
 - Rewrote library in TypeScript for better type support.
@@ -19,5 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `fcf` function as it is not super useful and can be easily implemented by users if needed.
 
 
-[Unreleased]: https://github.com/Enkel-Digital/simpler-fetch/compare/v7.0.0...HEAD
+[Unreleased]: https://github.com/Enkel-Digital/simpler-fetch/compare/v7.0.1...HEAD
+[7.0.1]: https://github.com/Enkel-Digital/simpler-fetch/releases/tag/v7.0.1
 [7.0.0]: https://github.com/Enkel-Digital/simpler-fetch/releases/tag/v7.0.0
