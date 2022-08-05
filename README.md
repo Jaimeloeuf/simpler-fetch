@@ -5,7 +5,7 @@ It **DOES NOT** introduce any new features at all. It only makes it easier and n
 
 This library only exports a JS ES6 module, which means that it can be tree shaked when used with a bundler. However this also means that NodeJS users need to `import` instead of `require`, see [sample project](./sample/node/).
 
-***Note that this does not test if `fetch` is available to save that few bytes. If `fetch` is not available globally, DO NOT load this library directly, load a [polyfill](https://github.com/github/fetch) first before loading this library.***
+***Note that this library does not test if `fetch` is available to save that few bytes. If `fetch` is not available globally, DO NOT load this library directly, load a [polyfill](https://github.com/github/fetch) or run a monkey patch first before loading this library.***
 
 
 ## Intended use
@@ -135,7 +135,7 @@ import { oof } from "simpler-fetch";
 ### \_fetch
 Simple fetch abstraction to refactor the API and does body stringification if needed.
 
-This is the bare minimum abstraction and used by `oof` and `fcf` under the hood, **not recommended** unless you have a very specific use case. The [`oof`](#oof) abstraction is alot nicer to work with.
+This is the bare minimum abstraction and it's used by `oof` under the hood, **do not use this** unless you have a very specific use case. The [`oof`](#oof) abstraction is alot nicer to work with.
 
 ```javascript
 import { _fetch } from "simpler-fetch";
@@ -162,9 +162,7 @@ import { _fetch } from "simpler-fetch";
 
 
 ### fcf
-In older versions of this library, there was another abstraction on top of `_fetch` built for functional programming. But because it was not very practical and generally not really used.
-
-You can find its source code and documentation [here](./archive/fcf/)
+In older versions of this library, there was another abstraction on top of `_fetch` built for functional programming. But because it was not very practical and generally not really used, it has been removed/abandoned now. You can find its source code and documentation [here](./archive/fcf/)
 
 
 ## Using with firebase auth
@@ -172,7 +170,7 @@ You can find its source code and documentation [here](./archive/fcf/)
 
 
 ## Technical Details
-- Import paths in TS source files are always written with the `.js` extension
+- Import paths in TS source files are always written with the `.js` extension (no longer an issue now as all source code is in a single file)
   - This is because TS will not modify the file extension as it generates the JS files,
   - And when used in node js, module import paths require the full file extension to be used.
   - Therefore this is needed to work on node.js runtimes.
@@ -183,8 +181,4 @@ You can find its source code and documentation [here](./archive/fcf/)
 
 
 ## License, Author and Contributing
-This project is developed and made available under the [MIT License](./LICENSE). Feel free to use it however you like!
-Please open a github issue if you have any questions or problems.
-
-Authors:
-- [JJ](https://github.com/Jaimeloeuf)
+This project is developed by [JJ](https://github.com/Jaimeloeuf) and made available under the [MIT License](./LICENSE). Feel free to use it however you like and open a github issue if you have any questions or problems!
