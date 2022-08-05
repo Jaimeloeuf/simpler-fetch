@@ -67,6 +67,13 @@ if (!global.fetch) {
     .runJSON()
     .then((res) => console.log("res 5", res));
 
+  // POST request with no data used
+  // Useful when using POST request to trigger RPC endpoints without any values
+  await oof
+    .POST("/test")
+    .runJSON()
+    .then((res) => console.log("res 6", res));
+
   /* ================================= Error Handling ================================= */
 
   console.log("Next API call will fail to show case error handling.");

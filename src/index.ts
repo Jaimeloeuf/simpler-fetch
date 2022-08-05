@@ -192,6 +192,9 @@ export class oof {
    *
    * For TS users, this method accepts a generic type that extends the Header type.
    *
+   * Even though there is no default arguement, you do not have to call the `.data` method with an empty object when
+   * calling a method like `oof.POST` as `fetch` and API services will just treat it as an empty object by default.
+   *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   data<T = any>(data: T): oof {
