@@ -14,10 +14,12 @@ if (!global.fetch) {
 
 // async IIFE to use async await without using top level await as older node versions dont support it
 (async function () {
-  // Set base URL of your API, leave out the trailing '/'
-  // if you plan to use a starting '/' for every API call.
+  // Set Base URL of your API once and all subsequent API calls with use this base API url.
+  // Leave out the trailing '/' if you plan to use a starting '/' for every API call.
   oof._baseUrl = "http://localhost:3000";
   console.log("oof._baseUrl: ", oof._baseUrl);
+
+  // See /sample/webapp/index.js on alternative ways to dynamically set `oof._baseUrl` when using build tools
 
   /* ================================= GET ================================= */
 

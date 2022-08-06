@@ -2,10 +2,27 @@ import { oof } from "../../dist/index.js";
 
 // async IIFE to use async await without using top level await as older browsers dont support it
 (async function () {
-  // Set base URL of your API, leave out the trailing '/'
-  // if you plan to use a starting '/' for every API call.
+  // Set Base URL of your API once and all subsequent API calls with use this base API url.
+  // Leave out the trailing '/' if you plan to use a starting '/' for every API call.
   oof._baseUrl = "http://localhost:3000";
   console.log("oof._baseUrl: ", oof._baseUrl);
+
+  // Alternatively, if you would like to have your URL injected from a .env file, e.g. using VITE
+  // oof._baseUrl = import.meta.env.VITE_API_URL;
+
+  // Alternatively, if you would like to use different base URLs for different build modes,
+  // Base URL can be set like this if using a bundler that injects NODE_ENV in
+  // oof._baseUrl =
+  //   process.env.NODE_ENV === "production"
+  //     ? "https://deployed-api.com"
+  //     : "http://localhost:3000";
+
+  // Alternatively, if you would like to use different base URLs for different build modes,
+  // Base URL can be set like this if using a bundler that sets the `import.meta` attributes
+  // oof._baseUrl =
+  //   import.meta.env.MODE === "development"
+  //     ? "http://localhost:3000"
+  //     : "https://api.example.com";
 
   /* ================================= GET ================================= */
 
