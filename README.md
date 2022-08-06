@@ -27,17 +27,29 @@ This library is designed to make working with JSON APIs extremely easy, and it a
     # Install from github
     npm i https://github.com/Enkel-Digital/simpler-fetch/
     ```
-1. Import this library directly from a CDN link
+1. Start using the library!
     ```javascript
-    // You can use any provider, however jsDelivr is shown here as it can be used in China and it is backed by multiple CDNs
-    import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch/dist/index.js";
+    // Import the library as a npm dependency
+    import { oof } from "simpler-fetch";
 
+    // Alternatively you can import this library directly from a CDN link
+    // You can use any provider, however jsDelivr is shown here as it can be used in China and it is backed by multiple CDNs
+    // import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch/dist/index.js";
+    //
     // For CDN use, YOU ARE ADVISED to peg your code to a specific version to ensure it does not break between upgrades, e.g.
-    // import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@7.0.1/dist/index.js";
+    // import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@7.0.2/dist/index.js";
 
     // Start using it!
     oof
       .GET("https://jsonplaceholder.typicode.com/todos/1")
+      .runJSON()
+      .then(console.log);
+
+    // POST request example
+    oof
+      .POST("https://jsonplaceholder.typicode.com/posts")
+      .header({ someAuthenticationToken: "superSecureTokenString" })
+      .data({ title: "foo", body: "bar", userId: 1 })
       .runJSON()
       .then(console.log);
     ```
