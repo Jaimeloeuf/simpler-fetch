@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update dependency
 
 ### Added
+- Add README section on platforms this library supports.
 - Add sample code and documentation in sample webapp to show alternative ways to dynamically set `oof._baseUrl` when using build tools such as bundlers/vite.
 - Add docs and sample code to show how and explain why a POST request can be made without actually calling the .data method to pass in an empty object when you do not have any data to pass to the API.
 

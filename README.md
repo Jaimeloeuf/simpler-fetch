@@ -192,5 +192,12 @@ In older versions of this library, there was another abstraction on top of `_fet
     - <https://github.com/microsoft/TypeScript/issues/40878>
 
 
+## Support
+This library is designed for modern browsers in mind only and does not support older browsers/node by default although you can monkey patch it to work for example by using polyfills.
+
+- Because this library only exports a JS ES6 module, your target platform (browser/node) must support ES6 modules.
+- This library relies on the modern [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), so if your platform does not have this natively, you need to monkey patch it in using a `polyfill` or something like `node-fetch`.
+
+
 ## License, Author and Contributing
 This project is developed by [JJ](https://github.com/Jaimeloeuf) and made available under the [MIT License](./LICENSE). Feel free to use it however you like and open a github issue if you have any questions or problems!
