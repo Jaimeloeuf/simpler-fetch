@@ -1,6 +1,6 @@
 {
   "name": "simpler-fetch",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "Simple and Easy to use fetch API abstraction with zero dependency that is super small!",
   "type": "module",
   "main": "dist/index.js",
