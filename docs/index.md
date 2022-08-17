@@ -9,7 +9,7 @@
 It **DOES NOT** introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers. Since this is just a wrapper over fetch, this library **can be used in an isomorphic context**, as long as a fetch function is available in the global scope as it is not tied to any specific fetch implementation.
 
 ::: tip
-This library only exports a JS ES6 module, which means that it can be tree shaked when used with a bundler. However this also means that NodeJS users need to `import` instead of `require`, see [sample project](./sample/node/).
+This library only exports a JS ES6 module, which means that it can be tree shaked when used with a bundler. However this also means that NodeJS users need to `import` instead of `require`, see [sample project](https://github.com/Enkel-Digital/simpler-fetch/tree/master/sample).
 :::
 
 ::: danger
@@ -48,7 +48,7 @@ import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@7.0.2/dist/index
 ## oof
 This is one of the exported values from the simpler-fetch module. `oof` stands for the Object Oriented Fetch abstraction over [`_fetch`](./#_fetch).
 
-This object oriented approach gives users a familiar chainable interface to build their API calls and this is also **the recommended way** to use this library as a end user. See the [sample project provided](./sample/) for a more in depth example on using `oof`.
+This object oriented approach gives users a familiar chainable interface to build their API calls and this is also **the recommended way** to use this library as a end user. See the [sample project provided](https://github.com/Enkel-Digital/simpler-fetch/tree/master/sample) for a more in depth example on using `oof`.
 
 ### Importing the library
 ```javascript
