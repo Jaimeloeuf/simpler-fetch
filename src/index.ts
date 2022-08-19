@@ -15,7 +15,7 @@ export const _fetch = (url: string, opts: RequestInit = {}, body?: any) =>
     */
 
     // Only include the body field if a body value is provided
-    // Stringify the body object if it isn't already
+    // Only stringify body, if a runtime object type value is passed in
     body: body && typeof body === "object" ? JSON.stringify(body) : body,
   });
 
@@ -57,6 +57,8 @@ type JsonResponse = Record<string | number | symbol, any>;
 export class oof {
   // Must be initialized with empty string
   // So if user does not set any baseUrl, _baseUrl + this.path will not result in undefined + this.path
+  // `_baseUrl` is named with a preceding underscore, implying that it should be private,
+  // however users can still read and modify this to set the base API url.
   static _baseUrl = "";
 
   /* Private Instance variables that are only accessible internally */
