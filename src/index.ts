@@ -241,6 +241,28 @@ export class oof {
   }
 
   /**
+   * Safe version of the `run` method that will not throw/bubble up any errors.
+   *
+   * @example <caption>Using await to handle await at the same scope level</caption>
+   * ```javascript
+   * const { res, err } = await oof.GET("/api").runSafe();
+   *
+   * if (err) {
+   *    return console.log("Something went wrong!");
+   * }
+   *
+   * console.log("Res:", res);
+   * ```
+   */
+  async runSafe(): Promise<{ res?: Response; err?: Error }> {
+    try {
+      return { res: await this.run() };
+    } catch (err) {
+      return { err };
+    }
+  }
+
+  /**
    * Wrapper around `run` method to auto parse return data as JSON before returning
    * Returns the parsed JSON response.
    * Return type will always union with { ok: boolean; status: number; } as these will always be injected in
@@ -274,5 +296,44 @@ export class oof {
     // const response = await this.run();
     // const parsedJSON = await response.json();
     // return { ok: response.ok, status: response.status, ...parsedJSON };
+  }
+
+  /**
+   * Safe version of `runJSON` method that will not throw / let any async errors bubble up.
+   *
+   * Wrapper around `run` method to auto parse return data as JSON before returning
+   * Returns the parsed JSON response.
+   * Return type will always union with { ok: boolean; status: number; } as these will always be injected in
+   *
+   * When API server responds with a status code of anything outside of 200-299 Response.ok is auto set to false
+   * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#checking_that_the_fetch_was_successful
+   * https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
+   *
+   * Thus instead of making API servers include an 'ok' data prop in response body,
+   * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
+   * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
+   *
+   * Function can be async as it returns a Promise, but it is not necessary as no await is used within.
+   *
+   * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
+   * For TS users, this method accepts a generic type to type the returned object.
+   */
+  runSafeJSON<T extends JsonResponse = JsonResponse>(): Promise<{
+    res?: T & { ok: boolean; status: number };
+    err?: Error;
+  }> {
+    // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
+    return this.run().then((response) =>
+      response
+        .json()
+        .then((parsedJSON) => ({
+          res: {
+            ok: response.ok,
+            status: response.status,
+            ...parsedJSON,
+          },
+        }))
+        .catch((err) => ({ err }))
+    );
   }
 }
