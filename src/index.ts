@@ -262,8 +262,33 @@ export class oof {
     }
   }
 
+  /*
+    These are other methods that builts on the run method to simplify value extraction.
+    These functions can be async as it returns a Promise, but it is not necessary as no await is used within.
+  */
+
+  /** Abstraction on top of the `run` method to return response body parsed as text */
+  runText(): Promise<string> {
+    return this.run().then((res) => res.text());
+  }
+
+  /** Abstraction on top of the `run` method to return response body parsed as Blob */
+  runBlob(): Promise<Blob> {
+    return this.run().then((res) => res.blob());
+  }
+
+  /** Abstraction on top of the `run` method to return response body parsed as FormData */
+  runFormData(): Promise<FormData> {
+    return this.run().then((res) => res.formData());
+  }
+
+  /** Abstraction on top of the `run` method to return response body parsed as ArrayBuffer */
+  runArrayBuffer(): Promise<ArrayBuffer> {
+    return this.run().then((res) => res.arrayBuffer());
+  }
+
   /**
-   * Wrapper around `run` method to auto parse return data as JSON before returning
+   * Wrapper around `run` method to auto parse return data as JSON
    * Returns the parsed JSON response.
    * Return type will always union with { ok: boolean; status: number; } as these will always be injected in
    *
