@@ -15,7 +15,7 @@
     "build:watch": "npx tsc -w",
     "build:default": "npx tsc",
     "build:nocomments": "npx tsc -p ./tsconfig.nocomments.json",
-    "build:minify": "npx terser --compress --mangle --comments all --output ./dist/index.js -- ./dist/index.js",
+    "build:minify": "node ./minify.js",
     "build:delete": "npx rimraf ./dist tsconfig.tsbuildinfo tsconfig.nocomments.tsbuildinfo",
     "build": "npm run build:delete && npm run build:default && npm run build:nocomments && npm run build:minify"
   },
