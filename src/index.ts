@@ -361,12 +361,12 @@ export class oof {
    * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
    * For TS users, this method accepts a generic type to type the returned object.
    */
-  runSafeJSON<T extends JsonResponse = JsonResponse>(): Promise<{
-    res?: T & { ok: boolean; status: number };
-    err?: Error;
-  }> {
+  runSafeJSON<T extends JsonResponse = JsonResponse>(): Promise<
+    | { res: T & { ok: boolean; status: number }; err: undefined }
+    | { res: undefined; err: Error }
+  > {
     // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
-    return this.run().then((response) =>
+    return this._run().then((response) =>
       response
         .json()
         .then((parsedJSON) => ({
@@ -375,8 +375,9 @@ export class oof {
             status: response.status,
             ...parsedJSON,
           },
+          err: undefined,
         }))
-        .catch((err) => ({ err }))
+        .catch((err) => ({ err, res: undefined }))
     );
   }
 }
