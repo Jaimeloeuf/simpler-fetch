@@ -50,6 +50,24 @@ type HTTPMethod =
 type JsonResponse = Record<string | number | symbol, any>;
 
 /**
+ * Function wrapper to ensure that any of the `run` methods will not throw/bubble up any errors to the users,
+ * instead all values and errors will be encapsulated into a monadic like structure for user to destructure out.
+ * This takes inspiration from how Go-lang does error handling, where they can deal with errors sequentially,
+ * without having to deal with jumping control flows with try/catch blocks.
+ *
+ * Go-lang error handling reference: https://go.dev/blog/error-handling-and-go
+ *
+ * @param fn Takes in any function to wrap around to prevent errors from bubbling up
+ * @returns Returns either the result of the function call or an error if any is thrown, encapsulating both in an object that can be destructed
+ */
+const safe = <T>(
+  fn: () => Promise<T>
+): Promise<{ res: T; err: undefined } | { res: undefined; err: Error }> =>
+  fn()
+    .then((res) => ({ res, err: undefined }))
+    .catch((err) => ({ err, res: undefined }));
+
+/**
  * oof: Object Oriented Fetch abstraction over `_fetch`
  *
  * This object oriented approach gives users a easy to use chainable interface to build their API calls
@@ -268,23 +286,23 @@ export class oof {
   */
 
   /** Abstraction on top of the `run` method to return response body parsed as text */
-  runText(): Promise<string> {
-    return this.run().then((res) => res.text());
+  runText() {
+    return safe(() => this.run().then((res) => res.text()));
   }
 
   /** Abstraction on top of the `run` method to return response body parsed as Blob */
-  runBlob(): Promise<Blob> {
-    return this.run().then((res) => res.blob());
+  runBlob() {
+    return safe(() => this.run().then((res) => res.blob()));
   }
 
   /** Abstraction on top of the `run` method to return response body parsed as FormData */
-  runFormData(): Promise<FormData> {
-    return this.run().then((res) => res.formData());
+  runFormData() {
+    return safe(() => this.run().then((res) => res.formData()));
   }
 
   /** Abstraction on top of the `run` method to return response body parsed as ArrayBuffer */
-  runArrayBuffer(): Promise<ArrayBuffer> {
-    return this.run().then((res) => res.arrayBuffer());
+  runArrayBuffer() {
+    return safe(() => this.run().then((res) => res.arrayBuffer()));
   }
 
   /**
