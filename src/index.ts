@@ -222,9 +222,10 @@ export class oof {
     return this;
   }
 
-  /** Call method after constructing the API call object to make the API call */
-  // @todo Wrap this in a try/catch and return {res, err} to force user to check instead of letting caller handle any throws
-  async run(): Promise<Response> {
+  /**
+   * Call method after constructing the API call object to make the API call
+   */
+  async _run(): Promise<Response> | never {
     return _fetch(
       // Check if `this.#path` contains any http protocol identifier using a case-insensitive regex match
       // If found, assume user passed in full URL to skip using base URL, thus use `this.#path` directly as full URL
@@ -272,12 +273,8 @@ export class oof {
    * console.log("Res:", res);
    * ```
    */
-  async runSafe(): Promise<{ res?: Response; err?: Error }> {
-    try {
-      return { res: await this.run() };
-    } catch (err) {
-      return { err };
-    }
+  run() {
+    return safe(this._run);
   }
 
   /*
@@ -287,22 +284,22 @@ export class oof {
 
   /** Abstraction on top of the `run` method to return response body parsed as text */
   runText() {
-    return safe(() => this.run().then((res) => res.text()));
+    return safe(() => this._run().then((res) => res.text()));
   }
 
   /** Abstraction on top of the `run` method to return response body parsed as Blob */
   runBlob() {
-    return safe(() => this.run().then((res) => res.blob()));
+    return safe(() => this._run().then((res) => res.blob()));
   }
 
   /** Abstraction on top of the `run` method to return response body parsed as FormData */
   runFormData() {
-    return safe(() => this.run().then((res) => res.formData()));
+    return safe(() => this._run().then((res) => res.formData()));
   }
 
   /** Abstraction on top of the `run` method to return response body parsed as ArrayBuffer */
   runArrayBuffer() {
-    return safe(() => this.run().then((res) => res.arrayBuffer()));
+    return safe(() => this._run().then((res) => res.arrayBuffer()));
   }
 
   /**
@@ -323,61 +320,26 @@ export class oof {
    * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
    * For TS users, this method accepts a generic type to type the returned object.
    */
-  runJSON<T extends JsonResponse = JsonResponse>(): Promise<
-    T & { ok: boolean; status: number }
-  > {
-    // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
-    return this.run().then((response) =>
-      response.json().then((parsedJSON) => ({
-        ok: response.ok,
-        status: response.status,
-        ...parsedJSON,
-      }))
-    );
-
-    // Alternatively, a clearer way to write this is with async/await but it cost extra bytes.
-    // const response = await this.run();
-    // const parsedJSON = await response.json();
-    // return { ok: response.ok, status: response.status, ...parsedJSON };
-  }
-
-  /**
-   * Safe version of `runJSON` method that will not throw / let any async errors bubble up.
-   *
-   * Wrapper around `run` method to auto parse return data as JSON before returning
-   * Returns the parsed JSON response.
-   * Return type will always union with { ok: boolean; status: number; } as these will always be injected in
-   *
-   * When API server responds with a status code of anything outside of 200-299 Response.ok is auto set to false
-   * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#checking_that_the_fetch_was_successful
-   * https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
-   *
-   * Thus instead of making API servers include an 'ok' data prop in response body,
-   * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
-   * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
-   *
-   * Function can be async as it returns a Promise, but it is not necessary as no await is used within.
-   *
-   * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
-   * For TS users, this method accepts a generic type to type the returned object.
-   */
-  runSafeJSON<T extends JsonResponse = JsonResponse>(): Promise<
-    | { res: T & { ok: boolean; status: number }; err: undefined }
-    | { res: undefined; err: Error }
-  > {
-    // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
-    return this._run().then((response) =>
-      response
-        .json()
-        .then((parsedJSON) => ({
-          res: {
+  runJSON<T extends JsonResponse = JsonResponse>() {
+    return safe(
+      // Return type is whats expected in { res: T }
+      (): Promise<T & { ok: boolean; status: number }> =>
+        // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
+        this._run().then((response) =>
+          response.json().then((parsedJSON) => ({
+            // `ok` and `status` props set before `parsedJSON` is spread in to allow it to override the preceeding props
             ok: response.ok,
             status: response.status,
             ...parsedJSON,
-          },
-          err: undefined,
-        }))
-        .catch((err) => ({ err, res: undefined }))
+          }))
+        )
     );
+
+    // Alternatively, a clearer way to write this is with async/await but it cost extra bytes.
+    // return safe(async (): Promise<T & { ok: boolean; status: number }> => {
+    //   const response = await this._run();
+    //   const parsedJSON = await response.json();
+    //   return { ok: response.ok, status: response.status, ...parsedJSON };
+    // });
   }
 }
