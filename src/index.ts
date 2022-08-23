@@ -276,7 +276,22 @@ export class oof {
    * ```
    */
   run() {
-    return safe(this._run);
+    // Need to wrap the call to the `this._run` method in an anonymous arrow function,
+    // so that the this binding is preserved when running the method.
+    return safe(() => this._run());
+
+    // Alternatives:
+    //
+    // `return safe(this._run);`
+    // If written like the way above, then it will fail, as there is no more `this`
+    // binding when the call to that method is made within the `safe` function.
+    //
+    // `return safe(this._run.bind(this));`
+    // Above is an alternative that also works, but what they are trying to achieve is
+    // essentially the same, which is to preserve the current `this` binding in this
+    // run method, regardless of whether it is creating a new anonymous arrow function
+    // or binding the current this to create a new function using `this._run`. The
+    // anonymous arrow function is used instead as it uses less characters.
   }
 
   /*
