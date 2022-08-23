@@ -64,7 +64,21 @@ export class oof {
   #path: string;
   #opts: RequestInit;
 
-  // data can be any type as JSON.stringify accepts any type that is serializable
+  /**
+   * The `data` field will be used for the `body` prop of the `fetch` function.
+   * Since that function accepts the type of `BodyInit | null` and we can also
+   * pass it strings that are stringified with JSON.stringify, `data` can be any
+   * type as JSON.stringify accepts any type that is serializable.
+   *
+   * The JSON.stringify method takes many types of arguments as specified in the reference links below.
+   * Due to the huge variety of argument types and the lack of a standard TypeScript interface/type
+   * describing it, this is explicitly typed as `any`, which means that this type is basically anything
+   * that can be serialized by JSON.stringify and also any child types of `BodyInit | null`
+   *
+   * References:
+   * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description
+   * - https://tc39.es/ecma262/#sec-json.stringify
+   */
   #data?: any;
 
   /** Low level constructor API that generally isnt used. Stick with the provided static methods for a cleaner API. */
