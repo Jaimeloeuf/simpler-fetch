@@ -210,7 +210,19 @@ export class oof {
    *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  data<T = any>(data: T): oof {
+  data<T = any>(data: T, optionalContentType?: string): oof {
+    // Only add in the content-type header if user chooses to set it,
+    //
+    // Ref: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
+    // Quoting the above link's last line: "... the fetch() function will try to
+    // intelligently determine the content type. A request will also automatically
+    // set a Content-Type header if none is set in the dictionary."
+    //
+    // This means that if none is passed in, fetch API's implementation will guess and
+    // set the content-type automatically, which is why this method parameter is optional.
+    if (optionalContentType)
+      this.header({ "Content-Type": optionalContentType });
+
     this.#data = data;
     return this;
   }
