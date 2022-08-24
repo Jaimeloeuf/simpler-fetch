@@ -65,9 +65,9 @@ export class oof {
   #opts: RequestInit;
 
   /**
-   * The `data` field will be used for the `body` prop of the `fetch` function.
+   * The `body` field will be used for the `body` prop of the `fetch` function.
    * Since that function accepts the type of `BodyInit | null` and we can also
-   * pass it strings that are stringified with JSON.stringify, `data` can be any
+   * pass it strings that are stringified with JSON.stringify, `body` can be any
    * type as JSON.stringify accepts any type that is serializable.
    *
    * The JSON.stringify method takes many types of arguments as specified in the reference links below.
@@ -79,7 +79,7 @@ export class oof {
    * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description
    * - https://tc39.es/ecma262/#sec-json.stringify
    */
-  #data?: any;
+  #body?: any;
 
   /** Low level constructor API that generally isnt used. Stick with the provided static methods for a cleaner API. */
   constructor({
@@ -210,7 +210,7 @@ export class oof {
    *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  data<T = any>(data: T, optionalContentType?: string): oof {
+  body<T = any>(body: T, optionalContentType?: string): oof {
     // Only add in the content-type header if user chooses to set it,
     //
     // Ref: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
@@ -223,7 +223,7 @@ export class oof {
     if (optionalContentType)
       this.header({ "Content-Type": optionalContentType });
 
-    this.#data = data;
+    this.#body = body;
     return this;
   }
 
@@ -235,7 +235,7 @@ export class oof {
    * Because, the `_run` method needs to accept too many data input types,
    * so instead of doing all the processing and transforming then, the specific
    * transformations should be done in helper methods like this so that in the
-   * actual `fetch` call, we can just set `body: this.#data` directly.
+   * actual `fetch` call, we can just set `body: this.#body` directly.
    *
    * @param data Any data type that is of 'application/json' type and can be stringified by JSON.stringify
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
@@ -244,12 +244,12 @@ export class oof {
     // Content-type needs to be set manually even though `fetch` is able to guess most
     // content-type because once object is stringified, the data will be a string, and
     // fetch will guess that it is 'text/plain' rather than 'application/json'.
-    return this.data(JSON.stringify(data), "application/json");
+    return this.body(JSON.stringify(data), "application/json");
 
     // Alternative that implements setting body directly instead of using
     // the lower level method, but would result in a larger library size.
     // this.header({ "Content-Type": "application/json" });
-    // this.#data = JSON.stringify(data);
+    // this.#body = JSON.stringify(data);
     // return this;
   }
 
@@ -294,8 +294,8 @@ export class oof {
         // on helper methods like `bodyJSON` to set a JSON data type as the body
         // and to also set the content-type and do any transformations as needed.
         //
-        // See #data prop's docs on its type
-        body: this.#data,
+        // See #body prop's docs on its type
+        body: this.#body,
       }
     );
   }
