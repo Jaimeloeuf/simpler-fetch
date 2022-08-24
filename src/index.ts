@@ -104,29 +104,6 @@ export class oof {
   }
 
   /**
-   * Wrapper function over constructor to make the constructor API more ergonomic.
-   *
-   * This exposed static method allows users to use HTTP methods that are not provided by default.
-   * This method is meant for HTTP methods like GET that do not allow entity bodies.
-   * Although the provided GET and DEL methods can use this method internally,
-   * they do not use this so as to optimize away the additional function call.
-   * @param {String} method The CAPITALISED verb string of the HTTP method
-   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
-   */
-  static _WO_DATA = (method: HTTPMethod, path: string): oof =>
-    new oof({ method, path });
-
-  /**
-   * Wrapper function over constructor to make the constructor API more ergonomic.
-   *
-   * This static method allows users to use HTTP methods like POST that have JSON entity bodies
-   * @param {String} method The CAPITALISED verb string of the HTTP method
-   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
-   */
-  static _W_DATA = (method: HTTPMethod, path: string): oof =>
-    new oof({ method, path, headers: { "Content-Type": "application/json" } });
-
-  /**
    * Wrapper function over constructor to construct a new `oof` instance for a `GET` API call
    *
    * @param {String} path Path of your API
@@ -140,7 +117,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static POST = (path: string): oof => oof._W_DATA("POST", path);
+  static POST = (path: string): oof => new oof({ method: "POST", path });
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `PUT` API call
@@ -148,7 +125,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static PUT = (path: string): oof => oof._W_DATA("PUT", path);
+  static PUT = (path: string): oof => new oof({ method: "PUT", path });
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `DEL` API call
