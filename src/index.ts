@@ -228,6 +228,32 @@ export class oof {
   }
 
   /**
+   * Method that stringifies a JSON stringifiable data type to use as the request body,
+   * and sets the content-type to 'application/json'.
+   *
+   * Why does this method exists?
+   * Because, the `_run` method needs to accept too many data input types,
+   * so instead of doing all the processing and transforming then, the specific
+   * transformations should be done in helper methods like this so that in the
+   * actual `fetch` call, we can just set `body: this.#data` directly.
+   *
+   * @param data Any data type that is of 'application/json' type and can be stringified by JSON.stringify
+   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
+   */
+  bodyJSON<T = any>(data: T): oof {
+    // Content-type needs to be set manually even though `fetch` is able to guess most
+    // content-type because once object is stringified, the data will be a string, and
+    // fetch will guess that it is 'text/plain' rather than 'application/json'.
+    return this.data(JSON.stringify(data), "application/json");
+
+    // Alternative that implements setting body directly instead of using
+    // the lower level method, but would result in a larger library size.
+    // this.header({ "Content-Type": "application/json" });
+    // this.#data = JSON.stringify(data);
+    // return this;
+  }
+
+  /**
    * Call method after constructing the API call object to make the API call
    */
   async _run(): Promise<Response> | never {
@@ -263,12 +289,13 @@ export class oof {
         // Note that this will not be able to override the body prop only as the body prop is set after this
         ...this.#opts,
 
-        // Only include the body field if a body value is provided
-        // Only stringify body, if a runtime object type value is passed in
-        body:
-          this.#data && typeof this.#data === "object"
-            ? JSON.stringify(this.#data)
-            : this.#data,
+        // Because fetch's body prop can accept many different types of data, instead
+        // of doing transformations like JSON.stringify here, this library relies
+        // on helper methods like `bodyJSON` to set a JSON data type as the body
+        // and to also set the content-type and do any transformations as needed.
+        //
+        // See #data prop's docs on its type
+        body: this.#data,
       }
     );
   }
