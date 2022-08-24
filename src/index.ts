@@ -136,18 +136,26 @@ export class oof {
   static DEL = (path: string): oof => new oof({ method: "DELETE", path });
 
   /**
-   * Set options for the fetch method call. Usually used to set custom RequestInit parameters.
-   * This is generally not used unless you have specific options to pass in e.g. cache: "no-cache".
+   * Use this to set custom RequestInit parameters for this specific `oof` instance's
+   * fetch method call. See below on when should you use this method.
    *
-   * Note that passing in a header object here will override all headers passed in via the 'header' method.
-   * Because these options are merged with the header object using a shallow merge.
+   * Alternatives to this method:
+   * - If you want to set request body, use the `.body` or `.bodyJSON` method instead.
+   * - If you need to set a request header, use the `.header` method instead.
+   * - If you want to set HTTP request method, use one of the static constructors
+   * like `oof.GET("/api/path")` or use the constructor by passing in a non-default
+   * (not GET/POST/PUT/DEL) HTTP method instead like `new oof({ method:"HTTP-METHOD" })`
    *
-   * This method directly assigns the arguement to `this.#opts` which means calling this method overrides
-   * whatever options that is already set previously. Because it does not make sense for the user to call
-   * this repeatedly since there is no default options set by this library anyways. Thus it is a direct
-   * assignment instead of a merge like `this.#opts = { ...this.#opts, ...opts }`
+   * Do not use this unless you have a specific option to pass in e.g. cache: "no-cache"
+   * for this one specific API call only and nothing else.
    *
-   * @param {RequestInit} opts Options object used as the RequestInit object
+   * This method directly assigns the arguement to `this.#opts` which means calling this
+   * method overrides whatever options that is already set previously. Because it does
+   * not make sense for the user to call this repeatedly since there is no default options
+   * set by this library anyways. Thus it is a direct assignment instead of a merge like
+   * `this.#opts = { ...this.#opts, ...opts }`
+   *
+   * @param {RequestInit} opts RequestInit object for this one API call
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   options(opts: RequestInit): oof {
@@ -244,6 +252,12 @@ export class oof {
         ? this.#path
         : oof._baseUrl + this.#path,
       {
+        // Add and/or Override defaults if any
+        // If there is a headers property in this options object, it will override the headers entirely
+        // Also options merging is a shallow merge not a deepmerge
+        // Note that this will not be able to override the body prop only as the body prop is set after this
+        ...this.#opts,
+
         method: this.#method,
 
         // Run header functions if any to ensure array of headers is now an array of header objects,
@@ -259,12 +273,6 @@ export class oof {
             )
           )
         ).reduce((obj, item) => ({ ...obj, ...item }), {}),
-
-        // Add and/or Override defaults if any
-        // If there is a headers property in this options object, it will override the headers entirely
-        // Also options merging is a shallow merge not a deepmerge
-        // Note that this will not be able to override the body prop only as the body prop is set after this
-        ...this.#opts,
 
         // Because fetch's body prop can accept many different types of data, instead
         // of doing transformations like JSON.stringify here, this library relies
