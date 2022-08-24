@@ -46,9 +46,11 @@ import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@7.0.2/dist/index
 
 
 ## oof
-This is one of the exported values from the simpler-fetch module. `oof` stands for the Object Oriented Fetch abstraction over [`_fetch`](./#_fetch).
+`oof` stands for Object Oriented Fetch.
 
-This object oriented approach gives users a familiar chainable interface to build their API calls and this is also **the recommended way** to use this library as a end user. See the [sample project provided](https://github.com/Enkel-Digital/simpler-fetch/tree/master/sample) for a more in depth example on using `oof`.
+This object oriented approach gives users a familiar chainable interface to build their API calls. See the [sample project provided](https://github.com/Enkel-Digital/simpler-fetch/tree/master/sample) for a full example on using `oof`.
+
+This the only exported value from the simpler-fetch module using a named export ([see here to understand why a named export is used despite this being the sole export](https://listed.to/@JJ/37419/named-exports-are-better-than-default-ones-mostly)).
 
 ### Importing the library
 ```javascript
@@ -139,33 +141,4 @@ await oof
 
 #### runJSON
 ```javascript
-```
-
-
-## \_fetch
-Simple fetch abstraction over the fetch API and does body stringification if needed.
-
-This is the bare minimum abstraction and it's used by [oof](#oof) under the hood, **do not use this** unless you have a very specific use case. The [oof](#oof) abstraction is alot nicer to work with.
-
-```javascript
-import { _fetch } from "simpler-fetch";
-
-(async function () {
-  const response = await _fetch(
-    "http://localhost:3000/test",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-
-        randomHeader: true,
-        anotherHeader: "value",
-        lastHeader: 1,
-      },
-    },
-    { test: true, anotherTest: "testing" }
-  ).then((response) => response.json());
-
-  console.log("Response", response);
-})();
 ```
