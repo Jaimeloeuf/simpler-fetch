@@ -47,16 +47,47 @@ const safe = <T>(
     .catch((err) => ({ err, res: undefined }));
 
 /**
- * oof: Object Oriented Fetch abstraction over `_fetch`
+ * oof: Object Oriented `Fetch` abstraction
  *
  * This object oriented approach gives users a easy to use chainable interface to build their API calls
  */
 export class oof {
-  // Must be initialized with empty string
-  // So if user does not set any baseUrl, _baseUrl + this.path will not result in undefined + this.path
-  // `_baseUrl` is named with a preceding underscore, implying that it should be private,
-  // however users can still read and modify this to set the base API url.
-  static _baseUrl = "";
+  /**
+   * This is the base URL used for all API calls that specify a relative API URL.
+   *
+   * This must be initialized with empty string, so that if the user does not set
+   * a baseUrl using the `oof.setBaseURL` static method, `_run` method's implementation
+   * of `oof.#baseUrl + this.path` will not result in `undefined + this.path` which
+   * will give a invalid API URL.
+   *
+   * Read the value of this variable using the static method `oof.baseUrl`
+   *
+   * This is a static private variable to prevent users from setting it any other way
+   * than using the `oof.setBaseURL` static method, so that users can easily find all
+   * places that sets the baseUrl with a simple global search and find.
+   */
+  static #baseUrl = "";
+
+  /** Static function to read the value of the base URL */
+  static baseUrl = (): string => oof.#baseUrl;
+
+  /**
+   * Set base url and get back `oof` to chain this method call.
+   *
+   * Although any static methods can be chained with this method, usually the only thing that
+   * you should chain to this method call is the `defaultOptions` method because these 2 methods
+   * are usually all that every users need to use in order to setup a base configuration for all
+   * future API calls made with this library.
+   *
+   * And the good thing about chaining with `defaultOptions` static method is that it does not
+   * return the `oof` class which means you cannot chain anymore methods to it, and this is good
+   * because your initial library configuration call should only consist of setting the `baseUrl`
+   * and the default `RequestInit` options.
+   */
+  static setBaseURL(url: string): typeof oof {
+    oof.#baseUrl = url;
+    return oof;
+  }
 
   /**
    * Default options that will be applied to all API calls, which can be set
@@ -273,7 +304,7 @@ export class oof {
       // Else prepend base URL to `this.#path` to get the full URL
       this.#path.match(/https:\/\/|http:\/\//i)
         ? this.#path
-        : oof._baseUrl + this.#path,
+        : oof.#baseUrl + this.#path,
       {
         // Apply the base / default options first so that other more specific values can override this.
         ...oof.#defaultOpts,
