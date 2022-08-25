@@ -193,7 +193,11 @@ export class oof {
    * Use this to set custom RequestInit parameters for this specific `oof` instance's
    * fetch method call. See below on when should you use this method.
    *
-   * Alternatives to this method:
+   * Note that the options set using this method cannot override the headers set with
+   * the `headers` method, cannot override the HTTP `method` set in the constructor
+   * and cannot override the body value set by any of the 'body' methods.
+   *
+   * Which is why:
    * - If you want to set request body, use the `.body` or `.bodyJSON` method instead.
    * - If you need to set a request header, use the `.header` method instead.
    * - If you want to set HTTP request method, use one of the static constructors
@@ -201,7 +205,10 @@ export class oof {
    * (not GET/POST/PUT/DEL) HTTP method instead like `new oof({ method:"HTTP-METHOD" })`
    *
    * Do not use this unless you have a specific option to pass in e.g. cache: "no-cache"
-   * for this one specific API call only and nothing else.
+   * for this one specific API call only and nothing else. If there are options that you
+   * want to set for all API request calls, use the `oof.defaultOptions` static method
+   * instead. Note that any options value set using this method will also override the
+   * default options set using `oof.defaultOptions`.
    *
    * This method directly assigns the arguement to `this.#opts` which means calling this
    * method overrides whatever options that is already set previously. Because it does
@@ -276,6 +283,13 @@ export class oof {
    * transformations should be done in helper methods like this so that in the
    * actual `fetch` call, we can just set `body: this.#body` directly.
    *
+   * Why not just use the `body` method?
+   * Since JSON is one of the most popular methods of communication over HTTP,
+   * this method helps users to write less code by helping them stringify their
+   * JS object and set the content-type header to 'application/json', instead
+   * of requiring them to explicitly call `.body(JSON.stringify(data), "application/json")`
+   * every single time they want to send JSON data to their API servers.
+   *
    * @param data Any data type that is of 'application/json' type and can be stringified by JSON.stringify
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
@@ -293,7 +307,25 @@ export class oof {
   }
 
   /**
-   * Call method after constructing the API call object to make the API call
+   * This is the underlying raw `_run` method, that is called internally after constructing
+   * the API call object to make the API call, and it should not be used by users directly.
+   * See the other run methods, `run`, `runJSON`, `runText`, `runBlob`, `runFormData`, `runArrayBuffer`.
+   *
+   * All other 'run' methods are safe by default, i.e. they do not throw on any errors/exceptions!
+   * This is the only underlying raw method that might throw an error/exception when something goes
+   * wrong. All the other methods are wrapped in the `safe` function to catch any errors so that it
+   * can be returned instead of causing a jump in the code control flow to the nearest catch block.
+   *
+   * The safety feature is super useful as it reduces the amount of boiler plate code you have to
+   * write (try/catch blocks and .catch methods) when dealing with libraries that can throw as it
+   * will disrupt your own code's flow. This safe APIs enables you to write single block level code
+   * that are guaranteed to not throw and gives you a super readable code control flow!
+   *
+   * This method is basically a wrapper around the fetch API. After configuring all the values using
+   * the object oriented notation (method chaining), when you call `_run`, it basically takes all the
+   * values on its instance props and use these as option values for the fetch API's RequestInit
+   * parameter while taking care of certain things like creating the full API url using any baseUrl
+   * set with `setBaseUrl`, delayed header generation and etc...
    */
   async _run(): Promise<Response> | never {
     // This library does not check if `fetch` is available in the global scope,
@@ -306,6 +338,18 @@ export class oof {
         ? this.#path
         : oof.#baseUrl + this.#path,
       {
+        /*
+          Properties are set following the order of specificity:
+          1. `defaultOptions` is the most generic so it is be applied first
+          2. instance specific options is applied right after so it can override default options as needed
+          3. the HTTP method, which cannot be overwritten by either default or instance options
+          4. the instance specific headers, which cannot be overwritten by either default or instance options
+          5. the instance specific body data, which cannot be overwritten by either default or instance options
+
+          From this order, we can see that options cannot override method set by constructor, headers
+          set by the `header` method and `body` set by any of the body methods.
+       */
+
         // Apply the base / default options first so that other more specific values can override this.
         ...oof.#defaultOpts,
 
@@ -339,6 +383,13 @@ export class oof {
       }
     );
   }
+
+  /*
+    Below are safe 'run' methods that will not throw / let any async errors bubble up.
+    These methods are wrapped with the `safe` function and return {res, err} to force
+    users to explicitly handle it with type narrowing instead of letting caller handle
+    any errors/exceptions thrown by the run methods, making it more type safe and explicit.
+  */
 
   /**
    * Safe version of the `run` method that will not throw/bubble up any errors.
@@ -374,34 +425,34 @@ export class oof {
   }
 
   /*
-    These are other methods that builts on the run method to simplify value extraction.
+    These are other methods that builts on the `_run` method to simplify value extraction.
     These functions can be async as it returns a Promise, but it is not necessary as no await is used within.
   */
 
-  /** Abstraction on top of the `run` method to return response body parsed as text */
+  /** Abstraction on top of the `_run` method to return response body parsed as text */
   runText() {
     return safe(() => this._run().then((res) => res.text()));
   }
 
-  /** Abstraction on top of the `run` method to return response body parsed as Blob */
+  /** Abstraction on top of the `_run` method to return response body parsed as Blob */
   runBlob() {
     return safe(() => this._run().then((res) => res.blob()));
   }
 
-  /** Abstraction on top of the `run` method to return response body parsed as FormData */
+  /** Abstraction on top of the `_run` method to return response body parsed as FormData */
   runFormData() {
     return safe(() => this._run().then((res) => res.formData()));
   }
 
-  /** Abstraction on top of the `run` method to return response body parsed as ArrayBuffer */
+  /** Abstraction on top of the `_run` method to return response body parsed as ArrayBuffer */
   runArrayBuffer() {
     return safe(() => this._run().then((res) => res.arrayBuffer()));
   }
 
   /**
-   * Wrapper around `run` method to auto parse return data as JSON
-   * Returns the parsed JSON response.
-   * Return type will always union with { ok: boolean; status: number; } as these will always be injected in
+   * Abstraction on top of the `_run` method to return response body parsed as JSON.
+   *
+   * Return type will always union with { ok: boolean; status: number; } as these will always be injected in.
    *
    * When API server responds with a status code of anything outside of 200-299 Response.ok is auto set to false
    * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#checking_that_the_fetch_was_successful
@@ -411,10 +462,19 @@ export class oof {
    * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
    * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
    *
-   * Function can be async as it returns a Promise, but it is not necessary as no await is used within.
+   * You do not have to worry about this method setting `ok` to false when the HTTP response code is 300-399
+   * even though it is outside of the 2XX range because by default, fetch API's option will have redirect
+   * set to "follow", which means it will follow the redirect to the final API end point and only then is
+   * the `ok` value set with the final HTTP response code.
+   *
+   * For TS users, this method accepts a generic type to type the returned object. Allowing you to have type
+   * safety for the response object. However, this DOES NOT perform any runtime data validation, so even if
+   * it is type safe, it does not mean that the response object is guaranteed to be what you typed it to be.
+   *
+   * @todo
+   * Might include a way to do response object validation, but TBD on how to implement it without bloating the library.
    *
    * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
-   * For TS users, this method accepts a generic type to type the returned object.
    */
   runJSON<T extends JsonResponse = JsonResponse>() {
     return safe(
@@ -431,7 +491,7 @@ export class oof {
         )
     );
 
-    // Alternatively, a clearer way to write this is with async/await but it cost extra bytes.
+    // Alternatively, a clearer way to implement this is with async/await but it cost extra bytes.
     // return safe(async (): Promise<T & { ok: boolean; status: number }> => {
     //   const response = await this._run();
     //   const parsedJSON = await response.json();
