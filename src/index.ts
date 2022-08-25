@@ -36,8 +36,32 @@ type JsonResponse = Record<string | number | symbol, any>;
  *
  * Go-lang error handling reference: https://go.dev/blog/error-handling-and-go
  *
+ * This function gives 'run' methods stricter type signature so that it will be more ergonomic for users to use
+ * when using this library with TypeScript, as the new type signature will help with type narrowing operations,
+ * as narrowing the type of one of the return value also narrows the other value's type. I.e. narrowing the 'err'
+ * type to undefined will also narrow the 'res' type to be not undefined, effectively only requiring the users
+ * to do type narrowing once rather than twice.
+ *
+ * There are shorter ways to write this function such as by not including the props that are hardcoded to be
+ * undefined because in JS, any prop that isn't defined on an object will have 'undefined' as its value when
+ * you try to access it by destructuring it out. Although this is not the shortest way, this way of writing
+ * the function provides TS users with the best type signature to provide strong type safety.
+ *
+ * This function's return type is generically typed using the return type of the `fn` parameter.
+ *
+ * The return type is manually/explicitly typed which is different from the TS inferred type signature, because
+ * if `err: undefined` and `res: undefined` are not explicitly written in the return objects of the 2 methods,
+ * TS will infer the return type to be a union of the types `{ res }` and `{ err }`. This is different from the
+ * explicit type signature given, which says that every return object value will have both properties `{ res, err }`
+ * defined even if one of the values is `undefined`. The problem with the inferred return type is that TS library
+ * users cannot write code that allows them to destructure both values out first before using them like `const { res,
+ * err } = await oof.GET("/api").run()`, which is kind of the main style that this library encourages users to use
+ * because TS will complain that the user is trying to destructure a property that does not exist on the object. Even
+ * though the value does not exist as what TS suggests, accessing an unknown property on an object produces the value
+ * `undefined` anyways.
+ *
  * @param fn Takes in any function to wrap around to prevent errors from bubbling up
- * @returns Returns either the result of the function call or an error if any is thrown, encapsulating both in an object that can be destructed
+ * @returns Returns either the result of the function call or an error if any is thrown, encapsulating both in an object that can be destructured
  */
 const safe = <T>(
   fn: () => Promise<T>
@@ -94,6 +118,11 @@ export class oof {
    * using the `defaultOptions` static method. These options can be overwritten
    * one-off in specific API calls using the `options` method.
    *
+   * Useful for doing things like setting the 'mode' of the request, e.g., cors,
+   * no-cors, or same-origin. Use the link to see all the default options that
+   * you can set like mode/credentials/cache/redirect:
+   * https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters
+   *
    * This is a static private variable that is only accessible from within this
    * class's static method.
    */
@@ -103,6 +132,9 @@ export class oof {
    * Static method to set default options that will be applied to all API calls.
    * The options set here can be overwritten one-off in specific API calls using
    * the `options` method.
+   *
+   * Note that everytime this static method is called, all the default options
+   * are overwritten to use this, the default options will not be merged.
    *
    * This static method does not return the `oof` class to specifically be
    * unchainable, so that users do not mistakenly use this in an API call,
@@ -254,6 +286,8 @@ export class oof {
     return this;
   }
 
+  /* All methods for setting body starts with the word 'body' */
+
   /**
    * Set data/object to be sent to server in API calls for methods such as POST/PUT.
    *
@@ -337,6 +371,11 @@ export class oof {
    * values on its instance props and use these as option values for the fetch API's RequestInit
    * parameter while taking care of certain things like creating the full API url using any baseUrl
    * set with `setBaseUrl`, delayed header generation and etc...
+   *
+   * The return type is unioned with `never` because this function can throw, aka never return.
+   * However with TS, any value unioned with `never`, will be itself, because checking for control
+   * flow is not enforced / not possible with TS. This is more for documentation purposes for
+   * library writers and users who want to learn more about this API.
    */
   async _run(): Promise<Response> | never {
     // This library does not check if `fetch` is available in the global scope,
@@ -396,18 +435,23 @@ export class oof {
   }
 
   /*
+    All methods for executing an API call starts with the word 'run'
+
     Below are safe 'run' methods that will not throw / let any async errors bubble up.
-    These methods are wrapped with the `safe` function and return {res, err} to force
+    These methods are wrapped with the `safe` function and `return { res, err }` to force
     users to explicitly handle it with type narrowing instead of letting caller handle
     any errors/exceptions thrown by the run methods, making it more type safe and explicit.
+
+    All the method calls are wrapped in anonymous functions passed to the safe function to
+    execute to reuse the error catching code block to save on library size.
   */
 
   /**
-   * Safe version of the `run` method that will not throw/bubble up any errors.
+   * Safe version of the `_run` method that will not throw/bubble up any errors.
    *
    * @example <caption>Using await to handle await at the same scope level</caption>
    * ```javascript
-   * const { res, err } = await oof.GET("/api").runSafe();
+   * const { res, err } = await oof.GET("/api").run();
    *
    * if (err) {
    *    return console.log("Something went wrong!");
@@ -439,6 +483,14 @@ export class oof {
     These are other methods that builts on the `_run` method to simplify value extraction.
     These functions can be async as it returns a Promise, but it is not necessary as no await is used within.
   */
+
+  // Attempt to simplify 'run' methods by reducing the number of calls to `this._run()`
+  // so for e.g. `runText` can be defined as `runText() { return this.runner("text") }`
+  // Not used right now as it is less type safe when developing the library, and also
+  // because this adds an extra function call overhead.
+  // runner(method: string) {
+  //   return this._run().then((res) => res[method]());
+  // }
 
   /** Abstraction on top of the `_run` method to return response body parsed as text */
   runText() {
