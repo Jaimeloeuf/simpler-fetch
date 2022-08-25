@@ -58,6 +58,29 @@ export class oof {
   // however users can still read and modify this to set the base API url.
   static _baseUrl = "";
 
+  /**
+   * Default options that will be applied to all API calls, which can be set
+   * using the `defaultOptions` static method. These options can be overwritten
+   * one-off in specific API calls using the `options` method.
+   *
+   * This is a static private variable that is only accessible from within this
+   * class's static method.
+   */
+  static #defaultOpts: any;
+
+  /**
+   * Static method to set default options that will be applied to all API calls.
+   * The options set here can be overwritten one-off in specific API calls using
+   * the `options` method.
+   *
+   * This static method does not return the `oof` class to specifically be
+   * unchainable, so that users do not mistakenly use this in an API call,
+   * and it will be more explicit when they set default options.
+   */
+  static defaultOptions(opts: RequestInit): void {
+    oof.#defaultOpts = opts;
+  }
+
   /* Private Instance variables that are only accessible internally */
   #method: HTTPMethod;
   #headers: Array<Header>;
@@ -252,10 +275,11 @@ export class oof {
         ? this.#path
         : oof._baseUrl + this.#path,
       {
-        // Add and/or Override defaults if any
-        // If there is a headers property in this options object, it will override the headers entirely
-        // Also options merging is a shallow merge not a deepmerge
-        // Note that this will not be able to override the body prop only as the body prop is set after this
+        // Apply the base / default options first so that other more specific values can override this.
+        ...oof.#defaultOpts,
+
+        // Apply instance specific options if any, and it will override any defaults it clashes with.
+        // Note that the options merging with the default options is a shallow merge and not a deepmerge.
         ...this.#opts,
 
         method: this.#method,
