@@ -1,7 +1,7 @@
 # simpler-fetch
 `simpler-fetch` is a super simple to use [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) abstraction with ZERO dependencies, making it super small at just 0.4kb with brotli compression!
 
-It **DOES NOT** introduce any new features at all. It only makes it easier and nicer to work with the fetch method, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers. Since this is just a wrapper over fetch, this library **can be used in an isomorphic context**, as long as a fetch function is available in the global scope as it is not tied to any specific fetch implementation.
+It **DOES NOT** introduce any new features at all. It only simplifies the `fetch API` to make it easier and nicer to work with, such as by providing a simple way to set baseUrls, and by providing a method to delay generating headers. Since this is just a wrapper over fetch, this library **can be used in an isomorphic context**, as long as a fetch function is available in the global scope as it is not tied to any specific fetch implementation.
 
 This library only exports a JS ES6 module, which means that it can be tree shaked when used with a bundler. However this also means that NodeJS users need to `import` instead of `require`, see [sample project](./sample/node/).
 
@@ -50,17 +50,17 @@ import { oof } from "simpler-fetch";
 
 // Start using it!
 oof
-  .GET("https://jsonplaceholder.typicode.com/todos/1")
-  .runJSON()
-  .then(console.log);
+    .GET("https://jsonplaceholder.typicode.com/todos/1")
+    .runJSON()
+    .then(console.log);
 
 // POST request example
 oof
-  .POST("https://jsonplaceholder.typicode.com/posts")
-  .header({ someAuthenticationToken: "superSecureTokenString" })
-  .data({ title: "foo", body: "bar", userId: 1 })
-  .runJSON()
-  .then(console.log);
+    .POST("https://jsonplaceholder.typicode.com/posts")
+    .header({ someAuthenticationToken: "superSecureTokenString" })
+    .data({ title: "foo", body: "bar", userId: 1 })
+    .runJSON()
+    .then(console.log);
 ```
 
 ### Basic GET Example using es6 import syntax with bundlers
@@ -78,8 +78,8 @@ oof._baseUrl = "https://deployed-api.com";
 
 // Make a GET request to https://deployed-api.com/test and parse the response as JSON
 const response = await oof
-  .GET("/test")
-  .runJSON(); // Make the API call and parse the response as JSON
+    .GET("/test")
+    .runJSON(); // Make the API call and parse the response as JSON
 
 console.log("Response", response);
 ```
@@ -94,16 +94,16 @@ oof._baseUrl = "https://deployed-api.com";
 // Manually parse the response as JSON, the shortform `runJSON` can also be used
 // Use the `run` method if you need to parse the response as something else like text
 const response = await oof
-  .POST("/test")
-  // Can be a synchronous function that returns a header object
-  .header(() => ({ randomHeader: true, anotherHeader: "value" }))
-  // Can be an asynchronous function that returns a header Promise<object>
-  .header(async () => ({ asyncAuthToken: await Promise.resolve("secret") }))
-  // Can also just directly pass in a header object. Header method can be called multiple times
-  .header({ someAuthenticationToken: "superSecureTokenString" })
-  .data({ test: true, anotherTest: "testing" })
-  .run()
-  .then((response) => response.json());
+    .POST("/test")
+    // Can be a synchronous function that returns a header object
+    .header(() => ({ randomHeader: true, anotherHeader: "value" }))
+    // Can be an asynchronous function that returns a header Promise<object>
+    .header(async () => ({ asyncAuthToken: await Promise.resolve("secret") }))
+    // Can also just directly pass in a header object. Header method can be called multiple times
+    .header({ someAuthenticationToken: "superSecureTokenString" })
+    .data({ test: true, anotherTest: "testing" })
+    .run()
+    .then((response) => response.json());
 
 console.log("Response", response);
 ```
@@ -118,14 +118,14 @@ oof._baseUrl = "https://deployed-api.com";
 // The library will check if http:// or https:// is included in the URL, and skip base URL if included
 // Any subsequent API calls will still use the default "https://deployed-api.com" as base URL
 const response = await oof
-  .GET("https://other-api-integration.com/test")
-  .runJSON(); // Make the API call and parse the response as JSON
+    .GET("https://other-api-integration.com/test")
+    .runJSON(); // Make the API call and parse the response as JSON
 
 // Subsequent API calls with just the path and not a full URL will have the base URL appended,
 // So in this case, this is a GET request to https://deployed-api.com/test
 const response = await oof
-  .GET("/test")
-  .runJSON(); // Make the API call and parse the response as JSON
+    .GET("/test")
+    .runJSON(); // Make the API call and parse the response as JSON
 
 console.log("Response", response);
 ```
@@ -137,13 +137,13 @@ console.log("Response", response);
 
 ## Technical Details
 1. Import paths in TS source files are always written with the `.js` extension (no longer an issue now as all source code is in a single file)
-  - This is because TS will not modify the file extension as it generates the JS files,
-  - And when used in node js, module import paths require the full file extension to be used.
-  - Therefore this is needed to work on node.js runtimes.
-  - References
-    - <https://stackoverflow.com/questions/68928008/cant-import-module-without-the-js-extension-in-nodejs>
-    - <https://nodejs.org/api/esm.html#esm_import_specifiers>
-    - <https://github.com/microsoft/TypeScript/issues/40878>
+    - This is because TS will not modify the file extension as it generates the JS files,
+    - And when used in node js, module import paths require the full file extension to be used.
+    - Therefore this is needed to work on node.js runtimes.
+    - References
+        - <https://stackoverflow.com/questions/68928008/cant-import-module-without-the-js-extension-in-nodejs>
+        - <https://nodejs.org/api/esm.html#esm_import_specifiers>
+        - <https://github.com/microsoft/TypeScript/issues/40878>
 
 
 ## Support
