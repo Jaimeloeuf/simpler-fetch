@@ -182,6 +182,17 @@ export class oof {
   static PUT = (path: string): oof => new oof({ method: "PUT", path });
 
   /**
+   * Wrapper function over constructor to construct a new `oof` instance for a `PATCH` API call
+   *
+   * See this link on the difference between POST, PUT and PATCH HTTP methods:
+   * https://en.wikipedia.org/wiki/PATCH_(HTTP)#:~:text=The%20main%20difference%20between%20the,instructions%20to%20modify%20the%20resource.
+   *
+   * @param {String} path Path of your API
+   * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
+   */
+  static PATCH = (path: string): oof => new oof({ method: "PATCH", path });
+
+  /**
    * Wrapper function over constructor to construct a new `oof` instance for a `DEL` API call
    *
    * @param {String} path Path of your API
