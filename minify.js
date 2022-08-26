@@ -7,7 +7,6 @@ minify(readFileSync("./dist/index.js", "utf8"), {
 
   ecma: 2016,
 
-  // Compression options
   compress: {
     // Set all default compression options
     defaults: true,
@@ -21,6 +20,12 @@ minify(readFileSync("./dist/index.js", "utf8"), {
 
     // The maximum number of times to run compress. In some cases more than one pass leads to further compressed code. Keep in mind more passes will take more time.
     passes: 10,
+  },
+
+  mangle: {
+    // Since it is a standalone ES6 module, it is safe to mangle any module top
+    // level function names that are not exported to further minify the size.
+    toplevel: true,
   },
 }).then(({ code, sourceMap }) => {
   writeFileSync("./dist/index.js", code);
