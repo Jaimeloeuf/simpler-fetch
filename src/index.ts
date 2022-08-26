@@ -3,14 +3,24 @@
  * 1. An object
  * 2. A function that return an object
  * 3. A function that returns a Promise that resolves to an object
+ *
+ * Exporting this type so that you can explicitly type your Header objects
+ * with this to ensure that it is correctly typed at point of value definition
+ * instead of only type checking when you call the `.header` method.
  */
-type Header =
+export type Header =
   | Record<string, any>
   | (() => Record<string, any>)
   | (() => Promise<Record<string, any>>);
 
-/** All the supported HTTP methods */
-type HTTPMethod =
+/**
+ * All the supported HTTP methods
+ *
+ * Exporting this type so that you can explicitly type your HTTP method strings
+ * as needed to ensure that they are correctly typed at point of value definition
+ * instead of only type checking when you call the constructor.
+ */
+export type HTTPMethod =
   | "HEAD"
   | "OPTIONS"
   | "GET"
@@ -25,8 +35,12 @@ type HTTPMethod =
  * Note that this type is not a JSON type as this only support `{}` based types and all the other JSON string forms are not supported such as arrays or single strings.
  *
  * The reason why the other types are not supported is because the runJSON method actually injects the values of `ok` and `status` into the response before returning it.
+ *
+ * Exporting this type so that you can explicitly type your body objects
+ * with this to ensure that it is correctly typed at point of value definition
+ * instead of only type checking when you call the `.runJSON` method.
  */
-type JsonResponse = Record<string | number | symbol, any>;
+export type JsonResponse = Record<string | number | symbol, any>;
 
 /**
  * Function wrapper to ensure that any of the `run` methods will not throw/bubble up any errors to the users,
