@@ -50,16 +50,11 @@ export type JsonResponse = Record<string | number | symbol, any>;
  *
  * Go-lang error handling reference: https://go.dev/blog/error-handling-and-go
  *
- * This function gives 'run' methods stricter type signature so that it will be more ergonomic for users to use
- * when using this library with TypeScript, as the new type signature will help with type narrowing operations,
- * as narrowing the type of one of the return value also narrows the other value's type. I.e. narrowing the 'err'
+ * This function gives 'run' methods a stricter type signature so that it will be more ergonomic for users when
+ * using this library with TypeScript, as the new type signature will help with type narrowing operations, as
+ * narrowing the type of one of the return value also narrows the other value's type. I.e. narrowing the 'err'
  * type to undefined will also narrow the 'res' type to be not undefined, effectively only requiring the users
  * to do type narrowing once rather than twice.
- *
- * There are shorter ways to write this function such as by not including the props that are hardcoded to be
- * undefined because in JS, any prop that isn't defined on an object will have 'undefined' as its value when
- * you try to access it by destructuring it out. Although this is not the shortest way, this way of writing
- * the function provides TS users with the best type signature to provide strong type safety.
  *
  * This function's return type is generically typed using the return type of the `fn` parameter.
  *
@@ -74,15 +69,34 @@ export type JsonResponse = Record<string | number | symbol, any>;
  * though the value does not exist as what TS suggests, accessing an unknown property on an object produces the value
  * `undefined` anyways.
  *
+ *
+ * ### Why is `@ts-ignore` used?
+ * Although this type signature provides strong type safety, to implement this type signature properly would mean
+ * that the code (and by extension the build output) will be longer because the function would need to hardcode
+ * the props that are undefined. This is unnecessary because in JS, any prop that isn't defined on an object will
+ * have 'undefined' as its value when you try to access it by destructuring it out. Therefore the `ts-ignore` flag
+ * is used to ignore the error of missing 'undefined' props to reduce library size while not affecting its usage.
+ *
+ * Implementation without using the `ts-ignore` flag
+ * ```typescript
+ * const safe = <T>(
+ *   fn: () => Promise<T>
+ * ): Promise<{ res: T; err: undefined } | { res: undefined; err: Error }> =>
+ *    fn()
+ *      .then((res) => ({ res, err: undefined })) // Hardcoded undefined required
+ *      .catch((err) => ({ err, res: undefined })); // Hardcoded undefined required
+ * ```
+ *
  * @param fn Takes in any function to wrap around to prevent errors from bubbling up
  * @returns Returns either the result of the function call or an error if any is thrown, encapsulating both in an object that can be destructured
  */
 const safe = <T>(
   fn: () => Promise<T>
 ): Promise<{ res: T; err: undefined } | { res: undefined; err: Error }> =>
+  // @ts-ignore See the JSDoc on why this is used
   fn()
-    .then((res) => ({ res, err: undefined }))
-    .catch((err) => ({ err, res: undefined }));
+    .then((res) => ({ res }))
+    .catch((err) => ({ err }));
 
 /**
  * oof: Object Oriented `Fetch` abstraction
