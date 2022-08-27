@@ -290,12 +290,11 @@ export class oof {
    * to delay generating certain header values like a time limited auth token or recaptcha.
    *
    * This method can be called multiple times, and all the header objects will be combined.
-   *
-   * For TS users, this method accepts a generic type that extends the Header type.
+   * If there are duplicate headers, the latter will be used.
    *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  header<T extends Header>(header: T): oof {
+  header(header: Header): oof {
     this.#headers.push(header);
     return this;
   }
