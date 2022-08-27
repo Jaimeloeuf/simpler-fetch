@@ -303,15 +303,31 @@ export class oof {
   /* All methods for setting body starts with the word 'body' */
 
   /**
-   * Set data/object to be sent to server in API calls for methods such as POST/PUT.
+   * Set the request body to be sent to server for HTTP methods such as POST/PUT.
    *
-   * The type of data that can be passed in, is any JS value that can be JSON serialized with `JSON.stringify()`.
-   * See this [MDN link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description) on what type of data can be passed in.
+   * The type of `body` value can be anything, as you can pass in any value that the
+   * `fetch` API's `RequestInit`'s body property accepts.
    *
-   * For TS users, this method accepts a generic type that extends the Header type.
+   * Note on `optionalContentType`'s type: Although it is possible to create a union type
+   * of all allowed string literals for the content-type header / mime types, it is not
+   * very feasible as it is a very big list that will be updated in the future. Therefore
+   * users are expected to make sure that any string they pass is valid.
+   * References on all supported content-type values:
+   * - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+   * - https://stackoverflow.com/questions/23714383/what-are-all-the-possible-values-for-http-content-type-header/48704300#48704300
+   * - https://www.iana.org/assignments/media-types/media-types.xhtml
    *
-   * Even though there is no default arguement, you do not have to call the `.data` method with an empty object when
-   * calling a method like `oof.POST` as `fetch` and API services will just treat it as an empty object by default.
+   * For TS users, the body type is a generic type variable even though its default type
+   * for it is `any` so that you can use it to restrict the type passed into the method.
+   * This allows you to enforce type safety where once a generic type is set, you know that
+   * the value passed in for the `body` parameter cannot be any other type.
+   * @example <caption>Set body type for type safety</caption>
+   * ```javascript
+   * const { res, err } = await oof
+   *   .POST("/api")
+   *   .body<FormData>(someValue) // TS will enforce that someValue must be FormData
+   *   .run();
+   * ```
    *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
@@ -336,6 +352,13 @@ export class oof {
    * Method that stringifies a JSON stringifiable data type to use as the request body,
    * and sets the content-type to 'application/json'.
    *
+   * The type of data that can be passed in, is any JS value that can be JSON serialized
+   * with `JSON.stringify()`. See this [MDN link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description)
+   * on what type of data can be passed in.
+   *
+   * Even though there is no default arguement, you do not have to call the `.data` method with an empty object when
+   * calling a method like `oof.POST` as `fetch` and API services will just treat it as an empty object by default.
+   *
    * Why does this method exists?
    * Because, the `_run` method needs to accept too many data input types,
    * so instead of doing all the processing and transforming then, the specific
@@ -348,6 +371,18 @@ export class oof {
    * JS object and set the content-type header to 'application/json', instead
    * of requiring them to explicitly call `.body(JSON.stringify(data), "application/json")`
    * every single time they want to send JSON data to their API servers.
+   *
+   * For TS users, the data parameter have a generic type even though its default type
+   * is `any` so that you can use it to restrict the type passed into the method.
+   * This allows you to enforce type safety where once a generic type is set, you know that
+   * the value passed in for the `body` parameter cannot be any other type.
+   * @example <caption>Set body type for type safety</caption>
+   * ```javascript
+   * const { res, err } = await oof
+   *   .POST("/api")
+   *   .bodyJSON<MyRequestBody>(val) // TS will enforce that val must be MyRequestBody
+   *   .run();
+   * ```
    *
    * @param data Any data type that is of 'application/json' type and can be stringified by JSON.stringify
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
@@ -425,7 +460,9 @@ export class oof {
 
         // Run header functions if any to ensure array of headers is now an array of header objects,
         // The array of headers have the type of `object | Promise<object>` because header generator
-        // functions can be an async, to let users delay generating headers until `run` time.
+        // functions can be async to let users delay generating headers until `run` time. Use case
+        // include only generating a very short lived token at the last minute before the API call
+        // is made to ensure that it does not expire by the time it reaches the API server.
         //
         // `await Promise.all` on the array of headers to ensure all are resolved to `object` type,
         // before reducing the array of header objects into a single header object.
@@ -461,17 +498,16 @@ export class oof {
   */
 
   /**
-   * Safe version of the `_run` method that will not throw/bubble up any errors.
+   * Safe version of the `_run` method that **will not throw** or let any errors bubble up,
+   * i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
    *
-   * @example <caption>Using await to handle await at the same scope level</caption>
+   * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
    * ```javascript
    * const { res, err } = await oof.GET("/api").run();
    *
-   * if (err) {
-   *    return console.log("Something went wrong!");
-   * }
+   * if (err) return console.log("API Call failed!");
    *
-   * console.log("Res:", res);
+   * console.log("Res:", res); // Type narrowed to be the Response object
    * ```
    */
   run() {
@@ -506,28 +542,96 @@ export class oof {
   //   return this._run().then((res) => res[method]());
   // }
 
-  /** Abstraction on top of the `_run` method to return response body parsed as text */
+  /**
+   * Abstraction on top of the `_run` method to return response body parsed as text.
+   *
+   * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
+   * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
+   *
+   * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
+   * ```javascript
+   * const { res, err } = await oof.GET("/api").runText();
+   *
+   * if (err) return console.log("API Call failed!");
+   *
+   * console.log("Res:", res); // Type narrowed to be be a string
+   * ```
+   */
   runText() {
     return safe(() => this._run().then((res) => res.text()));
   }
 
-  /** Abstraction on top of the `_run` method to return response body parsed as Blob */
+  /**
+   * Abstraction on top of the `_run` method to return response body parsed as Blob.
+   *
+   * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
+   * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
+   *
+   * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
+   * ```javascript
+   * const { res, err } = await oof.GET("/api").runBlob();
+   *
+   * if (err) return console.log("API Call failed!");
+   *
+   * console.log("Res:", res); // Type narrowed to be a Blob
+   * ```
+   */
   runBlob() {
     return safe(() => this._run().then((res) => res.blob()));
   }
 
-  /** Abstraction on top of the `_run` method to return response body parsed as FormData */
+  /**
+   * Abstraction on top of the `_run` method to return response body parsed as FormData.
+   *
+   * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
+   * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
+   *
+   * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
+   * ```javascript
+   * const { res, err } = await oof.GET("/api").runFormData();
+   *
+   * if (err) return console.log("API Call failed!");
+   *
+   * console.log("Res:", res); // Type narrowed to be form data
+   * ```
+   */
   runFormData() {
     return safe(() => this._run().then((res) => res.formData()));
   }
 
-  /** Abstraction on top of the `_run` method to return response body parsed as ArrayBuffer */
+  /**
+   * Abstraction on top of the `_run` method to return response body parsed as ArrayBuffer.
+   *
+   * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
+   * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
+   *
+   * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
+   * ```javascript
+   * const { res, err } = await oof.GET("/api").runArrayBuffer();
+   *
+   * if (err) return console.log("API Call failed!");
+   *
+   * console.log("Res:", res); // Type narrowed to be an Array Buffer
+   * ```
+   */
   runArrayBuffer() {
     return safe(() => this._run().then((res) => res.arrayBuffer()));
   }
 
   /**
    * Abstraction on top of the `_run` method to return response body parsed as JSON.
+   *
+   * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
+   * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
+   *
+   * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
+   * ```javascript
+   * const { res, err } = await oof.GET("/api").runJSON<MyResponseObjectType>();
+   *
+   * if (err) return console.log("API Call failed!");
+   *
+   * console.log("Res:", res); // Type narrowed to be 'MyResponseObjectType'
+   * ```
    *
    * Return type will always union with { ok: boolean; status: number; } as these will always be injected in.
    *
@@ -568,7 +672,15 @@ export class oof {
         )
     );
 
-    // Alternatively, a clearer way to implement this is with async/await but it cost extra bytes.
+    // Alternatively, this is a clearer way to implement this method with async/await
+    // but it cost extra bytes. It is kept here for documentation purposes as it is
+    // more readable and basically do the exact same thing.
+    //
+    // After minification, the original implementation is 91 bytes and this is 102 bytes,
+    // and it drops to a 10 bytes difference after brotli compression. This is not that
+    // much of a size difference, but primarily it is also the difference between creating
+    // const variables to hold temporary variables and relying on closure scope values.
+    //
     // return safe(async (): Promise<T & { ok: boolean; status: number }> => {
     //   const response = await this._run();
     //   const parsedJSON = await response.json();
