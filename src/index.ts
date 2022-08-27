@@ -305,7 +305,7 @@ export class oof {
   }
 
   /**
-   * Add Headers to include in the API call.
+   * Add Header(s) to include in the API call.
    *
    * Accepts plain header objects, functions and async functions.
    *
@@ -315,10 +315,14 @@ export class oof {
    * This method can be called multiple times, and all the header objects will be combined.
    * If there are duplicate headers, the latter will be used.
    *
+   * If you prefer, this method is also a variadic function that accepts multiple arguments
+   * of the same type so that you can call this method just once if you have all the headers
+   * instead of invoking this method multiple times.
+   *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  header(header: Header): oof {
-    this.#headers.push(header);
+  header(...header: Header[]): oof {
+    this.#headers.push(...header);
     return this;
   }
 
