@@ -1,8 +1,17 @@
 /**
  * Header can either be,
  * 1. An object
- * 2. A function that return an object
- * 3. A function that returns a Promise that resolves to an object
+ * 2. A function that return an object or undefined
+ * 3. A function that returns a Promise that resolves to an object or undefined
+ *
+ * The function types can return undefined instead of an object because there are cases where
+ * we still want the API call to run even if the header cannot be generated. Such as if we were
+ * to use a function to read for a auth token in local storage and only return the object with
+ * the token if it exists. This will not cause any errors because spreading `undefined` into an
+ * object will just do nothing { something: true, ...undefined } will just be { something: true }
+ *
+ * Header cannot be `undefined` directly because the `header` method cannot be directly called
+ * with `undefined` because that wouldn't make any sense.
  *
  * Exporting this type so that you can explicitly type your Header objects
  * with this to ensure that it is correctly typed at point of value definition
@@ -10,8 +19,8 @@
  */
 export type Header =
   | Record<string, any>
-  | (() => Record<string, any>)
-  | (() => Promise<Record<string, any>>);
+  | (() => Record<string, any> | undefined)
+  | (() => Promise<Record<string, any> | undefined>);
 
 /**
  * All the supported HTTP methods
