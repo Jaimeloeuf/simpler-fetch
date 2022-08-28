@@ -2,8 +2,15 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { minify } from "terser";
 
 minify(readFileSync("./dist/index.js", "utf8"), {
-  // Generate sourcemap after minification
-  sourceMap: true,
+  // Generate sourcemap for the minified code
+  sourceMap: {
+    // This is only used to set //# sourceMappingURL=out.js.map in the minified code output
+    url: "index.js.map",
+
+    // Using content since this is compressing compiled JavaScript with an existing source map,
+    // to use the non-minified / mangled symbols that are preserved in the original TSC source map.
+    content: readFileSync("./dist/index.js.map", "utf8"),
+  },
 
   ecma: 2016,
 
@@ -27,6 +34,9 @@ minify(readFileSync("./dist/index.js", "utf8"), {
     // level function names that are not exported to further minify the size.
     toplevel: true,
   },
-}).then(({ code, sourceMap }) => {
+}).then(({ code, map }) => {
   writeFileSync("./dist/index.js", code);
+
+  // Save the updated source map for the minified code
+  writeFileSync("./dist/index.js.map", map);
 });
