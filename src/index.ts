@@ -195,9 +195,26 @@ export class oof {
 
   /* Private Instance variables that are only accessible internally */
   #method: HTTPMethod;
-  #headers: Array<Header>;
   #path: string;
-  #opts: RequestInit;
+
+  /**
+   * Instance variable to set the `RequestInit` type options passed to the `fetch` function.
+   *
+   * This is optional following how `fetch` defines its `init` parameter to be optional.
+   */
+  #opts?: RequestInit;
+
+  /**
+   * An array of headers to be combined before being used in this instance's API call.
+   *
+   * This cannot be optional because in the `header` method, it assumes that `this.#headers`
+   * is already an array and inside the `_run` method it also assumes that it is already an
+   * array by default when calling the `map` method on this.
+   *
+   * Therefore this is not optional and has to be initialized here even though by right the
+   * `fetch` function can accept it as `undefined`.
+   */
+  #headers: Array<Header> = [];
 
   /**
    * The `body` field will be used for the `body` prop of the `fetch` function.
@@ -221,31 +238,57 @@ export class oof {
    *
    * For most library users, just stick with the provided static methods for a cleaner API.
    *
-   * `HEAD` and `OPTIONS` HTTP methods are quite special and low level and extremely
-   * rarely used, therefore these are the only 2 methods which do not have static
-   * constructor wrapper methods to easily create `oof` instances for these methods.
-   * Because of that, the only times where a library user will use the constructor
-   * directly is when they want to use one of these 2 HTTP methods.
+   * The only times where a library user should use the constructor directly is when they
+   * want to use either the `HEAD` or `OPTIONS` HTTP method because they are quite special
+   * and low level and extremely rarely used, therefore these are the only 2 methods which
+   * do not have static constructor wrapper methods to easily create `oof` instances.
+   *
+   * The 2 parameters, `method` and `string`, are the only parameters that truly needs to be
+   * defined for every single API call and cannot be optional. All other configuration options
+   * can be set using instance methods like `options` and `headers` without relying on the
+   * constructor to set all of them.
+   *
+   * ### Compared to v7 and earlier
+   * In previous versions of this library, the constructor supported initializing all the
+   * options used in the `fetch` function. Although more flexible, it did not make sense
+   * because if someone were to use the constructor directly and pass in all the options,
+   * then they might as well just use `fetch` directly as that is easier to use when passing
+   * in all the config options at once. The whole purpose of this library is to configure
+   * the API call parameters using a chainable interface before making that API call, so
+   * there is no point in using a constructor that can initialize all of those values.
+   * Therefore, in version 8, the constructor API is simplified to remove all the unnecessary
+   * parameters to ensure users use this in the way it is designed. This new API also have
+   * some added benefits of being smaller in size for the constructor code AND also simplifies
+   * the caller code, while making it faster by removing the need to destructure out values,
+   * and by skipping the check to possibly transform the headers parameter.
+   *
+   * ### v7 of the constructor
+   * ```typescript
+   * constructor({
+   *     method,
+   *     path,
+   *     opts = {},
+   *     headers = [],
+   *   }: {
+   *     method: HTTPMethod;
+   *     path: string;
+   *     opts?: RequestInit;
+   *     headers?: Header | Array<Header>;
+   *   }) {
+   *     this.#method = method;
+   *     this.#path = path;
+   *     this.#opts = opts;
+   *
+   *     // Ensures that this.#headers is always an array regardless of what the user passes in
+   *     // Users can pass in a single header object/function or an array of header objects/functions
+   *     // If an array is passed in, leave it as it is, else wrap the single header object/function in a array
+   *     this.#headers = Array.isArray(headers) ? headers : [headers];
+   *   }
+   * ```
    */
-  constructor({
-    method,
-    path,
-    opts = {},
-    headers = [],
-  }: {
-    method: HTTPMethod;
-    path: string;
-    opts?: RequestInit;
-    headers?: Header | Array<Header>;
-  }) {
+  constructor(method: HTTPMethod, path: string) {
     this.#method = method;
     this.#path = path;
-    this.#opts = opts;
-
-    // Ensure that this.#headers is always an array regardless of what the user passes in
-    // Users can pass in a single header object/function or an array of header objects/functions
-    // If an array is passed in, leave it as it is, else wrap the single header object/function in a array
-    this.#headers = Array.isArray(headers) ? headers : [headers];
   }
 
   /**
@@ -254,7 +297,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static GET = (path: string): oof => new oof({ method: "GET", path });
+  static GET = (path: string): oof => new oof("GET", path);
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `POST` API call
@@ -262,7 +305,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static POST = (path: string): oof => new oof({ method: "POST", path });
+  static POST = (path: string): oof => new oof("POST", path);
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `PUT` API call
@@ -270,7 +313,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static PUT = (path: string): oof => new oof({ method: "PUT", path });
+  static PUT = (path: string): oof => new oof("PUT", path);
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `PATCH` API call
@@ -281,7 +324,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static PATCH = (path: string): oof => new oof({ method: "PATCH", path });
+  static PATCH = (path: string): oof => new oof("PATCH", path);
 
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `DEL` API call
@@ -289,7 +332,7 @@ export class oof {
    * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
-  static DEL = (path: string): oof => new oof({ method: "DELETE", path });
+  static DEL = (path: string): oof => new oof("DELETE", path);
 
   /**
    * Use this to set custom RequestInit parameters for this specific `oof` instance's
