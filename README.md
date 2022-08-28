@@ -35,7 +35,7 @@ npm i https://github.com/Enkel-Digital/simpler-fetch/
 
 
 ## Using the library
-`oof` stands for Object Oriented Fetch. This object oriented approach gives users a familiar chainable interface to build their API calls.
+`oof` stands for Object Oriented Fetch. This object oriented approach gives users a familiar chainable interface to build their API calls. Users create a new instance of the `oof` class for every API call and use the chainable methods to configure the API options to pass to `fetch` before making the fetch call.
 
 The `oof` class is the only exported value from the simpler-fetch module using a named export ([see here to understand why a named export is used despite this being the sole export](https://listed.to/@JJ/37419/named-exports-are-better-than-default-ones-mostly)).
 
@@ -146,28 +146,15 @@ function baseUrlExample() {
 ```
 
 
-## Using with firebase auth
-[See documentation for using this library with firebase authentication](./firebase-auth.md)
-
-
-## Technical Details
-Most of the detailed technical explanations are all written in the [source code](./src/index.ts) itself, either as generic comments or within JSDocs so do explore that for more details. This section just documents some details to understand why certain technical decisions were made that cannot be found in the source code.
-
-1. Import paths in TS source files are always written with the `.js` extension (no longer an issue now as all source code is in a single file)
-    - This is because TS will not modify the file extension as it generates the JS files,
-    - And when used in node js, module import paths require the full file extension to be used.
-    - Therefore this is needed to work on node.js runtimes.
-    - References
-        - <https://stackoverflow.com/questions/68928008/cant-import-module-without-the-js-extension-in-nodejs>
-        - <https://nodejs.org/api/esm.html#esm_import_specifiers>
-        - <https://github.com/microsoft/TypeScript/issues/40878>
-
-
 ## Supported Platforms
 This library is designed for modern browsers in mind only and does not support older browsers/node by default although you can monkey patch it to work for example by using polyfills.
 
 - Because this library only exports a JS ES6 module, your target platform (browser/node) must support ES6 modules.
 - This library relies on the modern [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), so if your platform does not have this natively, you need to monkey patch it in using a `polyfill` or something like `node-fetch`.
+
+
+## Using with firebase auth
+[See documentation for using this library with firebase authentication](./firebase-auth.md)
 
 
 ## Compared to other libraries
@@ -178,6 +165,7 @@ This library does not have as many advanced features as libraries like `Axios` (
 - This library does error handling better.
     - This is subjective but take a look at it yourself.
     - tl;dr all the methods (except the `_run` raw method) do not throw any errors / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
+    - Read more about how [this library views error handling](./oof%20error%20handling.md)
 - This library is extremely small compared to other popular HTTP clients like `Axios` and `superagent`, here is a comparison on library size after minification and using brotli compression
     1. 0.5kb - `simpler-fetch`
     1. 6kb - `axios v0.27.2` is 12 times larger than `simpler-fetch`
@@ -190,16 +178,6 @@ This library does not have as many advanced features as libraries like `Axios` (
     - Although it can work with it, as long as you downlevel the code and use a `fetch` polyfill.
 
 
-## Archived
-[See archived content here](./archive/)
-
-### \_fetch
-In older versions of this library, there was another abstraction on top of the `fetch` API to simplify the API and do body stringification if needed. But because it was not very practical and generally not really used, it has been removed/abandoned now. You can find its source code and documentation [here](./archive/_fetch/)
-
-### fcf
-In older versions of this library, there was another abstraction on top of `_fetch` built for functional programming. But because it was not very practical and generally not really used, it has been removed/abandoned now. You can find its source code and documentation [here](./archive/fcf/)
-
-
 ## Inspirations
 ### Things that inspired this library
 - [Go-lang's error handling](https://go.dev/blog/error-handling-and-go)
@@ -210,6 +188,31 @@ In older versions of this library, there was another abstraction on top of `_fet
 - [eazyfetch](https://github.com/Enkel-Digital/eazyfetch) is the predecessor of this library that is now deprecated.
     - [easyfetch](https://github.com/RealmTeam/easyfetch) is the inspiration for `eazyfetch`
 - [fetch-with-fire](https://github.com/Enkel-Digital/fetch-with-fire) was the predecessor of the `eazyfetch` library and it was created to primarily reduce the boiler plate code needed to include auth tokens on every API call.
+
+
+## Technical Details
+Most of the detailed technical explanations are all written in the [source code](./src/index.ts) itself, either as generic comments or within JSDocs so do explore that for more details. This section just documents some details to understand why certain technical decisions were made that cannot be found in the source code.
+
+1. `oof` does error handling alot differently compared to other HTTP client libraries
+    - [See this to learn more](./oof%20error%20handling.md)
+1. Import paths in TS source files are always written with the `.js` extension (no longer an issue now as all source code is in a single file)
+    - This is because TS will not modify the file extension as it generates the JS files,
+    - And when used in node js, module import paths require the full file extension to be used.
+    - Therefore this is needed to work on node.js runtimes.
+    - References
+        - <https://stackoverflow.com/questions/68928008/cant-import-module-without-the-js-extension-in-nodejs>
+        - <https://nodejs.org/api/esm.html#esm_import_specifiers>
+        - <https://github.com/microsoft/TypeScript/issues/40878>
+
+
+## Archived
+[See archived content here](./archive/)
+
+### \_fetch
+In older versions of this library, there was another abstraction on top of the `fetch` API to simplify the API and do body stringification if needed. But because it was not very practical and generally not really used, it has been removed/abandoned now. You can find its source code and documentation [here](./archive/_fetch/)
+
+### fcf
+In older versions of this library, there was another abstraction on top of `_fetch` built for functional programming. But because it was not very practical and generally not really used, it has been removed/abandoned now. You can find its source code and documentation [here](./archive/fcf/)
 
 
 ## License, Author and Contributing
