@@ -154,7 +154,7 @@ This library is designed for modern browsers in mind only and does not support o
 
 
 ## Using with firebase auth
-[See documentation for using this library with firebase authentication](./firebase-auth.md)
+[See documentation for using this library with firebase authentication](./docs/firebase-auth.md)
 
 
 ## Compared to other libraries
