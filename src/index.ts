@@ -234,6 +234,19 @@ export class oof {
   #body?: any;
 
   /**
+   * This flag on `oof` instances tells the `_run` method if it should treat the URL path
+   * as a full path rather than a subpath to be concatenated to the `#baseUrl`, instead of
+   * relying on heuristics in the `run` method to detect if the URL is a full path or not.
+   *
+   * This is used in conjunction with the `once` method to make a once off API call to
+   * another domain/baseUrl without changing the `baseUrl` for all other API calls.
+   *
+   * This is optional so that it does not have to be initialized for every instance and
+   * only set to true if required.
+   */
+  #once?: boolean;
+
+  /**
    * Low level constructor API that generally isnt used.
    *
    * For most library users, just stick with the provided static methods for a cleaner API.
@@ -333,6 +346,23 @@ export class oof {
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
   static DEL = (path: string): oof => new oof("DELETE", path);
+
+  /**
+   * Call this method to make a once off API call, that is, to make the API call without
+   * using the `baseUrl` of this class. Use this when you need to make an API call to
+   * another domain/baseUrl without changing the `baseUrl` for all other API calls.
+   *
+   * This method sets the `#once` flag on this `oof` instance so that `_run` will treat
+   * the URL request path as a full path rather than a subpath to be concatenated to the
+   * `#baseUrl`. The flag setting way is used instead of relying on heuristics in the
+   * `run` method to detect if the URL is a full path or not.
+   *
+   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
+   */
+  once(): oof {
+    this.#once = true;
+    return this;
+  }
 
   /**
    * Use this to set custom RequestInit parameters for this specific `oof` instance's
@@ -521,12 +551,25 @@ export class oof {
     // This library does not check if `fetch` is available in the global scope,
     // it assumes it exists, if it does not exists, please load a `fetch` polyfill first!
     return fetch(
-      // Check if `this.#path` contains any http protocol identifier using a case-insensitive regex match
-      // If found, assume user passed in full URL to skip using base URL, thus use `this.#path` directly as full URL
-      // Else prepend base URL to `this.#path` to get the full URL
-      this.#path.match(/https:\/\/|http:\/\//i)
-        ? this.#path
-        : oof.#baseUrl + this.#path,
+      // Use the flag on this `oof` instance to see if the URL path should be treated as a full path rather
+      // than a subpath to be concatenated to the `#baseUrl`, instead of relying on heuristics to detect if
+      // the URL is a full path or not, which was how it was done in v7 and before. The new method now is
+      // more reliable, as the library user can use the `once` method to explicitly set if they want to make
+      // a one off API call with the path as the full URL path rather than hoping for the heuristics to work.
+      // This also solves a long standing issue where users who wanted to use a full URL with a none HTTP
+      // based scheme like 'blob://xyz.com' could not work as the heuristics only checks for HTTP based schemes.
+      // The new method is also faster as a simple conditional expression is faster than running a regex match.
+      //
+      // How it was done in v7 and before:
+      // Checks if `this.#path` contains any http protocol identifier using a case-insensitive regex match
+      // If found, assume user passed in full URL to skip using base URL, thus use `this.#path` directly as
+      // full URL, else prepend base URL to `this.#path` to get the full URL.
+      // ```typescript
+      // this.#path.match(/https:\/\/|http:\/\//i)
+      //   ? this.#path
+      //   : oof.#baseUrl + this.#path,
+      // ```
+      this.#once ? this.#path : oof.#baseUrl + this.#path,
       {
         /*
           Properties are set following the order of specificity:

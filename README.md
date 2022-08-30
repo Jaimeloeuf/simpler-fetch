@@ -123,12 +123,18 @@ import { oof } from "simpler-fetch";
 
 oof.setBaseURL("https://deployed-api.com");
 
-// Make a API call to a different API domain, but only for this single request by using a full URL path
-// The library will check if http:// or https:// is included in the URL, and skip base URL if included
-// Any subsequent API calls will still use the default "https://deployed-api.com" as base URL
+// Make a API call to a different API domain, but only
+// for this single request by using the `once` method.
+// Any subsequent API calls will still use the default
+// "https://deployed-api.com" as base URL.
+//
+// Reference:
+// - https://stackoverflow.com/a/60006313
+// - https://url.spec.whatwg.org/#url-writing
 function customUrlExample() {
     const { res, err } = await oof
         .GET("https://other-api-integration.com/test")
+        .once()
         .runJSON(); // Make the API call and parse the response as JSON
 
     console.log("Response", res);
