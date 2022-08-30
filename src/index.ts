@@ -13,6 +13,15 @@
  * Header cannot be `undefined` directly because the `header` method cannot be directly called
  * with `undefined` because that wouldn't make any sense.
  *
+ * If function throws, the API call will be cancelled and the error will be caught by the 'safe'
+ * functions i.e. the 'run' methods to be returned to users.
+ *
+ * What if the API call should be cancelled if there is no header generated? Should it be on the
+ * library to quit when `undefined` is returned or should it be on the users to throw an error if
+ * no headers can be generated? Might be leaning more to library handling so that user land code
+ * does not have to repetitively implement throws.
+ * This might even tie in to the plugin idea where a plugin can cancel an API call like middlewares.
+ *
  * Exporting this type so that you can explicitly type your Header objects
  * with this to ensure that it is correctly typed at point of value definition
  * instead of only type checking when you call the `.header` method.
@@ -64,6 +73,10 @@ export type HTTPMethod =
 export type JsonResponse = Record<string | number | symbol, any>;
 
 /**
+ * @param fn Takes in any function to wrap around to prevent errors from bubbling up
+ * @returns Returns either the result of the function call or an error if any is thrown, encapsulating both in an object that can be destructured
+ *
+ * ### About
  * Function wrapper to ensure that any of the `run` methods will not throw/bubble up any errors to the users,
  * instead all values and errors will be encapsulated into a monadic like structure for user to destructure out.
  * This takes inspiration from how Go-lang does error handling, where they can deal with errors sequentially,
@@ -108,8 +121,41 @@ export type JsonResponse = Record<string | number | symbol, any>;
  *      .catch((err) => ({ err, res: undefined })); // Hardcoded undefined required
  * ```
  *
- * @param fn Takes in any function to wrap around to prevent errors from bubbling up
- * @returns Returns either the result of the function call or an error if any is thrown, encapsulating both in an object that can be destructured
+ *
+ * ### Why can't the return type be inferred?
+ * ```typescript
+ * const safe = async <T>(fn: () => Promise<T>) =>
+ *   fn()
+ *     .then((res) => ({ res }))
+ *     .catch((err) => ({ err }));
+ * ```
+ * Why can't the code be written like this and let TS infer the return type?
+ *
+ * Because the inferred type will be a union type of `{res} | {err}`, which means that if the user attempts to write
+ * `{ res, err }` to destructure out the values, it will result in an error, because TS thinks that the return type
+ * will either be `{res}` or `{err}` only without letting the other counterpart be destructured to undefined unless
+ * explicitly annotated.
+ *
+ *
+ * ### Why not use an opaque type?
+ * ```typescript
+ * type Success<T> = { res: T; err: undefined };
+ * type Failed = { res: undefined; err: Error };
+ * type WrappedResponse<T> = Success<T> | Failed;
+ *
+ * const safe = <T>(fn: () => Promise<T>): Promise<WrappedResponse<T>> =>
+ *   fn()
+ *     .then((res) => ({ res, err: undefined }))
+ *     .catch((err) => ({ err, res: undefined }));
+ * ```
+ * Why can't the code be written like this to use an opaque type for the return type so that it reads off nicely
+ * rather than explicitly defining the return type in the function's type signature?
+ *
+ * Because Opaque types, although better worded and more descriptive to read, is opaque by nature (cannot see the
+ * actual type notation) which means that it is harder for users to actually read and understand with one glance
+ * what the return type actually is. They would have to look up the definition of the `WrappedResponse` type before
+ * they can fully understand how to use it. Therefore to ensure that library users have as little context switch as
+ * possible, the type definition is written in the function signature directly.
  */
 const safe = <T>(
   fn: () => Promise<T>
@@ -192,6 +238,12 @@ export class oof {
   static defaultOptions(opts: RequestInit): void {
     oof.#defaultOpts = opts;
   }
+
+  // @todo
+  // In future versions default headers that will be included in every request might be supported.
+  // Basically there is a `oof.#defaultHeaders` and in `_run` method the header generation can be
+  // changed to `[...oof.#defaultHeaders, this.#headers].map` instead to run both default and
+  // instance headers, where the instance headers can override the default headers if needed.
 
   /* Private Instance variables that are only accessible internally */
   #method: HTTPMethod;
@@ -425,6 +477,21 @@ export class oof {
 
   /**
    * Set the request body to be sent to server for HTTP methods such as POST/PUT.
+   *
+   * For most users who want to send JSON data to the server, see the `bodyJSON` method
+   * instead of a simpler API. For other types of data like `FormData`, `Blob` and `streams`
+   * can just pass it into this method as the `body` parameter and the content type will be
+   * automatically detected / set by the `fetch` function.
+   *
+   * The reason for this method instead of just having `bodyJSON` only is because the library
+   * cannot always just assume that users only use JSON data, and have to support data types
+   * like FormData, Blob and etc... However the problem is that when content-type cannot be
+   * set fetch will try to guess it, but when body is the results of JSON.stringify(this.#body),
+   * fetch will guess the content-type to be text/plain and the browser will treat it as a safe
+   * CORS request, which means that for that request there will be no pre-flight request sent.
+   * Which means that the browser prevents certain headers from being used, which might cause
+   * an issue, and also the server may not always respond correctly because they assume they got
+   * text/plain even though your API endpoint is for application/json.
    *
    * The type of `body` value can be anything, as you can pass in any value that the
    * `fetch` API's `RequestInit`'s body property accepts.
