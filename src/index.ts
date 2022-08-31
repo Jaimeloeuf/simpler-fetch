@@ -246,7 +246,29 @@ export class oof {
   // instance headers, where the instance headers can override the default headers if needed.
 
   /* Private Instance variables that are only accessible internally */
+
+  /**
+   * Instance variable to set the HTTP method used for the API call.
+   *
+   * This can only be set in the constructor, and library users do not need to set this as
+   * they can just use one of the static constructor wrapper methods.
+   */
   #method: HTTPMethod;
+
+  /**
+   * This is the path of the API endpoint to make the request.
+   *
+   * This can either be a relative or absolute URL path on the current or another domain.
+   *
+   * ### How to set this
+   * 1. Making an API call to a relative URL endpoint on the same domain as the site
+   *    - Leave baseUrl blank by not setting a baseUrl and use the relative path directly like `oof.GET(path)`
+   *    - If baseUrl has already been set to another domain, then use the relative path directly with a call to the `once` method like `oof.GET(path).once()`
+   * 1. Making an API call to a relative URL endpoint on a seperate API domain
+   *    - Set the baseUrl using `oof.setBaseUrl(baseUrl)` and use the relative path directly like `oof.GET(path)`
+   * 1. Making an API call to an absolute URL endpoint on a seperate API domain once
+   *    - Use the full path directly like `oof.GET(fullUrlPath).once()`
+   */
   #path: string;
 
   /**
@@ -301,6 +323,7 @@ export class oof {
   /**
    * Low level constructor API that generally isnt used.
    *
+   * ### When should you use the constructor directly?
    * For most library users, just stick with the provided static methods for a cleaner API.
    *
    * The only times where a library user should use the constructor directly is when they
@@ -308,6 +331,7 @@ export class oof {
    * and low level and extremely rarely used, therefore these are the only 2 methods which
    * do not have static constructor wrapper methods to easily create `oof` instances.
    *
+   * ### Parameters
    * The 2 parameters, `method` and `string`, are the only parameters that truly needs to be
    * defined for every single API call and cannot be optional. All other configuration options
    * can be set using instance methods like `options` and `headers` without relying on the
@@ -359,7 +383,6 @@ export class oof {
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `GET` API call
    *
-   * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
   static GET = (path: string): oof => new oof("GET", path);
@@ -367,7 +390,6 @@ export class oof {
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `POST` API call
    *
-   * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
   static POST = (path: string): oof => new oof("POST", path);
@@ -375,7 +397,6 @@ export class oof {
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `PUT` API call
    *
-   * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
   static PUT = (path: string): oof => new oof("PUT", path);
@@ -386,7 +407,6 @@ export class oof {
    * See this link on the difference between POST, PUT and PATCH HTTP methods:
    * https://en.wikipedia.org/wiki/PATCH_(HTTP)#:~:text=The%20main%20difference%20between%20the,instructions%20to%20modify%20the%20resource.
    *
-   * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
   static PATCH = (path: string): oof => new oof("PATCH", path);
@@ -394,7 +414,6 @@ export class oof {
   /**
    * Wrapper function over constructor to construct a new `oof` instance for a `DEL` API call
    *
-   * @param {String} path Path of your API
    * @returns {oof} Returns a new instance of `oof` after constructing it to let you chain method calls
    */
   static DEL = (path: string): oof => new oof("DELETE", path);
@@ -417,6 +436,10 @@ export class oof {
   }
 
   /**
+   * @param {RequestInit} opts RequestInit object for this one API call
+   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
+   *
+   * ### When to use this method?
    * Use this to set custom RequestInit parameters for this specific `oof` instance's
    * fetch method call. See below on when should you use this method.
    *
@@ -442,9 +465,6 @@ export class oof {
    * not make sense for the user to call this repeatedly since there is no default options
    * set by this library anyways. Thus it is a direct assignment instead of a merge like
    * `this.#opts = { ...this.#opts, ...opts }`
-   *
-   * @param {RequestInit} opts RequestInit object for this one API call
-   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
   options(opts: RequestInit): oof {
     this.#opts = opts;
@@ -478,11 +498,13 @@ export class oof {
   /**
    * Set the request body to be sent to server for HTTP methods such as POST/PUT.
    *
+   * ### When to use this method?
    * For most users who want to send JSON data to the server, see the `bodyJSON` method
    * instead of a simpler API. For other types of data like `FormData`, `Blob` and `streams`
    * can just pass it into this method as the `body` parameter and the content type will be
    * automatically detected / set by the `fetch` function.
    *
+   * ### Why have both `body` and `bodyJSON` method?
    * The reason for this method instead of just having `bodyJSON` only is because the library
    * cannot always just assume that users only use JSON data, and have to support data types
    * like FormData, Blob and etc... However the problem is that when content-type cannot be
@@ -496,6 +518,21 @@ export class oof {
    * The type of `body` value can be anything, as you can pass in any value that the
    * `fetch` API's `RequestInit`'s body property accepts.
    *
+   * ### Using generics for TS Type Safety
+   * ```javascript
+   * const { res, err } = await oof
+   *   .POST("/api")
+   *   .body<FormData>(someValue) // TS will enforce that someValue must be FormData
+   *   .run();
+   * ```
+   * The above code sets the body type for type safety.
+   *
+   * For TS users, the body type is a generic type variable even though its default type
+   * for it is `any` so that you can use it to restrict the type passed into the method.
+   * This allows you to enforce type safety where once a generic type is set, you know that
+   * the value passed in for the `body` parameter cannot be any other type.
+   *
+   * ### On `optionalContentType`'s type safety
    * Note on `optionalContentType`'s type: Although it is possible to create a union type
    * of all allowed string literals for the content-type header / mime types, it is not
    * very feasible as it is a very big list that will be updated in the future. Therefore
@@ -504,18 +541,6 @@ export class oof {
    * - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
    * - https://stackoverflow.com/questions/23714383/what-are-all-the-possible-values-for-http-content-type-header/48704300#48704300
    * - https://www.iana.org/assignments/media-types/media-types.xhtml
-   *
-   * For TS users, the body type is a generic type variable even though its default type
-   * for it is `any` so that you can use it to restrict the type passed into the method.
-   * This allows you to enforce type safety where once a generic type is set, you know that
-   * the value passed in for the `body` parameter cannot be any other type.
-   * @example <caption>Set body type for type safety</caption>
-   * ```javascript
-   * const { res, err } = await oof
-   *   .POST("/api")
-   *   .body<FormData>(someValue) // TS will enforce that someValue must be FormData
-   *   .run();
-   * ```
    *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
@@ -537,43 +562,48 @@ export class oof {
   }
 
   /**
+   * @param data Any data type that is of 'application/json' type and can be stringified by JSON.stringify
+   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
+   *
+   * ### About
    * Method that stringifies a JSON stringifiable data type to use as the request body,
    * and sets the content-type to 'application/json'.
    *
+   * ### What data type can be passed in?
    * The type of data that can be passed in, is any JS value that can be JSON serialized
    * with `JSON.stringify()`. See this [MDN link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description)
    * on what type of data can be passed in.
    *
+   * ### What if you have no data to send?
    * Even though there is no default arguement, you do not have to call the `.data` method with an empty object when
    * calling a method like `oof.POST` as `fetch` and API services will just treat it as an empty object by default.
    *
-   * Why does this method exists?
+   * ### Why does this method exists?
    * Because, the `_run` method needs to accept too many data input types,
    * so instead of doing all the processing and transforming then, the specific
    * transformations should be done in helper methods like this so that in the
    * actual `fetch` call, we can just set `body: this.#body` directly.
    *
-   * Why not just use the `body` method?
+   * ### Why not just use the `body` method?
    * Since JSON is one of the most popular methods of communication over HTTP,
    * this method helps users to write less code by helping them stringify their
    * JS object and set the content-type header to 'application/json', instead
    * of requiring them to explicitly call `.body(JSON.stringify(data), "application/json")`
    * every single time they want to send JSON data to their API servers.
    *
-   * For TS users, the data parameter have a generic type even though its default type
-   * is `any` so that you can use it to restrict the type passed into the method.
-   * This allows you to enforce type safety where once a generic type is set, you know that
-   * the value passed in for the `body` parameter cannot be any other type.
-   * @example <caption>Set body type for type safety</caption>
+   * ### Using generics for TS Type Safety
    * ```javascript
    * const { res, err } = await oof
    *   .POST("/api")
    *   .bodyJSON<MyRequestBody>(val) // TS will enforce that val must be MyRequestBody
    *   .run();
    * ```
+   * The above code sets the body type for type safety.
    *
-   * @param data Any data type that is of 'application/json' type and can be stringified by JSON.stringify
-   * @returns {oof} Returns the current instance of `oof` to let you chain method calls
+   * For TS users, the data parameter have a generic type even though its default type
+   * is `any` so that you can use it to restrict the type passed into the method.
+   * This allows you to enforce type safety where once a generic type is set, you know that
+   * the value passed in for the `body` parameter cannot be any other type.
    */
   bodyJSON<T = any>(data: T): oof {
     // Content-type needs to be set manually even though `fetch` is able to guess most
@@ -589,10 +619,12 @@ export class oof {
   }
 
   /**
+   * ### About
    * This is the underlying raw `_run` method, that is called internally after constructing
    * the API call object to make the API call, and it should not be used by users directly.
    * See the other run methods, `run`, `runJSON`, `runText`, `runBlob`, `runFormData`, `runArrayBuffer`.
    *
+   * ### Method 'safety'
    * All other 'run' methods are safe by default, i.e. they do not throw on any errors/exceptions!
    * This is the only underlying raw method that might throw an error/exception when something goes
    * wrong. All the other methods are wrapped in the `safe` function to catch any errors so that it
@@ -603,12 +635,14 @@ export class oof {
    * will disrupt your own code's flow. This safe APIs enables you to write single block level code
    * that are guaranteed to not throw and gives you a super readable code control flow!
    *
+   * ### What is this method about?
    * This method is basically a wrapper around the fetch API. After configuring all the values using
    * the object oriented notation (method chaining), when you call `_run`, it basically takes all the
    * values on its instance props and use these as option values for the fetch API's RequestInit
    * parameter while taking care of certain things like creating the full API url using any baseUrl
    * set with `setBaseUrl`, delayed header generation and etc...
    *
+   * ### More on the return type
    * The return type is unioned with `never` because this function can throw, aka never return.
    * However with TS, any value unioned with `never`, will be itself, because checking for control
    * flow is not enforced / not possible with TS. This is more for documentation purposes for
@@ -834,6 +868,7 @@ export class oof {
    * console.log("Res:", res); // Type narrowed to be 'MyResponseObjectType'
    * ```
    *
+   * ### Why are values injected in the return type?
    * Return type will always union with { ok: boolean; status: number; } as these will always be injected in.
    *
    * When API server responds with a status code of anything outside of 200-299 Response.ok is auto set to false
@@ -844,11 +879,13 @@ export class oof {
    * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
    * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
    *
+   * ### What about redirects?
    * You do not have to worry about this method setting `ok` to false when the HTTP response code is 300-399
    * even though it is outside of the 2XX range because by default, fetch API's option will have redirect
    * set to "follow", which means it will follow the redirect to the final API end point and only then is
    * the `ok` value set with the final HTTP response code.
    *
+   * ### Using generics for TS Type Safety
    * For TS users, this method accepts a generic type to type the returned object. Allowing you to have type
    * safety for the response object. However, this DOES NOT perform any runtime data validation, so even if
    * it is type safe, it does not mean that the response object is guaranteed to be what you typed it to be.
