@@ -1,7 +1,7 @@
 # webapp
-Sample project with a webapp and corresponding API server to demonstrate the use of this library.
+Sample project with a webapp written in JS and corresponding API server to demonstrate the use of this library.
 
-The webapp demonstrates the use of `oof` in particular as that is **the recommended way** to use this library.
+The webapp demonstrates how to use the `oof` class with TS specific features.
 
 
 ## Running the webapp
