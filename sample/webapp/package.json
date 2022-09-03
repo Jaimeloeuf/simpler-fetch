@@ -1,5 +1,5 @@
 {
-  "name": "test-app",
+  "name": "sample-js-webapp",
   "scripts": {
     "serve": "npx vite --port 8080",
     "preview": "npx vite preview --port 8080",
