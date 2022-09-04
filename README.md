@@ -14,13 +14,15 @@ This library only exports a JS ES6 module, which means that it can be tree shake
 
 
 ## Intended use
-This library is intended for any projects that want a simple to use and lightweight API library without resorting to deal with the low level and cumbersome fetch API.
+This library is intended for any projects that want a simple to use and lightweight HTTP API client library without resorting to deal with the low level and cumbersome fetch API or use a super heavy library like `superagent`.
 
 This library is designed to make working with APIs (especially JSON APIs) extremely easy, and provides first class TypeScript support to improve the development experience with strict type safety.
 
 
 ## Documentation & Changes
-- [See CHANGELOG for more changes across versions!](./CHANGELOG.md)
+***<a href="./docs/v7%20to%20v8%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v7 to v8 major breaking change upgrade</a>***
+- [See full API and other technical documentations](./docs/README.md)
+- [See CHANGELOG for specific changes across versions!](./CHANGELOG.md)
 
 
 ## Installation
@@ -39,7 +41,7 @@ npm i https://github.com/Enkel-Digital/simpler-fetch/
 
 The `oof` class is the only exported value from the simpler-fetch module using a named export ([see here to understand why a named export is used despite this being the sole export](https://listed.to/@JJ/37419/named-exports-are-better-than-default-ones-mostly)).
 
-See the [sample project provided](./sample/) for a full example on using `oof` and install it to play around with it. Below are some simpler examples of how to use them, where all will achieve the same result.
+See the [sample project provided](./sample/) for a full example on using `oof` and install it to play around with it. Below are some simpler examples to get you started quickly.
 
 ### Quickstart
 ```typescript
@@ -51,12 +53,13 @@ import { oof } from "simpler-fetch";
 // import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch/dist/index.js";
 //
 // For CDN use, YOU ARE ADVISED to peg your code to a specific version to ensure it does not break between upgrades, e.g.
-// import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@7.0.2/dist/index.js";
+// import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@8.0.0/dist/index.js";
 
 // Start using it!
 function getExample() {
     const { res, err } = await oof
         .GET("https://jsonplaceholder.typicode.com/todos/1")
+        .once() // Skip the baseUrl
         .runJSON();
 
     console.log(res, err);
@@ -66,6 +69,7 @@ function getExample() {
 function postExample() {
     const { res, err } = await oof
         .POST("https://jsonplaceholder.typicode.com/posts")
+        .once() // Skip the baseUrl
         .header({ someAuthenticationToken: "superSecureTokenString" })
         .data({ title: "foo", body: "bar", userId: 1 })
         .runJSON();
@@ -117,7 +121,7 @@ const { res, err } = await oof
 console.log("Response", res);
 ```
 
-### Using a different base URL for one off API call
+### Make a one off API call to a different domain
 ```typescript
 import { oof } from "simpler-fetch";
 
@@ -134,7 +138,7 @@ oof.setBaseURL("https://deployed-api.com");
 function customUrlExample() {
     const { res, err } = await oof
         .GET("https://other-api-integration.com/test")
-        .once()
+        .once() // Skip the baseUrl
         .runJSON(); // Make the API call and parse the response as JSON
 
     console.log("Response", res);
@@ -171,7 +175,7 @@ This library does not have as many advanced features as libraries like `Axios` (
 - This library does error handling better.
     - This is subjective but take a look at it yourself.
     - tl;dr all the methods (except the `_run` raw method) do not throw any errors / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
-    - Read more about how [this library views error handling](./oof%20error%20handling.md)
+    - Read more about how [this library views error handling](./docs/oof%20error%20handling.md)
 - This library is extremely small compared to other popular HTTP clients like `Axios` and `superagent`, here is a comparison on library size after minification and using brotli compression
     1. 0.5kb - `simpler-fetch`
     1. 6kb - `axios v0.27.2` is 12 times larger than `simpler-fetch`
@@ -195,12 +199,17 @@ This library does not have as many advanced features as libraries like `Axios` (
     - [easyfetch](https://github.com/RealmTeam/easyfetch) is the inspiration for `eazyfetch`
 - [fetch-with-fire](https://github.com/Enkel-Digital/fetch-with-fire) was the predecessor of the `eazyfetch` library and it was created to primarily reduce the boiler plate code needed to include auth tokens on every API call.
 
+### Similar projects
+These are some similar projects that are all simple wrappers/abstractions on top of the `fetch` API just like the old v7 of this library, but their API is more clunky (biased opinion) and more rigid. They also do not have a nice way to do error handling, where you have to deal with catching errors yourself like most other libraries.
+- https://github.com/posva/mande
+- https://github.com/typicode/fetchival
+
 
 ## Technical Details
 Most of the detailed technical explanations are all written in the [source code](./src/index.ts) itself, either as generic comments or within JSDocs so do explore that for more details. This section just documents some details to understand why certain technical decisions were made that cannot be found in the source code.
 
 1. `oof` does error handling alot differently compared to other HTTP client libraries
-    - [See this to learn more](./oof%20error%20handling.md)
+    - [See this to learn more](./docs/oof%20error%20handling.md)
 1. Import paths in TS source files are always written with the `.js` extension (no longer an issue now as all source code is in a single file)
     - This is because TS will not modify the file extension as it generates the JS files,
     - And when used in node js, module import paths require the full file extension to be used.
