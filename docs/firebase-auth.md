@@ -19,15 +19,13 @@ const firebaseApp = initializeApp({
 const auth = getAuth(firebaseApp);
 
 /**
- * Only returns authentication header object if user is authenticated.
- * If user is unauthenticated, this does not throw and just returns undefined.
- * @function getAuthHeader
- * @returns {object | undefined} Authentication header object or nothing.
+ * Get authentication header if user is authenticated.
+ * Will not throw if user is unauthenticated,
+ * it just returns `{ Authorization: 'Bearer undefined' }`
  */
-async function getAuthHeader() {
-  if (auth.currentUser)
-    return { Authorization: `Bearer ${await auth.currentUser.getIdToken()}` };
-}
+const getAuthHeader = async () => ({
+  Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
+});
 
 
 // Set base URL for fetch lib
