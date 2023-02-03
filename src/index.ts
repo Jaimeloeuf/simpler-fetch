@@ -702,6 +702,7 @@ export class oof {
           3. the HTTP method, which cannot be overwritten by either default or instance options
           4. the instance specific headers, which cannot be overwritten by either default or instance options
           5. the instance specific body data, which cannot be overwritten by either default or instance options
+          6. the instance specific timeout abortController's signal, which cannot be overwritten by options
 
           From this order, we can see that options cannot override method set by constructor, headers
           set by the `header` method and `body` set by any of the body methods.
@@ -739,6 +740,10 @@ export class oof {
         //
         // See #body prop's docs on its type
         body: this.#body,
+
+        // Using optional chaining as `#abortController` may be undefined if not set using the `timeoutAfter`
+        // method, if so, just let it be undefined and it will just be ignored.
+        signal: this.#abortController?.signal,
       }
     );
   }
