@@ -308,6 +308,16 @@ export class oof {
   #body?: any;
 
   /**
+   * Optional `AbortController` used for the custom timeout set by `timeoutAfter()`
+   */
+  #abortController?: AbortController;
+
+  /**
+   * Optional timeout milliseconds for the custom timeout set by `timeoutAfter()`
+   */
+  #timeoutInMilliseconds?: number;
+
+  /**
    * This flag on `oof` instances tells the `_run` method if it should treat the URL path
    * as a full path rather than a subpath to be concatenated to the `#baseUrl`, instead of
    * relying on heuristics in the `run` method to detect if the URL is a full path or not.
@@ -490,6 +500,19 @@ export class oof {
    */
   header(...header: Header[]): oof {
     this.#headers.push(...header);
+    return this;
+  }
+
+  /**
+   * Use this method to set a custom timeout, instead of relying on brower default
+   * timeouts like Chrome's 300 seconds default.
+   *
+   * The timeout value is optional, and it uses a arbitrary 8 seconds default.
+   */
+  timeoutAfter(timeoutInMilliseconds: number = 8000): oof {
+    this.#timeoutInMilliseconds = timeoutInMilliseconds;
+    this.#abortController = new AbortController();
+
     return this;
   }
 
