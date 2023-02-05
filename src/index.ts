@@ -671,7 +671,7 @@ export class oof {
    * flow is not enforced / not possible with TS. This is more for documentation purposes for
    * library writers and users who want to learn more about this API.
    */
-  async _run(): Promise<Response> | never {
+  async _fetch(): Promise<Response> | never {
     // This library does not check if `fetch` is available in the global scope,
     // it assumes it exists, if it does not exists, please load a `fetch` polyfill first!
     return fetch(
@@ -746,6 +746,62 @@ export class oof {
         signal: this.#abortController?.signal,
       }
     );
+  }
+
+  async _run(): Promise<Response> | never {
+    // If there is no custom timeout specified, just directly run and return the result of `_fetch`
+    if (this.#abortController === undefined) return this._fetch();
+
+    // Create a new timeout using the custom timeout milliseconds value, and save the timeoutID so
+    // that the timer can be cleared to skip the callback if the API returns before the timeout.
+    const timeoutID = setTimeout(
+      // On timeout, abort the API call with a custom reason with the caller specified timeout value.
+      //
+      // For TS, `this.#abortController` needs to use the non-null assertion operator because between
+      // the time that this setTimeout callback function is defined and the time that this is triggered,
+      // the `this.#abortController` variable could potentially be changed and became undefined/null.
+      // However, since there is no other code that will modify this variable, its value can be safely
+      // assumed to not be deleted by the time this timeout callback is triggered.
+      //
+      // If `this._fetch` method call throws an Error that is not caused by this timeout, for e.g. an
+      // error like DNS failed, the `clearTimeout` call will be skipped since the custom catch block
+      // re-throws any error it gets. That means that this abort method will still be called even if
+      // the API call has already errored out. However this is fine since calling abort after the API
+      // call completes will just be ignored and will not cause any new errors to be thrown.
+      () =>
+        this.#abortController!.abort(
+          `${this.#timeoutInMilliseconds}ms time out exceeded`
+        ),
+
+      this.#timeoutInMilliseconds
+    );
+
+    const res = await this._fetch().catch((err) => {
+      // If the error is caused by the abort signal, throw a new custom error,
+      // Else, re-throw original error to let method caller handle it.
+      if (
+        err instanceof DOMException &&
+        err.name === "AbortError" &&
+        this.#abortController?.signal.aborted
+      )
+        // Throw new error with abort reason as message instead of the generic 'DOMException'
+        throw new Error(this.#abortController?.signal.reason);
+
+      // Throw err to continue if not an abort error as we dont have to override the message
+      throw err;
+    });
+
+    // What if the fetch call errors out and this clearTimeout is not called?
+    //
+    // If `this._fetch` method call throws an Error that is not caused by the abort signal, e.g. an
+    // error like DNS failed, this `clearTimeout` call will be skipped since the custom catch block
+    // re-throws any error it gets. That means that the timeout callback will still call the abort
+    // method even if the API call has already errored out. However that is fine since calling abort
+    // after the API call completes will just be ignored and will not cause any new errors.
+    clearTimeout(timeoutID);
+
+    // Let response from `_fetch` pass through once timeout wrapper logic completed.
+    return res;
   }
 
   /*
