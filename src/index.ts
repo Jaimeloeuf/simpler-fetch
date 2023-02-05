@@ -643,7 +643,7 @@ export class oof {
 
   /**
    * ### About
-   * This is private `_fetch` method is used to make the API call internally after constructing the
+   * This is private `#fetch` method is used to make the API call internally after constructing the
    * API call object and configuring all its values using object oriented method chaining with the
    * instance methods. This method should only be called by the `_run` wrapper method which implements
    * the timeout logic.
@@ -671,7 +671,7 @@ export class oof {
    * flow is not enforced / not possible with TS. This is more for documentation purposes for
    * library writers and users who want to learn more about this API.
    */
-  async _fetch(): Promise<Response> | never {
+  async #fetch(): Promise<Response> | never {
     // This library does not check if `fetch` is available in the global scope,
     // it assumes it exists, if it does not exists, please load a `fetch` polyfill first!
     return fetch(
@@ -750,7 +750,7 @@ export class oof {
 
   /**
    * ### About
-   * This method wraps the raw `_fetch` method to implement custom timeout logic, and this should
+   * This method wraps the raw `#fetch` method to implement custom timeout logic, and this should
    * not be used by users directly.
    *
    * This is the underlying raw `_run` method used by all other 'safe' run methods, `run`, `runJSON`,
@@ -768,15 +768,15 @@ export class oof {
    * that are guaranteed to not throw and gives you a super readable code control flow!
    *
    * ### More on the return type
-   * This method's Function type signature mirrors the Function type signature of the `_fetch`
+   * This method's Function type signature mirrors the Function type signature of the `#fetch`
    * method since this method is just a wrapper over it to implement timeout, whatever that is
-   * returned from `_fetch` is directly returned to this method's caller.
+   * returned from `#fetch` is directly returned to this method's caller.
    *
-   * See the documentation for `_fetch` method for more information on its return type.
+   * See the documentation for `#fetch` method for more information on its return type.
    */
   async _run(): Promise<Response> | never {
-    // If there is no custom timeout specified, just directly run and return the result of `_fetch`
-    if (this.#abortController === undefined) return this._fetch();
+    // If there is no custom timeout specified, just directly run and return the result of `#fetch`
+    if (this.#abortController === undefined) return this.#fetch();
 
     // Create a new timeout using the custom timeout milliseconds value, and save the timeoutID so
     // that the timer can be cleared to skip the callback if the API returns before the timeout.
@@ -789,7 +789,7 @@ export class oof {
       // However, since there is no other code that will modify this variable, its value can be safely
       // assumed to not be deleted by the time this timeout callback is triggered.
       //
-      // If `this._fetch` method call throws an Error that is not caused by this timeout, for e.g. an
+      // If `this.#fetch` method call throws an Error that is not caused by this timeout, for e.g. an
       // error like DNS failed, the `clearTimeout` call will be skipped since the custom catch block
       // re-throws any error it gets. That means that this abort method will still be called even if
       // the API call has already errored out. However this is fine since calling abort after the API
@@ -802,7 +802,7 @@ export class oof {
       this.#timeoutInMilliseconds
     );
 
-    const res = await this._fetch().catch((err) => {
+    const res = await this.#fetch().catch((err) => {
       // If the error is caused by the abort signal, throw a new custom error,
       // Else, re-throw original error to let method caller handle it.
       if (
@@ -819,14 +819,14 @@ export class oof {
 
     // What if the fetch call errors out and this clearTimeout is not called?
     //
-    // If `this._fetch` method call throws an Error that is not caused by the abort signal, e.g. an
+    // If `this.#fetch` method call throws an Error that is not caused by the abort signal, e.g. an
     // error like DNS failed, this `clearTimeout` call will be skipped since the custom catch block
     // re-throws any error it gets. That means that the timeout callback will still call the abort
     // method even if the API call has already errored out. However that is fine since calling abort
     // after the API call completes will just be ignored and will not cause any new errors.
     clearTimeout(timeoutID);
 
-    // Let response from `_fetch` pass through once timeout wrapper logic completed.
+    // Let response from `#fetch` pass through once timeout wrapper logic completed.
     return res;
   }
 
