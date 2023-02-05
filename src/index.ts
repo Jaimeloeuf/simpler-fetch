@@ -643,27 +643,27 @@ export class oof {
 
   /**
    * ### About
-   * This is the underlying raw `_run` method, that is called internally after constructing
-   * the API call object to make the API call, and it should not be used by users directly.
-   * See the other run methods, `run`, `runJSON`, `runText`, `runBlob`, `runFormData`, `runArrayBuffer`.
+   * This is private `_fetch` method is used to make the API call internally after constructing the
+   * API call object and configuring all its values using object oriented method chaining with the
+   * instance methods. This method should only be called by the `_run` wrapper method which implements
+   * the timeout logic.
+   *
+   * This method is basically a wrapper around the fetch API where it takes all the options configured
+   * using the public instance methods and stored in the instance variables and use these for fetch
+   * API's RequestInit parameter, while taking care of certain things like creating the full API url
+   * using any baseUrl set with `setBaseUrl`, delayed header generation and etc...
    *
    * ### Method 'safety'
-   * All other 'run' methods are safe by default, i.e. they do not throw on any errors/exceptions!
-   * This is the only underlying raw method that might throw an error/exception when something goes
-   * wrong. All the other methods are wrapped in the `safe` function to catch any errors so that it
-   * can be returned instead of causing a jump in the code control flow to the nearest catch block.
+   * All the public 'run' methods are safe by default, i.e. they do not throw on any errors!
+   *
+   * This is the underlying raw fetch method that might throw an error when something goes wrong.
+   * All the other public run methods are wrapped in the `safe` function to catch any errors so that
+   * it can be returned instead of causing a jump in the code control flow to the nearest catch block.
    *
    * The safety feature is super useful as it reduces the amount of boiler plate code you have to
    * write (try/catch blocks and .catch methods) when dealing with libraries that can throw as it
    * will disrupt your own code's flow. This safe APIs enables you to write single block level code
    * that are guaranteed to not throw and gives you a super readable code control flow!
-   *
-   * ### What is this method about?
-   * This method is basically a wrapper around the fetch API. After configuring all the values using
-   * the object oriented notation (method chaining), when you call `_run`, it basically takes all the
-   * values on its instance props and use these as option values for the fetch API's RequestInit
-   * parameter while taking care of certain things like creating the full API url using any baseUrl
-   * set with `setBaseUrl`, delayed header generation and etc...
    *
    * ### More on the return type
    * The return type is unioned with `never` because this function can throw, aka never return.
@@ -748,6 +748,32 @@ export class oof {
     );
   }
 
+  /**
+   * ### About
+   * This method wraps the raw `_fetch` method to implement custom timeout logic, and this should
+   * not be used by users directly.
+   *
+   * This is the underlying raw `_run` method used by all other 'safe' run methods, `run`, `runJSON`,
+   * `runText`, `runBlob`, `runFormData`, `runArrayBuffer`.
+   *
+   * ### Method 'safety'
+   * All other 'run' methods are safe by default, i.e. they do not throw on any errors/exceptions!
+   * This is the only underlying raw method that might throw an error/exception when something goes
+   * wrong. All the other methods are wrapped in the `safe` function to catch any errors so that it
+   * can be returned instead of causing a jump in the code control flow to the nearest catch block.
+   *
+   * The safety feature is super useful as it reduces the amount of boiler plate code you have to
+   * write (try/catch blocks and .catch methods) when dealing with libraries that can throw as it
+   * will disrupt your own code's flow. This safe APIs enables you to write single block level code
+   * that are guaranteed to not throw and gives you a super readable code control flow!
+   *
+   * ### More on the return type
+   * This method's Function type signature mirrors the Function type signature of the `_fetch`
+   * method since this method is just a wrapper over it to implement timeout, whatever that is
+   * returned from `_fetch` is directly returned to this method's caller.
+   *
+   * See the documentation for `_fetch` method for more information on its return type.
+   */
   async _run(): Promise<Response> | never {
     // If there is no custom timeout specified, just directly run and return the result of `_fetch`
     if (this.#abortController === undefined) return this._fetch();
