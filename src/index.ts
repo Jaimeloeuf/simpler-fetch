@@ -815,6 +815,15 @@ export class oof {
 
       // Throw err to continue if not an abort error as we dont have to override the message
       throw err;
+
+      // Alternative ternary operator syntax that is harder to read but uses less bytes
+      // If the error is caused by the abort signal, throw a new custom error,
+      // Else, re-throw original error to let method caller handle it.
+      // throw err instanceof DOMException &&
+      //   err.name === "AbortError" &&
+      //   this.#abortController?.signal.aborted
+      //   ? new Error(this.#abortController?.signal.reason)
+      //   : err;
     });
 
     // What if the fetch call errors out and this clearTimeout is not called?
