@@ -786,11 +786,12 @@ export class oof {
     const timeoutID = setTimeout(
       // On timeout, abort the API call with a custom reason with the caller specified timeout value.
       //
-      // For TS, `this.#abortController` needs to use the non-null assertion operator because between
-      // the time that this setTimeout callback function is defined and the time that this is triggered,
-      // the `this.#abortController` variable could potentially be changed and became undefined/null.
-      // However, since there is no other code that will modify this variable, its value can be safely
-      // assumed to not be deleted by the time this timeout callback is triggered.
+      // As TS notes, the `this.#abortController` variable could be changed and became  undefined/null
+      // between the time that this setTimeout callback function is defined and when this is triggered.
+      // Since there is no other code that will modify this variable, its value can be safely assumed
+      // to not be deleted when this callback is called, which means that a non-null assertion operator
+      // can be used. However just to be extra safe, an optional chaining operator is used instead, so
+      // in the event where it is somehow undefined/null, this will not error out.
       //
       // If `this.#fetch` method call throws an Error that is not caused by this timeout, for e.g. an
       // error like DNS failed, the `clearTimeout` call will be skipped since the custom catch block
@@ -798,7 +799,7 @@ export class oof {
       // the API call has already errored out. However this is fine since calling abort after the API
       // call completes will just be ignored and will not cause any new errors to be thrown.
       () =>
-        this.#abortController!.abort(
+        this.#abortController?.abort(
           `${this.#timeoutInMilliseconds}ms time out exceeded`
         ),
 
