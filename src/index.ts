@@ -1,35 +1,49 @@
 /**
- * Header can either be,
- * 1. An object
- * 2. A function that return an object or undefined
- * 3. A function that returns a Promise that resolves to an object or undefined
+ * `HeaderObject` type represents what can be used to add HTTP header values. This
+ * type follows the `headers` type required by the fetch API itself.
  *
- * The function types can return undefined instead of an object because there are cases where
- * we still want the API call to run even if the header cannot be generated. Such as if we were
- * to use a function to read for a auth token in local storage and only return the object with
- * the token if it exists. This will not cause any errors because spreading `undefined` into an
- * object will just do nothing { something: true, ...undefined } will just be { something: true }
- *
- * Header cannot be `undefined` directly because the `header` method cannot be directly called
- * with `undefined` because that wouldn't make any sense.
- *
- * If function throws, the API call will be cancelled and the error will be caught by the 'safe'
- * functions i.e. the 'run' methods to be returned to users.
- *
- * What if the API call should be cancelled if there is no header generated? Should it be on the
- * library to quit when `undefined` is returned or should it be on the users to throw an error if
- * no headers can be generated? Might be leaning more to library handling so that user land code
- * does not have to repetitively implement throws.
- * This might even tie in to the plugin idea where a plugin can cancel an API call like middlewares.
+ * Note that this is NOT A JSON stringifiable type, since headers for the fetch API
+ * do not accept arbitrary objects.
  *
  * Exporting this type so that you can explicitly type your Header objects
  * with this to ensure that it is correctly typed at point of value definition
  * instead of only type checking when you call the `.header` method.
  */
+export type HeaderObject = Record<string, string | number | boolean | null>;
+
+/**
+ * ## `Header` Type
+ * Header can either be,
+ * 1. A `HeaderObject`
+ * 2. A function that returns a `HeaderObject` or undefined
+ * 3. A function that returns a Promise that resolves to a `HeaderObject` or undefined
+ *
+ * Header cannot be `undefined` directly because the `header` method cannot be directly called
+ * with `undefined` because that wouldn't make any sense.
+ *
+ * Exporting this type so that you can explicitly type your Header values
+ * with this to ensure that it is correctly typed at point of value definition
+ * instead of only type checking when you call the `.header` method.
+ *
+ * ## `Header` function types
+ * The function types can return undefined instead of a `HeaderObject` because the API call should
+ * still run even if the header cannot be generated. For e.g. if using a function that reads auth
+ * token from local storage and only return a `HeaderObject` with the token if it exists. This will
+ * not cause any errors because spreading `undefined` into an object will just do nothing
+ * `{ something: true, ...undefined }` will just be `{ something: true }`
+ *
+ * If function throws, the API call will be cancelled and the error will be caught by the 'safe'
+ * functions i.e. the 'run' methods to be returned to users.
+ *
+ * ## Function return types
+ * the return type can be undefined since spreading it like ...undefined will just do nothing
+ * this is because if my header generation function say to get a JWT if it gets nothing, it can just
+ * dont return, and let it be undefined
+ */
 export type Header =
-  | Record<string, any>
-  | (() => Record<string, any> | undefined)
-  | (() => Promise<Record<string, any> | undefined>);
+  | HeaderObject
+  | (() => HeaderObject | undefined)
+  | (() => Promise<HeaderObject | undefined>);
 
 /**
  * All the supported HTTP methods.
