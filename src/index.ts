@@ -496,10 +496,13 @@ export class oof {
    * of the same type so that you can call this method just once if you have all the headers
    * instead of invoking this method multiple times.
    *
+   * The `headers` function parameter forces the caller to pass in at least one argument
+   * for this variadic method. See https://stackoverflow.com/a/72286990
+   *
    * @returns {oof} Returns the current instance of `oof` to let you chain method calls
    */
-  header(...header: Header[]): oof {
-    this.#headers.push(...header);
+  header(...headers: [Header, ...Header[]]): oof {
+    this.#headers.push(...headers);
     return this;
   }
 
