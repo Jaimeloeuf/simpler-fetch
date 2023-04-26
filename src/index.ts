@@ -261,6 +261,13 @@ export class oof {
    *
    * This is a static private variable that is only accessible from within this
    * class's static method.
+   *
+   * ## Type
+   * This is not typed as `RequestInit` as it will mess up the types in `#fetch`
+   * method, which is why this is purposely widened to `any`. This can still be
+   * type safe, since this value can only be set through the `defaultOptions`
+   * static method, whose param is typed as `RequestInit`. In short, this is type
+   * safe as this can only be set via the type safe `defaultOptions` method.
    */
   static #defaultOpts: any;
 
@@ -279,12 +286,6 @@ export class oof {
   static defaultOptions(opts: RequestInit): void {
     oof.#defaultOpts = opts;
   }
-
-  // @todo
-  // In future versions default headers that will be included in every request might be supported.
-  // Basically there is a `oof.#defaultHeaders` and in `_run` method the header generation can be
-  // changed to `[...oof.#defaultHeaders, this.#headers].map` instead to run both default and
-  // instance headers, where the instance headers can override the default headers if needed.
 
   /* Private Instance variables that are only accessible internally */
 
