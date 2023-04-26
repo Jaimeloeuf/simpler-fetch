@@ -94,6 +94,24 @@ export type HTTPMethod =
 export type JsonResponse = Record<string | number | symbol, any>;
 
 /**
+ * Unifying all possible errors that can be thrown by fetch into
+ * a single error type, covering possible errors thrown by header
+ * function(s) too with the generic `Error` class.
+ *
+ * See this reference on all errors that can be thrown:
+ * https://developer.mozilla.org/en-US/docs/Web/API/fetch#exceptions
+ *
+ * RequestError is exported from the library so that users can inspect this union type.
+ */
+export type RequestError =
+  // AbortError
+  | DOMException
+  // If the network fails
+  | TypeError
+  // Generic Error type for when the header function throws....?
+  | Error;
+
+/**
  * @param fn Takes in any function to wrap around to prevent errors from bubbling up
  * @returns Returns either the result of the function call or an error if any is thrown, encapsulating both in an object that can be destructured
  *
@@ -180,7 +198,9 @@ export type JsonResponse = Record<string | number | symbol, any>;
  */
 const safe = <T>(
   fn: () => Promise<T>
-): Promise<{ res: T; err: undefined } | { res: undefined; err: Error }> =>
+): Promise<
+  { res: T; err: undefined } | { res: undefined; err: RequestError }
+> =>
   // @ts-ignore See the JSDoc on why this is used
   fn()
     .then((res) => ({ res }))
@@ -678,16 +698,7 @@ export class oof {
    * using any baseUrl set with `setBaseUrl`, delayed header generation and etc...
    *
    * ### Method 'safety'
-   * All the public 'run' methods are safe by default, i.e. they do not throw on any errors!
-   *
    * This is the underlying raw fetch method that might throw an error when something goes wrong.
-   * All the other public run methods are wrapped in the `safe` function to catch any errors so that
-   * it can be returned instead of causing a jump in the code control flow to the nearest catch block.
-   *
-   * The safety feature is super useful as it reduces the amount of boiler plate code you have to
-   * write (try/catch blocks and .catch methods) when dealing with libraries that can throw as it
-   * will disrupt your own code's flow. This safe APIs enables you to write single block level code
-   * that are guaranteed to not throw and gives you a super readable code control flow!
    *
    * ### More on the return type
    * The return type is unioned with `never` because this function can throw, aka never return.
