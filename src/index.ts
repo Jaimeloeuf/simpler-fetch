@@ -3,4 +3,11 @@
  */
 
 export { oof } from "./oof";
-export * from "./types/index";
+
+// Export type only works with named exports
+export type {
+  HTTPMethod,
+  Header,
+  HeaderValue,
+  RequestError,
+} from "./types/index";
