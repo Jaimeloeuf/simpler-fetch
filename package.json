@@ -4,17 +4,15 @@
   "description": "Simple and Easy to use fetch API abstraction with zero dependency that is super small!",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "types": "dist/index.d.ts",
   "scripts": {
     "build:watch": "npx tsc -w",
-    "build:default": "npx tsc",
-    "build:nocomments": "npx tsc -p ./tsconfig.nocomments.json",
-    "build:minify": "node ./minify.js",
-    "build:delete": "npx rimraf ./dist tsconfig.tsbuildinfo tsconfig.nocomments.tsbuildinfo",
-    "build": "npm run build:delete && npm run build:default && npm run build:nocomments && npm run build:minify"
+    "build:delete": "npx rimraf ./dist tsconfig.tsbuildinfo",
+    "build:rollup": "npx rollup --config",
+    "build": "npm run build:delete && npm run build:rollup"
   },
   "repository": {
     "type": "git",
@@ -27,6 +25,7 @@
     "api",
     "easy",
     "oop",
+    "builder pattern",
     "chainable",
     "typescript",
     "type-safe"
@@ -38,8 +37,11 @@
   },
   "homepage": "https://github.com/Enkel-Digital/simpler-fetch#readme",
   "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.1",
     "@types/node": "^18.7.15",
     "rimraf": "^3.0.2",
+    "rollup": "^3.21.0",
+    "rollup-plugin-ts": "^3.2.0",
     "terser": "^5.15.0",
     "typescript": "^4.8.2"
   }
