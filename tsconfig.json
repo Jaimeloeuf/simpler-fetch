@@ -7,17 +7,14 @@
 
     /* Projects */
     "incremental": true,                              /* Enable incremental compilation */
-    // "composite": true,                                /* Enable constraints that allow a TypeScript project to be used with project references. */
-    // "tsBuildInfoFile": "./dist",                          /* Specify the folder for .tsbuildinfo incremental compilation files. */
-    // "disableSourceOfProjectReferenceRedirect": true,  /* Disable preferring source files instead of declaration files when referencing composite projects */
-    // "disableSolutionSearching": true,                 /* Opt a project out of multi-project reference checking when editing. */
-    // "disableReferencedProjectLoad": true,             /* Reduce the number of projects loaded automatically by TypeScript. */
+    "tsBuildInfoFile": "./",                          /* Specify the folder for .tsbuildinfo incremental compilation files. */
+    "composite": true,                                /* Enable constraints that allow a TypeScript project to be used with project references. */
 
     /* Language and Environment */
     // Target of ES2022 to support private class fields using `#propertyName`
-    "target": "ES2022",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "target": "ES2022",
     // Need DOM for RequestInit and fetch types
-    "lib": ["ES2022", "DOM"],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
+    "lib": ["ES2022", "DOM"],
 
     /* Modules */
     "rootDir": "./src",                                  /* Specify the root folder within your source files. */
@@ -29,8 +26,6 @@
     "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
     "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
     "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
-    // Comments are removed in tsconfig.nocomments.json
-    // "removeComments": true,                           /* Disable emitting comments. */
 
     /* Interop Constraints */
     "isolatedModules": true,                          /* Ensure that each file can be safely transpiled without relying on other imports. */
