@@ -54,8 +54,8 @@ export class Fetch {
    * An array of headers to be combined before being used in this instance's API call.
    *
    * This cannot be optional because in the `header` method, it assumes that `this.#headers`
-   * is already an array and inside the `_run` method it also assumes that it is already an
-   * array by default when calling the `map` method on this.
+   * is already an array and inside the `#fetch` method it also assumes that it is already
+   * an array by default when calling the `map` method on this.
    *
    * Therefore this is not optional and has to be initialized here even though by right the
    * `fetch` function can accept it as `undefined`.
@@ -266,7 +266,7 @@ export class Fetch {
    * calling a method like `oof.POST` as `fetch` and API services will just treat it as an empty object by default.
    *
    * ### Why does this method exists?
-   * Because, the `_run` method needs to accept too many data input types,
+   * Because, the `#run` method needs to accept too many data input types,
    * so instead of doing all the processing and transforming then, the specific
    * transformations should be done in helper methods like this so that in the
    * actual `fetch` call, we can just set `body: this.#body` directly.
@@ -309,7 +309,7 @@ export class Fetch {
    * ### About
    * This is private `#fetch` method is used to make the API call internally after constructing the
    * API call object and configuring all its values using object oriented method chaining with the
-   * instance methods. This method should only be called by the `_run` wrapper method which implements
+   * instance methods. This method should only be called by the `#run` wrapper method which implements
    * the timeout logic.
    *
    * This method is basically a wrapper around the fetch API where it takes all the options configured
@@ -385,10 +385,9 @@ export class Fetch {
 
   /**
    * ### About
-   * This method wraps the raw `#fetch` method to implement custom timeout logic, and this should
-   * not be used by users directly.
+   * This private method wraps the raw `#fetch` method to implement custom timeout logic.
    *
-   * This is the underlying raw `_run` method used by all other 'safe' run methods, `run`, `runJSON`,
+   * This is the underlying raw `#run` method used by all other 'safe' run methods, `run`, `runJSON`,
    * `runText`, `runBlob`, `runFormData`, `runArrayBuffer`.
    *
    * ### Method 'safety'
@@ -409,7 +408,7 @@ export class Fetch {
    *
    * See the documentation for `#fetch` method for more information on its return type.
    */
-  async _run(): Promise<Response> | never {
+  async #run(): Promise<Response> | never {
     // If there is no custom timeout specified, just directly run and return the result of `#fetch`
     if (this.#abortController === undefined) return this.#fetch();
 
@@ -488,12 +487,12 @@ export class Fetch {
   */
 
   /**
-   * Safe version of the `_run` method that **will not throw** or let any errors bubble up,
+   * Safe version of the `#run` method that **will not throw** or let any errors bubble up,
    * i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
    *
    * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
    * ```javascript
-   * const { res, err } = await oof.GET("/api").run();
+   * const { res, err } = await oof.useDefault().GET("/api").run();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -501,46 +500,38 @@ export class Fetch {
    * ```
    */
   run() {
-    // Need to wrap the call to the `this._run` method in an anonymous arrow function,
-    // so that the this binding is preserved when running the method.
-    return safe(() => this._run());
+    // Need to wrap the call to the `this.#run` method in an anonymous arrow function,
+    // so that the `this` binding is preserved when running the method.
+    return safe(() => this.#run());
 
     // Alternatives:
     //
-    // `return safe(this._run);`
+    // `return safe(this.#run);`
     // If written like the way above, then it will fail, as there is no more `this`
     // binding when the call to that method is made within the `safe` function.
     //
-    // `return safe(this._run.bind(this));`
+    // `return safe(this.#run.bind(this));`
     // Above is an alternative that also works, but what they are trying to achieve is
     // essentially the same, which is to preserve the current `this` binding in this
     // run method, regardless of whether it is creating a new anonymous arrow function
-    // or binding the current this to create a new function using `this._run`. The
+    // or binding the current this to create a new function using `this.#run`. The
     // anonymous arrow function is used instead as it uses less characters.
   }
 
   /*
-    These are other methods that builts on the `_run` method to simplify value extraction.
+    These are other methods that builts on the `#run` method to simplify value extraction.
     These functions can be async as it returns a Promise, but it is not necessary as no await is used within.
   */
 
-  // Attempt to simplify 'run' methods by reducing the number of calls to `this._run()`
-  // so for e.g. `runText` can be defined as `runText() { return this.runner("text") }`
-  // Not used right now as it is less type safe when developing the library, and also
-  // because this adds an extra function call overhead.
-  // runner(method: string) {
-  //   return this._run().then((res) => res[method]());
-  // }
-
   /**
-   * Abstraction on top of the `_run` method to return response body parsed as text.
+   * Abstraction on top of the `#run` method to return response body parsed as text.
    *
    * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
    * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
    *
    * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
    * ```javascript
-   * const { res, err } = await oof.GET("/api").runText();
+   * const { res, err } = await oof.useDefault().GET("/api").runText();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -548,18 +539,18 @@ export class Fetch {
    * ```
    */
   runText() {
-    return safe(() => this._run().then((res) => res.text()));
+    return safe(() => this.#run().then((res) => res.text()));
   }
 
   /**
-   * Abstraction on top of the `_run` method to return response body parsed as Blob.
+   * Abstraction on top of the `#run` method to return response body parsed as Blob.
    *
    * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
    * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
    *
    * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
    * ```javascript
-   * const { res, err } = await oof.GET("/api").runBlob();
+   * const { res, err } = await oof.useDefault().GET("/api").runBlob();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -567,18 +558,18 @@ export class Fetch {
    * ```
    */
   runBlob() {
-    return safe(() => this._run().then((res) => res.blob()));
+    return safe(() => this.#run().then((res) => res.blob()));
   }
 
   /**
-   * Abstraction on top of the `_run` method to return response body parsed as FormData.
+   * Abstraction on top of the `#run` method to return response body parsed as FormData.
    *
    * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
    * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
    *
    * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
    * ```javascript
-   * const { res, err } = await oof.GET("/api").runFormData();
+   * const { res, err } = await oof.useDefault().GET("/api").runFormData();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -586,18 +577,18 @@ export class Fetch {
    * ```
    */
   runFormData() {
-    return safe(() => this._run().then((res) => res.formData()));
+    return safe(() => this.#run().then((res) => res.formData()));
   }
 
   /**
-   * Abstraction on top of the `_run` method to return response body parsed as ArrayBuffer.
+   * Abstraction on top of the `#run` method to return response body parsed as ArrayBuffer.
    *
    * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
    * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
    *
    * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
    * ```javascript
-   * const { res, err } = await oof.GET("/api").runArrayBuffer();
+   * const { res, err } = await oof.useDefault().GET("/api").runArrayBuffer();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -605,18 +596,18 @@ export class Fetch {
    * ```
    */
   runArrayBuffer() {
-    return safe(() => this._run().then((res) => res.arrayBuffer()));
+    return safe(() => this.#run().then((res) => res.arrayBuffer()));
   }
 
   /**
-   * Abstraction on top of the `_run` method to return response body parsed as JSON.
+   * Abstraction on top of the `#run` method to return response body parsed as JSON.
    *
    * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
    * up, i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
    *
    * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
    * ```javascript
-   * const { res, err } = await oof.GET("/api").runJSON<MyResponseObjectType>();
+   * const { res, err } = await oof.useDefault().GET("/api").runJSON<MyResponseObjectType>();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -655,7 +646,7 @@ export class Fetch {
       // Return type is whats expected in { res: T }
       (): Promise<T & { ok: boolean; status: number }> =>
         // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
-        this._run().then((response) =>
+        this.#run().then((response) =>
           response.json().then((parsedJSON) => ({
             // `ok` and `status` props set before `parsedJSON` is spread in to allow it to override the preceeding props
             ok: response.ok,
@@ -675,7 +666,7 @@ export class Fetch {
     // const variables to hold temporary variables and relying on closure scope values.
     //
     // return safe(async (): Promise<T & { ok: boolean; status: number }> => {
-    //   const response = await this._run();
+    //   const response = await this.#run();
     //   const parsedJSON = await response.json();
     //   return { ok: response.ok, status: response.status, ...parsedJSON };
     // });

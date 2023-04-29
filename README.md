@@ -174,7 +174,7 @@ This library does not have as many advanced features as libraries like `Axios` (
 - This library is extremely simple to use compared to other libraries, with a simpler and clear API backed by strong types to leverage the TS LSP to help with code completion.
 - This library does error handling better.
     - This is subjective but take a look at it yourself.
-    - tl;dr all the methods (except the `_run` raw method) do not throw any errors / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
+    - All the `run` methods do not throw any errors / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
     - Read more about how [this library views error handling](./docs/oof%20error%20handling.md)
 - This library is extremely small compared to other popular HTTP clients like `Axios` and `superagent`, here is a comparison on library size after minification and using brotli compression
     1. 0.5kb - `simpler-fetch`
