@@ -12,11 +12,12 @@
     "build:watch": "npx tsc -w",
     "build:delete": "npx rimraf ./dist tsconfig.tsbuildinfo",
     "build:rollup": "npx rollup --config",
-    "build": "npm run build:delete && npm run build:rollup"
+    "build": "npm run build:delete && npm run build:rollup",
+    "prepack": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Enkel-Digital/simpler-fetch.git"
+    "url": "git+https://github.com/Jaimeloeuf/simpler-fetch.git"
   },
   "keywords": [
     "simpler",
@@ -33,9 +34,9 @@
   "author": "JJ",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Enkel-Digital/simpler-fetch/issues"
+    "url": "https://github.com/Jaimeloeuf/simpler-fetch/issues"
   },
-  "homepage": "https://github.com/Enkel-Digital/simpler-fetch#readme",
+  "homepage": "https://github.com/Jaimeloeuf/simpler-fetch#readme",
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.1",
     "@types/node": "^18.7.15",
