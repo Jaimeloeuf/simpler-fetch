@@ -443,22 +443,21 @@ export class Fetch {
       if (
         err instanceof DOMException &&
         err.name === "AbortError" &&
+        // This can be thought of as an almost redundant check, since the first 2 conditions
+        // should already ensure that it is an `AbortError`. This checks just makes sure that
+        // the AbortError is in fact caused by the internal `#abortController` used for custom
+        // timeouts rather than a abort controller passed in via options.
+        //
+        // This also ensures that `.signal.reason` access is properly typed after narrowing the
+        // optional abortController's type in this control flow conditional.
         this.#abortController?.signal.aborted
       )
         // Throw new error with abort reason as message instead of the generic 'DOMException'
-        throw new Error(this.#abortController?.signal.reason);
+        // If reason is somehow empty, default to err.message to prevent throwing an empty error.
+        throw new Error(this.#abortController.signal.reason ?? err.message);
 
       // Throw err to continue if not an abort error as we dont have to override the message
       throw err;
-
-      // Alternative ternary operator syntax that is harder to read but uses less bytes
-      // If the error is caused by the abort signal, throw a new custom error,
-      // Else, re-throw original error to let method caller handle it.
-      // throw err instanceof DOMException &&
-      //   err.name === "AbortError" &&
-      //   this.#abortController?.signal.aborted
-      //   ? new Error(this.#abortController?.signal.reason)
-      //   : err;
     });
 
     // What if the fetch call errors out and this clearTimeout is not called?
