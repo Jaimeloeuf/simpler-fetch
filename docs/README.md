@@ -10,3 +10,7 @@ All technical documents for this library.
     - Explores how `oof` deals with Error handling and why it helps you (library users) better handle errors with less code than most other libraries.
 - [firebase auth](./firebase-auth.md)
     - Documentation on integrating firebase auth with this library.
+- [return this](./return%20this.md)
+    - Explores the reasoning for including `return this` and `return ClassName` in most methods.
+- [Why is fetch not exposed](./why%20is%20fetch%20not%20exposed.md)
+    - Explores the reason why `fetch` is not exposed by the library unlike other HTTP client libraries.
