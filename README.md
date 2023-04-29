@@ -223,6 +223,9 @@ Most of the detailed technical explanations are all written in the [source code]
 ## Archived
 [See archived content here](./archive/)
 
+### oof
+Archived version v8 of this library. You can find its source code and documentation [here](./archive/oof/)
+
 ### \_fetch
 In older versions of this library, there was another abstraction on top of the `fetch` API to simplify the API and do body stringification if needed. But because it was not very practical and generally not really used, it has been removed/abandoned now. You can find its source code and documentation [here](./archive/_fetch/)
 

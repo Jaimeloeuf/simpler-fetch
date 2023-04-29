@@ -1,0 +1,2 @@
+# oof
+This is an archive of the older v8 version of this library, where the entire library is implemented as a single `oof` class. This has been deprecated in favor of the new API implemented using 3 different classes to achieve support for different baseUrls.
