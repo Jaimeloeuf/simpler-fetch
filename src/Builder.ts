@@ -23,7 +23,7 @@ export class Builder {
 
   /**
    * Default options that will be applied to all API calls, which can be set
-   * using the `setDefaultOptions` static method. These options can be overwritten
+   * using the `setDefaultOptions` method. These options can be overwritten
    * one-off in specific API calls using the `options` method of `Fetch` class.
    *
    * Useful for doing things like setting the 'mode' of the request, e.g., cors,
@@ -38,16 +38,20 @@ export class Builder {
   #defaultOpts: RequestInit = {};
 
   /**
-   * Static method to set default options that will be applied to all API calls
-   * made through the `Fetch` instance created by this `Builder` instance.
+   * Method to set default options that will be applied to all API calls made
+   * through the `Fetch` instance created by this `Builder` instance.
    * The options set here can be overwritten one-off in specific API calls using
    * the `options` method of `Fetch` class.
    *
-   * Note that everytime this static method is called, all the default options
-   * are overwritten to use this, the default options will not be merged.
+   * Note that everytime this is called, all the default options are overwritten
+   * to use the options passed in as the new default options without merging the
+   * original default options set.
+   *
+   * @returns Returns the current instance to let you chain method calls
    */
-  setDefaultOptions(opts: RequestInit) {
+  setDefaultOptions(opts: RequestInit): Builder {
     this.#defaultOpts = opts;
+    return this;
   }
 
   /**
