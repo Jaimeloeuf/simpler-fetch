@@ -107,8 +107,7 @@ export class Fetch {
   }
 
   /**
-   * @param {RequestInit} opts RequestInit object for this one API call
-   * @returns {Fetch} Returns the current instance to let you chain method calls
+   * Method to set `RequestInit` object for this one API call.
    *
    * ### When to use this method?
    * Use this to set custom RequestInit parameters for this specific `oof` instance's
@@ -136,6 +135,8 @@ export class Fetch {
    * not make sense for the user to call this repeatedly since there is no default options
    * set by this library anyways. Thus it is a direct assignment instead of a merge like
    * `this.#opts = { ...this.#opts, ...opts }`
+   *
+   * @returns Returns the current instance to let you chain method calls
    */
   options(opts: RequestInit): Fetch {
     this.#opts = opts;
@@ -160,7 +161,7 @@ export class Fetch {
    * The `headers` function parameter forces the caller to pass in at least one argument
    * for this variadic method. See https://stackoverflow.com/a/72286990
    *
-   * @returns {Fetch} Returns the current instance to let you chain method calls
+   * @returns Returns the current instance to let you chain method calls
    */
   header(...headers: [Header, ...Header[]]): Fetch {
     this.#headers.push(...headers);
@@ -173,7 +174,7 @@ export class Fetch {
    *
    * The timeout value is optional, and it uses a arbitrary 8 seconds default.
    *
-   * @returns {Fetch} Returns the current instance to let you chain method calls
+   * @returns Returns the current instance to let you chain method calls
    */
   timeoutAfter(timeoutInMilliseconds: number = 8000): Fetch {
     this.#timeoutInMilliseconds = timeoutInMilliseconds;
@@ -231,7 +232,7 @@ export class Fetch {
    * - https://stackoverflow.com/questions/23714383/what-are-all-the-possible-values-for-http-content-type-header/48704300#48704300
    * - https://www.iana.org/assignments/media-types/media-types.xhtml
    *
-   * @returns {Fetch} Returns the current instance to let you chain method calls
+   * @returns Returns the current instance to let you chain method calls
    */
   body<T = any>(body: T, optionalContentType?: string): Fetch {
     // Only add in the content-type header if user chooses to set it,
@@ -252,7 +253,6 @@ export class Fetch {
 
   /**
    * @param data Any data type that is of 'application/json' type and can be stringified by JSON.stringify
-   * @returns {Fetch} Returns the current instance to let you chain method calls
    *
    * ### About
    * Method that stringifies a JSON stringifiable data type to use as the request body,
@@ -293,18 +293,14 @@ export class Fetch {
    * is `any` so that you can use it to restrict the type passed into the method.
    * This allows you to enforce type safety where once a generic type is set, you know that
    * the value passed in for the `body` parameter cannot be any other type.
+   *
+   * @returns Returns the current instance to let you chain method calls
    */
   bodyJSON<T = any>(data: T): Fetch {
     // Content-type needs to be set manually even though `fetch` is able to guess most
     // content-type because once object is stringified, the data will be a string, and
     // fetch will guess that it is 'text/plain' rather than 'application/json'.
     return this.body(JSON.stringify(data), "application/json");
-
-    // Alternative that implements setting body directly instead of using
-    // the lower level method, but would result in a larger library size.
-    // this.header({ "Content-Type": "application/json" });
-    // this.#body = JSON.stringify(data);
-    // return this;
   }
 
   /**

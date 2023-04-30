@@ -85,9 +85,12 @@ export class Builder {
    * to use the headers passed in as the new default headers without merging with
    * the original default headers.
    *
+   * The `headers` function parameter forces the caller to pass in at least one argument
+   * for this variadic method. See https://stackoverflow.com/a/72286990
+   *
    * @returns Returns the current instance to let you chain method calls
    */
-  setDefaultHeaders(...headers: Header[]): Builder {
+  setDefaultHeaders(...headers: [Header, ...Header[]]): Builder {
     this.#defaultHeaders = headers;
     return this;
   }
