@@ -536,7 +536,15 @@ export class Fetch {
    * ```
    */
   runText() {
-    return safe(() => this.#run().then((res) => res.text()));
+    return safe(() =>
+      this.#run().then((res) =>
+        res.text().then((data) => ({
+          ok: res.ok,
+          status: res.status,
+          data,
+        }))
+      )
+    );
   }
 
   /**
@@ -555,7 +563,15 @@ export class Fetch {
    * ```
    */
   runBlob() {
-    return safe(() => this.#run().then((res) => res.blob()));
+    return safe(() =>
+      this.#run().then((res) =>
+        res.blob().then((data) => ({
+          ok: res.ok,
+          status: res.status,
+          data,
+        }))
+      )
+    );
   }
 
   /**
@@ -574,7 +590,15 @@ export class Fetch {
    * ```
    */
   runFormData() {
-    return safe(() => this.#run().then((res) => res.formData()));
+    return safe(() =>
+      this.#run().then((res) =>
+        res.formData().then((data) => ({
+          ok: res.ok,
+          status: res.status,
+          data,
+        }))
+      )
+    );
   }
 
   /**
@@ -593,7 +617,15 @@ export class Fetch {
    * ```
    */
   runArrayBuffer() {
-    return safe(() => this.#run().then((res) => res.arrayBuffer()));
+    return safe(() =>
+      this.#run().then((res) =>
+        res.arrayBuffer().then((data) => ({
+          ok: res.ok,
+          status: res.status,
+          data,
+        }))
+      )
+    );
   }
 
   /**
@@ -640,32 +672,15 @@ export class Fetch {
    */
   runJSON<T extends JsonResponse = JsonResponse>() {
     return safe(
-      // Return type is whats expected in { res: T }
-      (): Promise<T & { ok: boolean; status: number }> =>
+      (): Promise<{ ok: boolean; status: number; data: T }> =>
         // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
-        this.#run().then((response) =>
-          response.json().then((parsedJSON) => ({
-            // `ok` and `status` props set before `parsedJSON` is spread in to allow it to override the preceeding props
-            ok: response.ok,
-            status: response.status,
-            ...parsedJSON,
+        this.#run().then((res) =>
+          res.json().then((parsedJSON) => ({
+            ok: res.ok,
+            status: res.status,
+            data: parsedJSON as T,
           }))
         )
     );
-
-    // Alternatively, this is a clearer way to implement this method with async/await
-    // but it cost extra bytes. It is kept here for documentation purposes as it is
-    // more readable and basically do the exact same thing.
-    //
-    // After minification, the original implementation is 91 bytes and this is 102 bytes,
-    // and it drops to a 10 bytes difference after brotli compression. This is not that
-    // much of a size difference, but primarily it is also the difference between creating
-    // const variables to hold temporary variables and relying on closure scope values.
-    //
-    // return safe(async (): Promise<T & { ok: boolean; status: number }> => {
-    //   const response = await this.#run();
-    //   const parsedJSON = await response.json();
-    //   return { ok: response.ok, status: response.status, ...parsedJSON };
-    // });
   }
 }
