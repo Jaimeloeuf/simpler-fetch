@@ -1,7 +1,7 @@
 # webapp-ts
 Sample project with a webapp written in TS and corresponding API server to demonstrate the use of this library.
 
-The webapp demonstrates how to use the `oof` class with TS specific features.
+The webapp demonstrates how to use the `oof` class with TS specific features. You can still use this library without TS, by simply ignoring all the TS annotations.
 
 
 ## Running the webapp
