@@ -1,5 +1,5 @@
 import { Fetch } from "./Fetch";
-import type { HTTPMethod } from "./types/index";
+import type { Header, HTTPMethod } from "./types/index";
 
 /**
  * Class used to implement the Builder pattern for creating `Fetch` instances.
@@ -44,8 +44,8 @@ export class Builder {
    * the `options` method of `Fetch` class.
    *
    * Note that everytime this is called, all the default options are overwritten
-   * to use the options passed in as the new default options without merging the
-   * original default options set.
+   * to use the options passed in as the new default options without merging with
+   * the original default options.
    *
    * @returns Returns the current instance to let you chain method calls
    */
@@ -55,11 +55,54 @@ export class Builder {
   }
 
   /**
+   * Default headers that will be applied to all API calls, which can be set
+   * using the `setDefaultHeaders` method. These headers can be overwritten
+   * one-off in specific API calls using the `header` method of `Fetch` class.
+   *
+   * Useful for doing things like passing in a function to generate auth header,
+   * so that the function does not need to be passed in for every API call made
+   * with the `Fetch` instance.
+   *
+   * This is a private variable as it should not be exposed to library users.
+   * This defaults to an empty array as it is optional but should be strongly
+   * typed to work with the type expected by the `Fetch` class.
+   */
+  #defaultHeaders: Array<Header> = [];
+
+  /**
+   * Method to set default headers that will be applied to all API calls made
+   * through the `Fetch` instance created by this `Builder` instance.
+   * The headers set here can be overwritten one-off in specific API calls using
+   * the `header` method of `Fetch` class.
+   *
+   * Useful for doing things like passing in a function to generate auth header,
+   * so that the function does not need to be passed in for every API call made
+   * with the `Fetch` instance. Another example is if every API call needs a
+   * recaptcha token, instead of passing in the recaptcha token header generator
+   * function everywhere, this can be set just once as a default header value.
+   *
+   * Note that everytime this is called, the default headers is fully overwritten
+   * to use the headers passed in as the new default headers without merging with
+   * the original default headers.
+   *
+   * @returns Returns the current instance to let you chain method calls
+   */
+  setDefaultHeaders(...headers: Header[]): Builder {
+    this.#defaultHeaders = headers;
+    return this;
+  }
+
+  /**
    * Wrapper function over `Fetch` constructor to construct a new
    * instance with the values on this `Builder` instance.
    */
   create = (method: HTTPMethod, path: string) =>
-    new Fetch(method, this.#baseUrl + path, this.#defaultOpts);
+    new Fetch(
+      method,
+      this.#baseUrl + path,
+      this.#defaultOpts,
+      this.#defaultHeaders
+    );
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
   GET = (path: string = "") => this.create("GET", path);

@@ -57,10 +57,10 @@ export class Fetch {
    * is already an array and inside the `#fetch` method it also assumes that it is already
    * an array by default when calling the `map` method on this.
    *
-   * Therefore this is not optional and has to be initialized here even though by right the
-   * `fetch` function can accept it as `undefined`.
+   * Therefore this is not optional and has to be initialized through the constructor using
+   * default options set on the `Builder` instance.
    */
-  #headers: Array<Header> = [];
+  #headers: Array<Header>;
 
   /**
    * The `body` field will be used for the `body` prop of the `fetch` function.
@@ -97,11 +97,13 @@ export class Fetch {
   constructor(
     readonly method: HTTPMethod,
     url: string,
-    defaultOpts: RequestInit
+    defaultOpts: RequestInit,
+    headers: Array<Header>
   ) {
     this.#method = method;
     this.#url = url;
     this.#defaultOpts = defaultOpts;
+    this.#headers = headers;
   }
 
   /**
