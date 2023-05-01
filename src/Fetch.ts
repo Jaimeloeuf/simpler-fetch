@@ -1,4 +1,9 @@
-import type { Header, HTTPMethod, JsonResponse } from "./types/index";
+import type {
+  Header,
+  HTTPMethod,
+  ApiResponse,
+  JsonResponse,
+} from "./types/index";
 import { safe } from "./safe";
 
 /**
@@ -538,11 +543,14 @@ export class Fetch {
   runText() {
     return safe(() =>
       this.#run().then((res) =>
-        res.text().then((data) => ({
-          ok: res.ok,
-          status: res.status,
-          data,
-        }))
+        res.text().then(
+          (data) =>
+            ({
+              ok: res.ok,
+              status: res.status,
+              data,
+            } satisfies ApiResponse<string>)
+        )
       )
     );
   }
@@ -565,11 +573,14 @@ export class Fetch {
   runBlob() {
     return safe(() =>
       this.#run().then((res) =>
-        res.blob().then((data) => ({
-          ok: res.ok,
-          status: res.status,
-          data,
-        }))
+        res.blob().then(
+          (data) =>
+            ({
+              ok: res.ok,
+              status: res.status,
+              data,
+            } satisfies ApiResponse<Blob>)
+        )
       )
     );
   }
@@ -592,11 +603,14 @@ export class Fetch {
   runFormData() {
     return safe(() =>
       this.#run().then((res) =>
-        res.formData().then((data) => ({
-          ok: res.ok,
-          status: res.status,
-          data,
-        }))
+        res.formData().then(
+          (data) =>
+            ({
+              ok: res.ok,
+              status: res.status,
+              data,
+            } satisfies ApiResponse<FormData>)
+        )
       )
     );
   }
@@ -619,11 +633,14 @@ export class Fetch {
   runArrayBuffer() {
     return safe(() =>
       this.#run().then((res) =>
-        res.arrayBuffer().then((data) => ({
-          ok: res.ok,
-          status: res.status,
-          data,
-        }))
+        res.arrayBuffer().then(
+          (data) =>
+            ({
+              ok: res.ok,
+              status: res.status,
+              data,
+            } satisfies ApiResponse<ArrayBuffer>)
+        )
       )
     );
   }
@@ -671,16 +688,17 @@ export class Fetch {
    * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
    */
   runJSON<T extends JsonResponse = JsonResponse>() {
-    return safe(
-      (): Promise<{ ok: boolean; status: number; data: T }> =>
-        // It's nested this way to ensure response.ok is still accessible after parsedJSON is received
-        this.#run().then((res) =>
-          res.json().then((parsedJSON) => ({
-            ok: res.ok,
-            status: res.status,
-            data: parsedJSON as T,
-          }))
+    return safe(() =>
+      this.#run().then((res) =>
+        res.json().then(
+          (parsedJSON) =>
+            ({
+              ok: res.ok,
+              status: res.status,
+              data: parsedJSON as T,
+            } satisfies ApiResponse<T>)
         )
+      )
     );
   }
 }
