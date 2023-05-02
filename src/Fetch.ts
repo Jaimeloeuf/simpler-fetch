@@ -526,6 +526,28 @@ export class Fetch {
   */
 
   /**
+   * `#runner` method used to reduce duplicated logic of running the API call and
+   * extracting value.
+   *
+   * Internal method for calling run method and calling the provided value extractor
+   * before formatting the return value to satisfy the expected `ApiResponse<T>` type.
+   */
+  #runner<T>(valueExtractor: (res: Response) => Promise<T>) {
+    return safe(() =>
+      this.#run().then((res) =>
+        valueExtractor(res).then(
+          (data) =>
+            ({
+              ok: res.ok,
+              status: res.status,
+              data,
+            } satisfies ApiResponse<T>)
+        )
+      )
+    );
+  }
+
+  /**
    * Abstraction on top of the `#run` method to return response body parsed as text.
    *
    * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
@@ -541,18 +563,7 @@ export class Fetch {
    * ```
    */
   runText() {
-    return safe(() =>
-      this.#run().then((res) =>
-        res.text().then(
-          (data) =>
-            ({
-              ok: res.ok,
-              status: res.status,
-              data,
-            } satisfies ApiResponse<string>)
-        )
-      )
-    );
+    return this.#runner((res) => res.text());
   }
 
   /**
@@ -571,18 +582,7 @@ export class Fetch {
    * ```
    */
   runBlob() {
-    return safe(() =>
-      this.#run().then((res) =>
-        res.blob().then(
-          (data) =>
-            ({
-              ok: res.ok,
-              status: res.status,
-              data,
-            } satisfies ApiResponse<Blob>)
-        )
-      )
-    );
+    return this.#runner((res) => res.blob());
   }
 
   /**
@@ -601,18 +601,7 @@ export class Fetch {
    * ```
    */
   runFormData() {
-    return safe(() =>
-      this.#run().then((res) =>
-        res.formData().then(
-          (data) =>
-            ({
-              ok: res.ok,
-              status: res.status,
-              data,
-            } satisfies ApiResponse<FormData>)
-        )
-      )
-    );
+    return this.#runner((res) => res.formData());
   }
 
   /**
@@ -631,18 +620,7 @@ export class Fetch {
    * ```
    */
   runArrayBuffer() {
-    return safe(() =>
-      this.#run().then((res) =>
-        res.arrayBuffer().then(
-          (data) =>
-            ({
-              ok: res.ok,
-              status: res.status,
-              data,
-            } satisfies ApiResponse<ArrayBuffer>)
-        )
-      )
-    );
+    return this.#runner((res) => res.arrayBuffer());
   }
 
   /**
@@ -688,17 +666,6 @@ export class Fetch {
    * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
    */
   runJSON<T extends JsonResponse = JsonResponse>() {
-    return safe(() =>
-      this.#run().then((res) =>
-        res.json().then(
-          (parsedJSON) =>
-            ({
-              ok: res.ok,
-              status: res.status,
-              data: parsedJSON as T,
-            } satisfies ApiResponse<T>)
-        )
-      )
-    );
+    return this.#runner<T>((res) => res.json());
   }
 }
