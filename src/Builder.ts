@@ -96,10 +96,10 @@ export class Builder {
   }
 
   /**
-   * Wrapper function over `Fetch` constructor to construct a new
-   * instance with the values on this `Builder` instance.
+   * Internal wrapper function over `Fetch` constructor to construct
+   * a new instance with the values set on this `Builder` instance.
    */
-  create = (method: HTTPMethod, path: string) =>
+  #create = (method: HTTPMethod, path: string) =>
     new Fetch(
       method,
       this.#baseUrl + path,
@@ -108,17 +108,17 @@ export class Builder {
     );
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
-  GET = (path: string = "") => this.create("GET", path);
+  GET = (path: string = "") => this.#create("GET", path);
 
   /** Construct a new `Fetch` instance to make a `POST` API call */
-  POST = (path: string = "") => this.create("POST", path);
+  POST = (path: string = "") => this.#create("POST", path);
 
   /** Construct a new `Fetch` instance to make a `PUT` API call */
-  PUT = (path: string = "") => this.create("PUT", path);
+  PUT = (path: string = "") => this.#create("PUT", path);
 
   /** Construct a new `Fetch` instance to make a `PATCH` API call */
-  PATCH = (path: string = "") => this.create("PATCH", path);
+  PATCH = (path: string = "") => this.#create("PATCH", path);
 
   /** Construct a new `Fetch` instance to make a `DELETE` API call */
-  DEL = (path: string = "") => this.create("DELETE", path);
+  DEL = (path: string = "") => this.#create("DELETE", path);
 }
