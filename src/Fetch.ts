@@ -2,6 +2,7 @@ import type {
   Header,
   HTTPMethod,
   ApiResponse,
+  Validator,
   JsonResponse,
 } from "./types/index";
 import { safe } from "./safe";
@@ -520,31 +521,73 @@ export class Fetch {
     // anonymous arrow function is used instead as it uses less characters.
   }
 
-  /*
-    These are other methods that builts on the `#run` method to simplify value extraction.
-    These functions can be async as it returns a Promise, but it is not necessary as no await is used within.
-  */
-
   /**
-   * `#runner` method used to reduce duplicated logic of running the API call and
-   * extracting value.
+   * `#runner` method used to reduce duplicated logic of running the API call.
    *
-   * Internal method for calling run method and calling the provided value extractor
-   * before formatting the return value to satisfy the expected `ApiResponse<T>` type.
+   * ### About
+   * This internal method calls the run method, calls the provided value extractor and
+   * runs the validator type predicate if provided, before formatting the return value
+   * to satisfy the expected `ApiResponse<T>` type.
+   *
+   * ### Type Safety (for both Compile time and Run time)
+   * The return type of this method is the generic type T, where the data will be casted as type T.
+   * Although this makes using the library really simple, this is not super type safe since the casting
+   * may be wrong. Therefore this method allows you to pass in an optional validator acting as a type
+   * predicate to do response validation, ensuring that the data is actually of the correct type.
+   * https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
+   *
+   * These are all the possible workflows:
+   * 1. No validator passed in
+   *     - Data will be ***CASTED*** as type `T`
+   * 2. Validator passed in, and validation passed
+   *     - Data will be ***type narrowed*** as type `T`
+   * 3. Validator passed in, validation failed
+   *     - Returns an **Error**
+   *
+   * ### Return type
+   * Return type will always be `ApiResponse<T>` where T is the type of the extracted value using methods
+   * such as `text`, `formData`, `json` and etc...
+   *
+   * When API service responds with a status code of between 200-299 inclusive, `ApiResponse<T>.ok` is
+   * automatically set to `true`, else it will be set to `false`.
+   * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#checking_that_the_fetch_was_successful
+   * https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
+   *
+   * ### What about redirects?
+   * You do not have to worry about this method setting `ok` to false when the HTTP response code is 300-399
+   * even though it is outside of the 2XX range because by default, fetch API's option will have redirect
+   * set to "follow", which means it will follow the redirect to the final API end point and only then is
+   * the `ok` value set with the final HTTP response code.
+   *
    */
-  #runner<T>(valueExtractor: (res: Response) => Promise<T>) {
-    return safe(() =>
-      this.#run().then((res) =>
-        valueExtractor(res).then(
-          (data) =>
-            ({
-              ok: res.ok,
-              status: res.status,
-              data,
-            } satisfies ApiResponse<T>)
-        )
-      )
-    );
+  #runner<T>(
+    valueExtractor: (res: Response) => Promise<T>,
+    optionalValidator?: Validator<T>
+  ) {
+    return safe(async () => {
+      const res = await this.#run();
+
+      // Assume data to be T without any validation, so that if no validator passed in,
+      // it can be assumed that the data is correctly shaped as `T` during compile time.
+      //
+      // If not annotated with the type T, inference works for the most part, but sometimes
+      // the type can end up as `Awaited<T>`. This only affects the `runJSON` method where
+      // data is inferred as `Awaited<T>` instead of `T`, which is technically the same type,
+      // but confuses lib users, where it is probably caused by .json value extraction that
+      // returns `any` so the conversion here does not properly take place.
+      // Reference: https://github.com/microsoft/TypeScript/issues/47144
+      const data: T = await valueExtractor(res);
+
+      // Only run validation if a validator is passed in
+      if (optionalValidator !== undefined && !optionalValidator(data))
+        throw new Error("Validation Failed");
+
+      return {
+        ok: res.ok,
+        status: res.status,
+        data,
+      } satisfies ApiResponse<T>;
+    });
   }
 
   /**
@@ -562,8 +605,8 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be be a string
    * ```
    */
-  runText() {
-    return this.#runner((res) => res.text());
+  runText(optionalValidator?: Validator<string>) {
+    return this.#runner((res) => res.text(), optionalValidator);
   }
 
   /**
@@ -581,8 +624,8 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be a Blob
    * ```
    */
-  runBlob() {
-    return this.#runner((res) => res.blob());
+  runBlob(optionalValidator?: Validator<Blob>) {
+    return this.#runner((res) => res.blob(), optionalValidator);
   }
 
   /**
@@ -600,8 +643,8 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be form data
    * ```
    */
-  runFormData() {
-    return this.#runner((res) => res.formData());
+  runFormData(optionalValidator?: Validator<FormData>) {
+    return this.#runner((res) => res.formData(), optionalValidator);
   }
 
   /**
@@ -619,8 +662,8 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be an Array Buffer
    * ```
    */
-  runArrayBuffer() {
-    return this.#runner((res) => res.arrayBuffer());
+  runArrayBuffer(optionalValidator?: Validator<ArrayBuffer>) {
+    return this.#runner((res) => res.arrayBuffer(), optionalValidator);
   }
 
   /**
@@ -638,34 +681,17 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be 'MyResponseObjectType'
    * ```
    *
-   * ### Why are values injected in the return type?
-   * Return type will always union with { ok: boolean; status: number; } as these will always be injected in.
-   *
-   * When API server responds with a status code of anything outside of 200-299 Response.ok is auto set to false
-   * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#checking_that_the_fetch_was_successful
-   * https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
-   *
-   * Thus instead of making API servers include an 'ok' data prop in response body,
-   * this method auto injects in the ok prop using Response.ok as long as API server use the right HTTP code.
-   * However the 'ok' prop is set before the spread operator so your API can return an 'ok' to override this.
-   *
-   * ### What about redirects?
-   * You do not have to worry about this method setting `ok` to false when the HTTP response code is 300-399
-   * even though it is outside of the 2XX range because by default, fetch API's option will have redirect
-   * set to "follow", which means it will follow the redirect to the final API end point and only then is
-   * the `ok` value set with the final HTTP response code.
-   *
    * ### Using generics for TS Type Safety
    * For TS users, this method accepts a generic type to type the returned object. Allowing you to have type
    * safety for the response object. However, this DOES NOT perform any runtime data validation, so even if
    * it is type safe, it does not mean that the response object is guaranteed to be what you typed it to be.
    *
-   * @todo
-   * Might include a way to do response object validation, but TBD on how to implement it without bloating the library.
-   *
-   * Record is keyed by any type `string|number|Symbol` which an object can be indexed with
+   * For run time type safety, please pass in a type predicate validator to do response data validation before
+   * type narrowing it down to the generic type T passed in.
    */
-  runJSON<T extends JsonResponse = JsonResponse>() {
-    return this.#runner<T>((res) => res.json());
+  runJSON<T extends JsonResponse = JsonResponse>(
+    optionalValidator?: Validator<T>
+  ) {
+    return this.#runner<T>((res) => res.json(), optionalValidator);
   }
 }

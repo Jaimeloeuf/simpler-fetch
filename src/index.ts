@@ -10,4 +10,6 @@ export type {
   Header,
   HeaderValue,
   RequestError,
+  ApiResponse,
+  Validator,
 } from "./types/index";

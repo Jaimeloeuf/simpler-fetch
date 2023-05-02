@@ -7,3 +7,4 @@ export * from "./HTTPMethod";
 export * from "./JsonResponse";
 export * from "./RequestError";
 export * from "./ApiResponse";
+export * from "./Validator";
