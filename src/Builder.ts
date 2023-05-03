@@ -85,8 +85,8 @@ export class Builder {
    * to use the headers passed in as the new default headers without merging with
    * the original default headers.
    *
-   * The `headers` function parameter forces the caller to pass in at least one argument
-   * for this variadic method. See https://stackoverflow.com/a/72286990
+   * The `headers` function parameter forces the caller to pass in at least one
+   * argument for this variadic method. See https://stackoverflow.com/a/72286990
    *
    * @returns Returns the current instance to let you chain method calls
    */
@@ -96,10 +96,23 @@ export class Builder {
   }
 
   /**
-   * Internal wrapper function over `Fetch` constructor to construct
-   * a new instance with the values set on this `Builder` instance.
+   * tl;dr Do not use this unless you know what you are doing.
+   *
+   * ### About
+   * Wrapper function over `Fetch` constructor to construct a new
+   * instance with the given HTTP method and path alongside the
+   * values set on this `Builder` instance.
+   *
+   * ### Library Users
+   * For the most part, library users ***SHOULD NOT*** be using this
+   * low level API, instead they should use the methods named after
+   * the HTTP methods such as builder.GET, builder.POST and so on.
+   * The only reason why this is made public is for users who want
+   * to use HTTP methods like `HEAD` and `OPTION` to still be able
+   * to do so using our library instead of doing some crazy hack,
+   * since there is no method for those specific HTTP methods.
    */
-  #create = (method: HTTPMethod, path: string) =>
+  HTTP = (method: HTTPMethod, path: string) =>
     new Fetch(
       method,
       this.#baseUrl + path,
@@ -108,17 +121,17 @@ export class Builder {
     );
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
-  GET = (path: string = "") => this.#create("GET", path);
+  GET = (path: string = "") => this.HTTP("GET", path);
 
   /** Construct a new `Fetch` instance to make a `POST` API call */
-  POST = (path: string = "") => this.#create("POST", path);
+  POST = (path: string = "") => this.HTTP("POST", path);
 
   /** Construct a new `Fetch` instance to make a `PUT` API call */
-  PUT = (path: string = "") => this.#create("PUT", path);
+  PUT = (path: string = "") => this.HTTP("PUT", path);
 
   /** Construct a new `Fetch` instance to make a `PATCH` API call */
-  PATCH = (path: string = "") => this.#create("PATCH", path);
+  PATCH = (path: string = "") => this.HTTP("PATCH", path);
 
   /** Construct a new `Fetch` instance to make a `DELETE` API call */
-  DEL = (path: string = "") => this.#create("DELETE", path);
+  DEL = (path: string = "") => this.HTTP("DELETE", path);
 }
