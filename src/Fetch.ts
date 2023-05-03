@@ -345,14 +345,13 @@ export class Fetch {
       //
       // `await Promise.all` on the array of headers to ensure all are resolved to `object` type,
       // before reducing the array of header objects into a single header object.
-      headers:
-        (
-          await Promise.all(
-            this.#headers.map((header) =>
-              typeof header === "function" ? header() : header
-            )
+      headers: (
+        await Promise.all(
+          this.#headers.map((header) =>
+            typeof header === "function" ? header() : header
           )
-        ).reduce((obj, item) => ({ ...obj, ...item }), {}) ?? {},
+        )
+      ).reduce((obj, item) => ({ ...obj, ...item }), {}),
 
       // Because fetch's body prop can accept many different types of data, instead
       // of doing transformations like JSON.stringify here, this library relies
@@ -364,7 +363,7 @@ export class Fetch {
 
       // Using optional chaining as `#abortController` may be undefined if not set using the `timeoutAfter`
       // method, if so, just let it be undefined and it will just be ignored.
-      signal: this.#abortController?.signal ?? null,
+      signal: this.#abortController?.signal,
     });
   }
 
