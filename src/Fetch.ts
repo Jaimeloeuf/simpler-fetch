@@ -41,11 +41,7 @@ export class Fetch {
 
   /**
    * Default options that will be applied to all API calls set with the constructor.
-   *
-   * Useful for doing things like setting the 'mode' of the request, e.g., cors,
-   * no-cors, or same-origin. Use the link to see all the default options that
-   * you can set like mode/credentials/cache/redirect:
-   * https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters
+   * This is a seperate value so that it can be merged with `opts` during API call.
    */
   #defaultOpts: RequestInit;
 
@@ -126,15 +122,13 @@ export class Fetch {
    * Which is why:
    * - If you want to set request body, use the `.body` or `.bodyJSON` method instead.
    * - If you need to set a request header, use the `.header` method instead.
-   * - If you want to set HTTP request method, use one of the static constructors
-   * like `oof.GET("/api/path")` or use the constructor by passing in a non-default
-   * (not GET/POST/PUT/DEL) HTTP method instead like `new oof({ method:"HTTP-METHOD" })`
+   * - If you want to set HTTP request method, use one of the static methods on `Builder`
    *
    * Do not use this unless you have a specific option to pass in e.g. cache: "no-cache"
    * for this one specific API call only and nothing else. If there are options that you
-   * want to set for all API request calls, use the `oof.defaultOptions` static method
+   * want to set for all API request calls, use `Builder`'s `.setDefaultOptions` method
    * instead. Note that any options value set using this method will also override the
-   * default options set using `oof.defaultOptions`.
+   * default options set.
    *
    * This method directly assigns the arguement to `this.#opts` which means calling this
    * method overrides whatever options that is already set previously. Because it does
@@ -477,19 +471,14 @@ export class Fetch {
     return res;
   }
 
-  /*
-    All methods for executing an API call starts with the word 'run'
-
-    Below are safe 'run' methods that will not throw / let any async errors bubble up.
-    These methods are wrapped with the `safe` function and `return { res, err }` to force
-    users to explicitly handle it with type narrowing instead of letting caller handle
-    any errors/exceptions thrown by the run methods, making it more type safe and explicit.
-
-    All the method calls are wrapped in anonymous functions passed to the safe function to
-    execute to reuse the error catching code block to save on library size.
-  */
-
   /**
+   * # Warning
+   * This method is generally not used since this returns the raw HTTP Response object.
+   * Library users should use the other run methods that handle value extraction too,
+   * such as `runJSON`, `runFormData` and etc... This method is made available as an
+   * escape hatch for users who do not want value extraction done, so that they can build
+   * extra logic on top of this library by getting the raw Response object back.
+   *
    * Safe version of the `#run` method that **will not throw** or let any errors bubble up,
    * i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
    *
@@ -579,6 +568,8 @@ export class Fetch {
       const data: T = await valueExtractor(res);
 
       // Only run validation if a validator is passed in
+      // User's validator can throw an error, which will be safely bubbled up to them,
+      // if they want to receive a custom error instead of the generic `Error("Validation Failed")`
       if (optionalValidator !== undefined && !optionalValidator(data))
         throw new Error("Validation Failed");
 
