@@ -167,6 +167,15 @@ This library is designed for modern browsers in mind only and does not support o
 [See documentation for using this library with firebase authentication](./docs/firebase-auth.md)
 
 
+## Response validation
+This library supports Response validation, it supports it via user supplied validator functions instead of bringing on a validation library itself, since it is will be a huge dependency and not all users will want to use it. Not including a validation library will also mean that users have the flexibility to choose and use whatever validation library they want to use.
+
+However, it can be troublesome for users to convert their own validation library's validators to the expected validator type of this library, therefore utility methods are exported from this library to support adapting validation libraries' validator functions to the expected validator type of this library in a type safe manner.
+
+Here is a list of popular validation libraries that are supported with utility adapters, if your validation library is not here, you can create an issue for it and I will add a adapter if it is popular enough.
+1. [Response validation with Zod](./docs/validation-zod.md)
+
+
 ## Compared to other libraries
 This library does not have as many advanced features as libraries like `Axios` (and it will never be) but the advantage of this is that it is much simpler to learn, use and is alot smaller!
 

@@ -14,3 +14,5 @@ All technical documents for this library.
     - Explores the reasoning for including `return this` and `return ClassName` in most methods.
 - [Why is fetch not exposed](./why%20is%20fetch%20not%20exposed.md)
     - Explores the reason why `fetch` is not exposed by the library unlike other HTTP client libraries.
+- [Response validation with Zod](./validation-zod.md)
+    - Explores how to use Zod for response validation using the exported parser adapter function.
