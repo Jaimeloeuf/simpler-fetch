@@ -40,17 +40,9 @@ export class Fetch {
   readonly #url: string;
 
   /**
-   * Default options that will be applied to all API calls set with the constructor.
-   * This is a seperate value so that it can be merged with `opts` during API call.
-   */
-  #defaultOpts: RequestInit;
-
-  /**
    * Instance variable to set the `RequestInit` type options passed to the `fetch` function.
-   *
-   * This is optional following how `fetch` defines its `init` parameter to be optional.
    */
-  #opts?: RequestInit;
+  #opts: RequestInit;
 
   /**
    * An array of headers to be combined before being used in this instance's API call.
@@ -104,7 +96,7 @@ export class Fetch {
   ) {
     this.#method = method;
     this.#url = url;
-    this.#defaultOpts = defaultOpts;
+    this.#opts = defaultOpts;
     this.#headers = headers;
   }
 
@@ -130,16 +122,16 @@ export class Fetch {
    * instead. Note that any options value set using this method will also override the
    * default options set.
    *
-   * This method directly assigns the arguement to `this.#opts` which means calling this
-   * method overrides whatever options that is already set previously. Because it does
-   * not make sense for the user to call this repeatedly since there is no default options
-   * set by this library anyways. Thus it is a direct assignment instead of a merge like
-   * `this.#opts = { ...this.#opts, ...opts }`
+   * This method merges the provided options with the previously set options, so if any
+   * default options can be overwritten there. Note that this is a shallow merge and not
+   * a deepmerge.
    *
    * @returns Returns the current instance to let you chain method calls
    */
   options(opts: RequestInit): Fetch {
-    this.#opts = opts;
+    // Using Object.assign to mutate the original object instead of creating a new one.
+    // this.#opts = { ...this.#opts, ...opts };
+    Object.assign(this.#opts, opts);
     return this;
   }
 
@@ -330,22 +322,17 @@ export class Fetch {
     return fetch(this.#url, {
       /*
         Properties are set following the order of specificity:
-        1. `defaultOptions` is the most generic so it is be applied first
-        2. instance specific options is applied right after so it can override default options as needed
-        3. the HTTP method, which cannot be overwritten by either default or instance options
-        4. the instance specific headers, which cannot be overwritten by either default or instance options
-        5. the instance specific body data, which cannot be overwritten by either default or instance options
-        6. the instance specific timeout abortController's signal, which cannot be overwritten by options
+        1. `RequestInit` options is applied first
+        2. HTTP method, which cannot be overwritten by options object
+        3. Instance specific headers, which cannot be overwritten by options object
+        4. Instance specific body data, which cannot be overwritten by options object
+        5. Instance specific timeout abortController's signal, which cannot be overwritten by options object
 
         From this order, we can see that options cannot override method set by constructor, headers
         set by the `header` method and `body` set by any of the body methods.
       */
 
-      // Apply the base / default options first so that other more specific values can override this.
-      ...this.#defaultOpts,
-
-      // Apply instance specific options if any, and it will override any defaults it clashes with.
-      // Note that the options merging with the default options is a shallow merge and not a deepmerge.
+      // Apply options by spreading it, since the final object is of the same `RequestInit` type
       ...this.#opts,
 
       method: this.#method,
