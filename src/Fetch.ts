@@ -42,7 +42,7 @@ export class Fetch {
   /**
    * Instance variable to set the `RequestInit` type options passed to the `fetch` function.
    */
-  #opts: RequestInit;
+  readonly #opts: RequestInit;
 
   /**
    * An array of headers to be combined before being used in this instance's API call.
@@ -54,7 +54,7 @@ export class Fetch {
    * Therefore this is not optional and has to be initialized through the constructor using
    * default options set on the `Builder` instance.
    */
-  #headers: Array<Header>;
+  readonly #headers: Array<Header>;
 
   /**
    * The `body` field will be used for the `body` prop of the `fetch` function.
