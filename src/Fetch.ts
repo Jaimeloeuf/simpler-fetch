@@ -164,11 +164,9 @@ export class Fetch {
    * Use this method to set a custom timeout, instead of relying on brower default
    * timeouts like Chrome's 300 seconds default.
    *
-   * The timeout value is optional, and it uses a arbitrary 8 seconds default.
-   *
    * @returns Returns the current instance to let you chain method calls
    */
-  timeoutAfter(timeoutInMilliseconds: number = 8000): Fetch {
+  timeoutAfter(timeoutInMilliseconds: number): Fetch {
     this.#timeoutInMilliseconds = timeoutInMilliseconds;
     this.#abortController = new AbortController();
 
