@@ -667,9 +667,7 @@ export class Fetch {
    * For run time type safety, please pass in a type predicate validator to do response data validation before
    * type narrowing it down to the generic type T passed in.
    */
-  runJSON<T extends JsonResponse = JsonResponse>(
-    optionalValidator?: Validator<T>
-  ) {
+  runJSON<T = JsonResponse>(optionalValidator?: Validator<T>) {
     return this.#runner<T>((res) => res.json(), optionalValidator);
   }
 }
