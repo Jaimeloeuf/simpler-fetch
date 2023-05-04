@@ -8,5 +8,6 @@
 export type ApiResponse<T> = {
   ok: Response["ok"];
   status: Response["status"];
+  headers: Response["headers"];
   data: T;
 };

@@ -562,6 +562,7 @@ export class Fetch {
       return {
         ok: res.ok,
         status: res.status,
+        headers: res.headers,
         data,
       } satisfies ApiResponse<T>;
     });
