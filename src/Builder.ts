@@ -116,8 +116,17 @@ export class Builder {
     new Fetch(
       method,
       this.#baseUrl + path,
-      this.#defaultOpts,
-      this.#defaultHeaders
+
+      // Use spread operator to create shallow copies, so that the
+      // default options and headers value in this builder instance
+      // will not be modified when the `Fetch` instance modifies
+      // the values by adding more headers or merging in options.
+      //
+      // A shallow copy will do since the values itself will not be
+      // touched by `Fetch`, only the target container, i.e. only
+      // the options object and the headers array will be modified.
+      { ...this.#defaultOpts },
+      [...this.#defaultHeaders]
     );
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
