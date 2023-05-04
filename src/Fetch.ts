@@ -4,7 +4,7 @@ import type {
   ApiResponse,
   Validator,
   JsonResponse,
-} from "./types/index";
+} from "./types";
 import { safe } from "./safe";
 
 /**

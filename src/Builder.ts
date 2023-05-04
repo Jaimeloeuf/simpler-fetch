@@ -1,5 +1,5 @@
 import { Fetch } from "./Fetch";
-import type { Header, HTTPMethod } from "./types/index";
+import type { Header, HTTPMethod } from "./types";
 
 /**
  * Class used to implement the Builder pattern for creating `Fetch` instances.

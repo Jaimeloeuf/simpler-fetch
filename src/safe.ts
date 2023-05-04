@@ -1,4 +1,4 @@
-import type { RequestError } from "./types/index";
+import type { RequestError } from "./types";
 
 /**
  * @param fn Takes in any function to wrap around to prevent errors from bubbling up

@@ -13,4 +13,4 @@ export type {
   RequestError,
   ApiResponse,
   Validator,
-} from "./types/index";
+} from "./types";

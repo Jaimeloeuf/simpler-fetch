@@ -20,6 +20,7 @@
     "rootDir": "./src",                                  /* Specify the root folder within your source files. */
     // Difference between ES2015 (aka ES6) and ES2020, is that ES2020 adds support for dynamic imports, and import.meta.
     "module": "ES6",                                /* Specify what module code is generated. */
+    "moduleResolution": "node",
 
     /* Emit */
     "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
