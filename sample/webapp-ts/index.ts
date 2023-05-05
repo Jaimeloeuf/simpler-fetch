@@ -256,6 +256,17 @@ import { zodToValidator } from "../../dist/index.js";
     //
   }
 
+  /* ================================= Uncommon HTTP methods ================================= */
+  {
+    {
+      // API call using a HTTP method without a built in method like GET/POST
+      // using run method since no data will be returned back to parse as it is a HEAD method.
+      const { res, err } = await oof.useDefault().HTTP("HEAD", "/test").run();
+
+      console.log("res HEAD", res, err);
+    }
+  }
+
   /* ================================= Lazily Loaded ================================= */
   {
     // Import the API library lazily into your application.
