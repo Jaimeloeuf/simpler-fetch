@@ -4,7 +4,7 @@ import { oof } from "../../dist/index.js";
 import { z } from "zod";
 import { zodToValidator } from "../../dist/index.js";
 
-// async IIFE to use async await without using top level await as older browsers dont support it
+// async IIFE to use async await without using top level await as older environments dont support it
 (async function () {
   /**
    * Identifiers for the baseUrls, you can choose to use literal strings too,

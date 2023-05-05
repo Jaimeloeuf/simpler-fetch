@@ -1,7 +1,8 @@
 # node
-- Sample project using library in `node.js` with node-fetch as fetch polyfill.
-- The script demonstrates the use of `oof` in particular as that is **the recommended way** to use this library.
-- This script is a es6 module, as this library and its fetch polyfill can only be used as a es6 module.
+- Sample project using library in `node.js`
+    - This requires node v18+ support where fetch is natively available
+    - You can use `node-fetch` as fetch polyfill by monkey patching it in.
+- This script is a es6 module, as this library is designed specifically for modern environments only
 
 
 ## Running the script

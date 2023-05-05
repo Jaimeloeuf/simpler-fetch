@@ -3,6 +3,8 @@ Sample project with a webapp written in TS and corresponding API server to demon
 
 The webapp demonstrates how to use the `oof` class with TS specific features. You can still use this library without TS, by simply ignoring all the TS annotations.
 
+This requires the browser to support the modern fetch API.
+
 
 ## Running the webapp
 1. Make sure the [API server](../server/) is already up and running
