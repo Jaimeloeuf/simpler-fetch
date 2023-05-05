@@ -40,7 +40,7 @@ export type HeaderValue = Exclude<HeadersInit, Headers>;
  * `{ something: true, ...undefined }` will just be `{ something: true }`
  *
  * If function throws, the API call will be cancelled and the error will be caught by the 'safe'
- * functions i.e. the 'run' methods to be returned to users.
+ * 'run' methods before they are bubbled up and returned to the library caller.
  *
  * ## Function return types
  * the return type can be undefined since spreading it like ...undefined will just do nothing
