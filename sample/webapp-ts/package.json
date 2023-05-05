@@ -7,5 +7,8 @@
   },
   "devDependencies": {
     "vite": "^3.0.9"
+  },
+  "dependencies": {
+    "zod": "^3.21.4"
   }
 }
