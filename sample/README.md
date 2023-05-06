@@ -1,8 +1,3 @@
 # Sample
-Sample projects to demonstrate the use of this library.
-
-Before any of the projects can be used, the [API server](./server/) must be up and running first.
-
-## Sample Projects
-- Use in a [`browser environment with a TypeScript webapp`](./webapp-ts/)
-- Use in a [`node.js`](./node/)
+1. Sample projects to demonstrate this library in a [`browser environment with a TypeScript webapp`](./webapp-ts/)
+1. Before running the webapp, the [API server](./server/) must be up and running first.
