@@ -1,6 +1,6 @@
 {
   "name": "simpler-fetch",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "description": "Simple and Easy to use fetch API abstraction with zero dependency that is super small!",
   "type": "module",
   "main": "dist/index.js",
@@ -42,7 +42,7 @@
     "@rollup/plugin-terser": "^0.4.1",
     "@types/node": "^18.16.3",
     "rimraf": "^5.0.0",
-    "rollup": "^3.21.3",
+    "rollup": "^3.21.5",
     "rollup-plugin-ts": "^3.2.0",
     "typescript": "^5.0.4",
     "zod": "^3.21.4"
