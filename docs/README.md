@@ -3,6 +3,8 @@ All technical documents for this library.
 
 
 ## Table of content
+- ***<a href="./v8%20to%20v9%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v8 to v9 major breaking change upgrade</a>***
+    - This details how to migrate from v8 to v9 to handle the breaking API change, and explores the motivation behind the new API.
 - ***<a href="./v7%20to%20v8%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v7 to v8 major breaking change upgrade</a>***
     - This details how to migrate from v7 and earlier to v8 to handle the breaking API change, and explores the motivation behind the new API.
 - [Main API documentation for `oof`](./index.md)

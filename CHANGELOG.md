@@ -15,6 +15,8 @@
 
 
 ## [9.0.0] - 2023-05-07
+[Migration guide for v8 to v9 major breaking change upgrade](./docs/v8%20to%20v9%20migration%20guide.md)
+
 In version 9 of simpler-fetch
 1. Huge big breaking changes following a API redesign, but the core functionality and project goal remains the same.
 1. Library API has been drastically improved in terms of ergonomics, compile time type safety and runtime type safety.

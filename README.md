@@ -2,7 +2,7 @@
 [![NPM version](https://img.shields.io/npm/v/simpler-fetch?style=flat-square)](https://npmjs.org/package/simpler-fetch)
 [![NPM downloads](https://img.shields.io/npm/dm/simpler-fetch?style=flat-square)](https://npmjs.org/package/simpler-fetch)
 
-`simpler-fetch` is a super simple to use [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) abstraction with ZERO dependencies (there is only optional *Type level dependencies*), making it super small at just **1.2kb** with brotli compression!
+> `simpler-fetch` is a super simple to use [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) abstraction with ZERO dependencies (there is only optional *Type level dependencies*), making it super small at just **1.2kb** with brotli compression!
 
 It **DOES NOT** introduce any new features at all. It only simplifies the `fetch API` to make it easier and safer to work with by providing abstractions such as a chainable way to configure the `fetch` options before making the fetch call, a simple way to set baseUrls, a way to delay generating headers.
 
@@ -20,6 +20,8 @@ This library is designed to make working with APIs (especially JSON APIs) extrem
 
 
 ## Documentation & Changes
+***<a href="./docs/v8%20to%20v9%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v8 to v9 major breaking change upgrade</a>***
+
 ***<a href="./docs/v7%20to%20v8%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v7 to v8 major breaking change upgrade</a>***
 
 - [See full API and other technical documentations](./docs/README.md)
