@@ -2,7 +2,7 @@
 [![NPM version](https://img.shields.io/npm/v/simpler-fetch?style=flat-square)](https://npmjs.org/package/simpler-fetch)
 [![NPM downloads](https://img.shields.io/npm/dm/simpler-fetch?style=flat-square)](https://npmjs.org/package/simpler-fetch)
 
-`simpler-fetch` is a super simple to use [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) abstraction with ZERO dependencies, making it super small at just **0.5kb** with brotli compression!
+`simpler-fetch` is a super simple to use [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) abstraction with ZERO dependencies (there is only optional *Type level dependencies*), making it super small at just **1.2kb** with brotli compression!
 
 It **DOES NOT** introduce any new features at all. It only simplifies the `fetch API` to make it easier and safer to work with by providing abstractions such as a chainable way to configure the `fetch` options before making the fetch call, a simple way to set baseUrls, a way to delay generating headers.
 
@@ -21,6 +21,7 @@ This library is designed to make working with APIs (especially JSON APIs) extrem
 
 ## Documentation & Changes
 ***<a href="./docs/v7%20to%20v8%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v7 to v8 major breaking change upgrade</a>***
+
 - [See full API and other technical documentations](./docs/README.md)
 - [See CHANGELOG for specific changes across versions!](./CHANGELOG.md)
 
@@ -37,9 +38,9 @@ npm i https://github.com/Enkel-Digital/simpler-fetch/
 
 
 ## Using the library
-`oof` stands for Object Oriented Fetch. This object oriented approach gives users a familiar chainable interface to build their API calls. Users create a new instance of the `oof` class for every API call and use the chainable methods to configure the API options to pass to `fetch` before making the fetch call.
+This library exports `oof`, which stands for Object Oriented Fetch. This object oriented builder pattern approach gives users a familiar chainable interface to build their API calls with chainable methods to configure API options for `fetch` before every API call.
 
-The `oof` class is the only exported value from the simpler-fetch module using a named export ([see here to understand why a named export is used despite this being the sole export](https://listed.to/@JJ/37419/named-exports-are-better-than-default-ones-mostly)).
+This library exports everything as [named exports](https://listed.to/@JJ/37419/named-exports-are-better-than-default-ones-mostly).
 
 See the [sample project provided](./sample/) for a full example on using `oof` and install it to play around with it. Below are some simpler examples to get you started quickly.
 
@@ -50,16 +51,15 @@ import { oof } from "simpler-fetch";
 
 // Alternatively you can import this library directly from a CDN link
 // You can use any provider, however jsDelivr is shown here as it can be used in China and it is backed by multiple CDNs
-// import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch/dist/index.js";
-//
-// For CDN use, YOU ARE ADVISED to peg your code to a specific version to ensure it does not break between upgrades, e.g.
-// import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@8.0.0/dist/index.js";
+// For CDN use, PEG your code to a specific version to ensure it does not break between upgrades, e.g.
+// import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@9.0.0/dist/index.js";
 
-// Start using it!
+// Basic GET example
 function getExample() {
     const { res, err } = await oof
-        .GET("https://jsonplaceholder.typicode.com/todos/1")
-        .once() // Skip the baseUrl
+        // Make a one off API call to this URL without any base Urls
+        .useOnce("https://jsonplaceholder.typicode.com/todos/1")
+        .GET()
         .runJSON();
 
     console.log(res, err);
@@ -68,92 +68,42 @@ function getExample() {
 // POST request example
 function postExample() {
     const { res, err } = await oof
-        .POST("https://jsonplaceholder.typicode.com/posts")
-        .once() // Skip the baseUrl
+        // Make a one off API call to this URL without any base Urls
+        .useOnce("https://jsonplaceholder.typicode.com/posts")
+        .POST()
         .header({ someAuthenticationToken: "superSecureTokenString" })
-        .data({ title: "foo", body: "bar", userId: 1 })
+        .bodyJSON({ title: "foo", body: "bar", userId: 1 })
         .runJSON();
 
     console.log(res, err);
 }
 ```
 
-### Basic GET Example using es6 import syntax with bundlers
-```typescript
-import { oof } from "simpler-fetch";
-
-// Set Base URL once and all subsequent API calls with use this base API url
-oof.setBaseURL("https://deployed-api.com");
-
-// Base URL can be set like this if using a bundler that injects NODE_ENV in
-// oof.setBaseURL(
-//   process.env.NODE_ENV === "production"
-//     ? "https://deployed-api.com"
-//     : "http://localhost:3000"
-// );
-
-// Make a GET request to https://deployed-api.com/test and parse the response as JSON
-const { res, err } = await oof
-    .GET("/test")
-    .runJSON(); // Make the API call and parse the response as JSON
-
-console.log("Response", res);
-```
-
 ### Basic POST Example
 ```typescript
 import { oof } from "simpler-fetch";
 
-oof.setBaseURL("https://deployed-api.com");
+// Add a base Url and set it to be the default base Url.
+oof.addBase("default", "https://deployed-api.com").setDefault("default");
 
 // Make a POST request and use a bunch of different ways to generate header values
 const { res, err } = await oof
+    // Use the default base Url
+    .useDefault()
     .POST("/test")
     // Can be a synchronous function that returns a header object
-    .header(() => ({ randomHeader: true, anotherHeader: "value" }))
+    .header(() => ({ randomHeader: "true", anotherHeader: "value" }))
     // Can be an asynchronous function that returns a header Promise<object>
     .header(async () => ({ asyncAuthToken: await Promise.resolve("secret") }))
     // Can also just directly pass in a header object. Header method can be called multiple times
     .header({ someAuthenticationToken: "superSecureTokenString" })
-    .bodyJSON({ test: true, anotherTest: "testing" })
+    .bodyJSON({ test: "true", anotherTest: "testing" })
     .runJSON();
 
-console.log("Response", res);
+console.log(res, err);
 ```
 
-### Make a one off API call to a different domain
-```typescript
-import { oof } from "simpler-fetch";
-
-oof.setBaseURL("https://deployed-api.com");
-
-// Make a API call to a different API domain, but only
-// for this single request by using the `once` method.
-// Any subsequent API calls will still use the default
-// "https://deployed-api.com" as base URL.
-//
-// Reference:
-// - https://stackoverflow.com/a/60006313
-// - https://url.spec.whatwg.org/#url-writing
-function customUrlExample() {
-    const { res, err } = await oof
-        .GET("https://other-api-integration.com/test")
-        .once() // Skip the baseUrl
-        .runJSON(); // Make the API call and parse the response as JSON
-
-    console.log("Response", res);
-}
-
-// Subsequent API calls with just the path and not a full URL will have the base URL appended,
-// So in this case, this is a GET request to https://deployed-api.com/test
-function baseUrlExample() {
-    const { res, err } = await oof
-        .GET("/test")
-        .runJSON(); // Make the API call and parse the response as JSON
-
-    console.log("Response", res);
-}
-```
+Once again, see the [sample project provided](./sample/) for a full example on using the library.
 
 
 ## Supported Platforms
@@ -180,21 +130,30 @@ Here is a list of popular validation libraries that are supported with utility a
 This library does not have as many advanced features as libraries like `Axios` (and it will never be) but the advantage of this is that it is much simpler to learn, use and is alot smaller!
 
 ### Advantages
-- This library is extremely simple to use compared to other libraries, with a simpler and clear API backed by strong types to leverage the TS LSP to help with code completion.
+- This library is extremely simple to use compared to other libraries, with a simple and clear API built with strong types for type safety and leverages TS LSP for code completion.
 - This library does error handling better.
     - This is subjective but take a look at it yourself.
     - All the `run` methods do not throw any errors / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
-    - Read more about how [this library views error handling](./docs/oof%20error%20handling.md)
-- This library is extremely small compared to other popular HTTP clients like `Axios` and `superagent`, here is a comparison on library size after minification and using brotli compression
-    1. 0.5kb - `simpler-fetch`
-    1. 6kb - `axios v0.27.2` is 12 times larger than `simpler-fetch`
-    1. 13kb - `superagent v8.0.0` is 26 times larger than `simpler-fetch`
+        - Read more about how [this library views error handling](./docs/oof%20error%20handling.md)
+- This library is extremely small compared to other popular HTTP clients like `Axios` and `superagent`, here is a comparison of the minified library after using brotli compression
+    1. 1.2kb - `simpler-fetch`
+    1. 14.3kb - [`axios v1.4.0`](https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js) is XYZ times larger than `simpler-fetch`
+    1. 19.1kb - [`superagent v8.0.9`](https://cdn.jsdelivr.net/npm/superagent@8.0.9/dist/superagent.min.js) is XYZ times larger than `simpler-fetch`
 
 ### Disadvantages
-- This has less advanced features like a nice elegant way to include abort signals
-    - However, since this library is based on the `fetch` API, this still have escape hatches to directly configure the `fetch` options to pass in an AbortSignal with the `options` method.
+- This has less advanced features like a nice and elegant way to do retries
+    - However, since this library is basically a wrapper around the `fetch` API to use the Builder pattern, you have the necessary tools and escape hatches to directly configure `fetch` options to implement something like that yourself.
 - This library is designed for newer platforms and doesn't support older platforms
     - Although it can work with it, as long as you downlevel the code and use a `fetch` polyfill.
+- This library does not support users passing in custom AbortControllers
+    - The reason is because the main use case for AbortControllers are usually for setting custom timeouts
+        - And this is already supported by the `timeoutAfter` method on `Fetch`.
+    - Therefore this is not supported since there are not many specific use cases for it right now.
+        - Might implement this in the future if there is an actual concrete use case for it.
+- Although this library supports using the `HEAD` and `OPTIONS` HTTP methods,
+    - They are not as easy to use as other common HTTP methods like `GET` and `POST`
+    - Since these are rather low level and extremely rarely used HTTP methods, users need to use the more cumbersome `HTTP` method on `Builder` instances.
+        - See the sample project for example on this.
 
 
 ## Inspirations
@@ -219,14 +178,40 @@ Most of the detailed technical explanations are all written in the [source code]
 
 1. `oof` does error handling alot differently compared to other HTTP client libraries
     - [See this to learn more](./docs/oof%20error%20handling.md)
-1. Import paths in TS source files are always written with the `.js` extension (no longer an issue now as all source code is in a single file)
-    - This is because TS will not modify the file extension as it generates the JS files,
-    - And when used in node js, module import paths require the full file extension to be used.
-    - Therefore this is needed to work on node.js runtimes.
-    - References
-        - <https://stackoverflow.com/questions/68928008/cant-import-module-without-the-js-extension-in-nodejs>
-        - <https://nodejs.org/api/esm.html#esm_import_specifiers>
-        - <https://github.com/microsoft/TypeScript/issues/40878>
+1. POST, PUT and PATCH HTTP methods are all supported, see this link on the difference
+    - <https://en.wikipedia.org/wiki/PATCH_(HTTP)#:~:text=The%20main%20difference%20between%20the,instructions%20to%20modify%20the%20resource.>
+1. This library implements the builder pattern with 3 levels of indirection (`oof`, `Builder` and `Fetch` classes)
+    - Why 3? Why cant we use less classes for a smaller library?
+        - Yes, the library can be smaller. But with this setup, the DX is improved as it forces you to use the method chaining in a specific order / sequence that makes the more sense.
+        - For example
+            1. Users can only set the JSON body after you set the base Url and path.
+            1. Users can only set API call specific headers after you set things like HTTP methods.
+    - The flow of method chaining configuration
+        1. `oof` class
+            - At the root layer, you can either
+                1. Configure the base Urls and default base Url.
+                1. Select what base Url you would like to use.
+        1. `Builder` class
+            - At the second layer, you can either
+                1. Select a HTTP method and Url path to use for the API call.
+                1. Configure default `RequestInit` options or Header values for all future API calls on the same base Url.
+            - Selecting the HTTP methods involve using instance methods like `GET` or `POST` with an optional path
+        1. `Fetch` class
+            - At the last layer, you get to configure options for the specific API call before actually making the API call.
+            - Some of the things you can configure are
+                1. The specific headers needed
+                1. Request body
+                1. Custom `RequestInit` options
+                1. Custom timeout value
+            - After configuration, you can make the API call using the `run` methods such as
+                1. `run` to get the raw Response object back from `window.fetch`
+                1. `runJSON` to get response back as a JSON value
+                1. `runText` to get response back as a String
+                1. `runBlob` to get response back as a Blob
+                1. `runFormData` to get response back as Form Data
+                1. `runArrayBuffer` to get response back as an ArrayBuffer
+            - All the run methods also support passing in an optional validator to do Response Validation.
+                - See above section on Response Validation.
 
 
 ## Archived
