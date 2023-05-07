@@ -4,8 +4,67 @@
 
 ## [Unreleased]
 
+### Fixed
+
+### Changed
+
+### Added
+
+### Removed
+
+
+
+## [9.0.0] - 2023-05-07
+In version 9 of simpler-fetch
+1. Huge big breaking changes following a API redesign, but the core functionality and project goal remains the same.
+1. Library API has been drastically improved in terms of ergonomics, compile time type safety and runtime type safety.
+1. All methods are now safe (does not throw).
+
+### Main Breaking Changes
+The API is now completely changed, it is better to just use the new API directly instead of migrating 1 by 1.
+
+### Changed
+1. Change the entire API to introduce support for multiple base Urls.
+    1. The library now have 3 layers of configuration before every API call
+        - See the `Technical Details` section in README for more details.
+1. All the run method APIs
+    1. Change all to return an object of type `ApiResponse<T>` so that regardless of what run method is being used, the API is uniform, and users can use the other useful properties from the raw Response object like `status` without having to manually deal with the raw Response object and parsing out required values.
+1. Return a typed `RequestError` instead of a generic `Error` type to allow users to see the union of all possible error types.
+
+### Added
+1. Support setting a custom timeout value for API calls, implemented using an `AbortController`.
+1. Add support for default options and default headers for each base Url using the `Builder` class.
+1. Add support runtime validation!
+    1. All run methods now accept optional validator functions for runtime response validation and type narrowing, to give TS users an extra layer of type safety at the runtime level directly integrated with the library instead of needing to do validation seperately themselves.
+    1. The library now also exports a utility function `zodToValidator` to support the use of Zod Parsers as runtime validation functions.
+1. Include Response Headers in the returned `ApiResponse<T>` object, so that users can access headers from their API service as needed while using the run methods instead of having to get the raw Response object back to parse out the headers and the value themselves.
+    1. <https://stackoverflow.com/questions/43344819/reading-response-headers-with-fetch-api>
+1. Add support for library users who would like to use HTTP methods like `HEAD` and `OPTIONS` through the `HTTP` method on `Builder`.
+
+### Fixed
+1. Fix `Header` type and made it stricter
+    1. Force callers to pass in at least one argument to Header functions, unlike the previous version which allowed no arguments.
+1. Changing the return tpye of `runJSON` method to `ApiResponse<T>` also fixes the issue where arrays returned from API services were being spread into an object which causes the caller to get an unexpectedly modified data type.
+1. Make `JsonResponse` type used as the data output type of `runJSON` method to be `any` to better reflect what is returned from `.json()` parsing.
+
+### Removed
+1. Removed the `_run` method
+    1. Since it did not serve any purpose for library users to have access to this underlying unsafe method.
+    1. If library users would like to access the raw Response object before any modification, they can use the safe `run` method.
+
+### Others
+1. Change build strategy
+    1. Change from a single source file to single dist file build output using TSC + minify, to use rollup build tool instead to support a multi source file setup, bundling and minification all with a single build tool.
+1. Clean up tsconfig
+1. Update all dependencies, including migrating TS to v5.
+1. Deleted the sample projects for JS WebApp and Node.
+    1. Delete the sample JS WebApp project since users can just reference the TS WebApp without copying over any of the type annotations.
+    1. Delete the sample Node project since the TS WebApp code can be executed in node without any issues.
+
 
 ## [8.0.0] - 2022-09-04
+[Migration guide for v7 to v8 major breaking change upgrade](./docs/v7%20to%20v8%20migration%20guide.md)
+
 In version 8 of simpler-fetch
 1. Huge big breaking changes following a API redesign, but the core functionality and project goal remains the same
 1. Library API has been drastically simplified
@@ -102,8 +161,9 @@ See the individual sections for more details
 1. Remove `fcf` function as it is not super useful and can be easily implemented by users if needed.
 
 
-[Unreleased]: https://github.com/Enkel-Digital/simpler-fetch/compare/v8.0.0...HEAD
-[8.0.0]: https://github.com/Enkel-Digital/simpler-fetch/releases/tag/v8.0.0
-[7.0.2]: https://github.com/Enkel-Digital/simpler-fetch/releases/tag/v7.0.2
-[7.0.1]: https://github.com/Enkel-Digital/simpler-fetch/releases/tag/v7.0.1
-[7.0.0]: https://github.com/Enkel-Digital/simpler-fetch/releases/tag/v7.0.0
+[Unreleased]: https://github.com/Jaimeloeuf/simpler-fetch/compare/v9.0.0...HEAD
+[9.0.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v9.0.0
+[8.0.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v8.0.0
+[7.0.2]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v7.0.2
+[7.0.1]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v7.0.1
+[7.0.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v7.0.0
