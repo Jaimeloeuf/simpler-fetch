@@ -34,6 +34,7 @@ async function callAPI() {
   if (err !== undefined) {
     console.error(err);
   } else {
+    // Compile time type safe AND runtime validated data structure
     console.log(res.data.id);
   }
 }
