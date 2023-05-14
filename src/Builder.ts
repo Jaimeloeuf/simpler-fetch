@@ -1,4 +1,5 @@
-import { Fetch } from "./Fetch2";
+// Temporarily doing a rename to not change any `Builder` code first
+import { RequestBuilder as Fetch } from "./Fetch2";
 import type { Header, HTTPMethod } from "./types";
 
 /**

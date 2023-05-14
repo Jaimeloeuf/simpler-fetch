@@ -1,12 +1,11 @@
 import type { Header, HTTPMethod } from "./types";
-import { Final } from "./Final";
+import { Fetch } from "./Final";
 
 /**
- * Class used to create an Object Oriented `Fetch` abstraction
- *
- * This object oriented approach gives users a easy to use chainable interface to build their API calls
+ * `RequestBuilder` class uses the builder pattern to build the `Request` Object
+ * before passing it to the Fetch class to run it.
  */
-export class Fetch {
+export class RequestBuilder {
   /* Private Instance variables that are only accessible internally */
 
   /**
@@ -128,7 +127,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  options(opts: RequestInit): Fetch {
+  options(opts: RequestInit): RequestBuilder {
     // Using Object.assign to mutate the original object instead of creating a new one.
     // this.#opts = { ...this.#opts, ...opts };
     Object.assign(this.#opts, opts);
@@ -155,7 +154,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  header(...headers: [Header, ...Header[]]): Fetch {
+  header(...headers: [Header, ...Header[]]): RequestBuilder {
     this.#headers.push(...headers);
     return this;
   }
@@ -166,7 +165,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  timeoutAfter(timeoutInMilliseconds: number): Fetch {
+  timeoutAfter(timeoutInMilliseconds: number): RequestBuilder {
     this.#timeoutInMilliseconds = timeoutInMilliseconds;
     this.#abortController = new AbortController();
     return this;
@@ -223,7 +222,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  body<T = any>(body: T, optionalContentType?: string): Fetch {
+  body<T = any>(body: T, optionalContentType?: string): RequestBuilder {
     // Only add in the content-type header if user chooses to set it,
     //
     // Ref: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
@@ -285,7 +284,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  bodyJSON<T = any>(data: T): Fetch {
+  bodyJSON<T = any>(data: T): RequestBuilder {
     // Content-type needs to be set manually even though `fetch` is able to guess most
     // content-type because once object is stringified, the data will be a string, and
     // fetch will guess that it is 'text/plain' rather than 'application/json'.
@@ -344,7 +343,7 @@ export class Fetch {
       signal: this.#abortController?.signal,
     });
 
-    return new Final(
+    return new Fetch(
       request,
       this.#timeoutInMilliseconds,
       this.#abortController,
