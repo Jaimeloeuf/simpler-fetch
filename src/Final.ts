@@ -279,6 +279,19 @@ export class Final<ResponseType> {
     return this;
   }
 
+  /**
+   * Alternative method to set the validator and run the call method immediately
+   * instead of chaining yet another method call, since there is no other methods
+   * that can be called after `validateWith` anyways.
+   */
+  callAndValidateWith<ExpectedResponseType extends ResponseType = ResponseType>(
+    responseValidator: Validator<ResponseType>
+  ) {
+    this.#optionalResponseValidator = responseValidator;
+    // By doing this, it will be a single method instead of returning this again...
+    return this.call<ExpectedResponseType>();
+  }
+
   call<ExpectedResponseType extends ResponseType = ResponseType>() {
     return safe(async () => {
       const res = await this.#run();
