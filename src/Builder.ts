@@ -1,4 +1,4 @@
-import { Fetch } from "./Fetch";
+import { Fetch } from "./Fetch2";
 import type { Header, HTTPMethod } from "./types";
 
 /**
