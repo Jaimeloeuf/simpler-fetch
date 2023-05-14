@@ -1,4 +1,4 @@
-import type { Header, HTTPMethod, ApiResponse, Validator } from "./types";
+import type { ApiResponse, Validator } from "./types";
 import { safe } from "./safe";
 
 /**
@@ -10,62 +10,10 @@ export class Final<ResponseType> {
   /* Private Instance variables that are only accessible internally */
 
   /**
-   * Instance variable to set the HTTP method used for the API call.
-   *
-   * This can only be set in the constructor, and library users do not need to set this as
-   * they can just use one of the static constructor wrapper methods.
+   * Request object holding all the information needed to make a fetch request
    */
-  readonly #method: HTTPMethod;
-
-  /**
-   * This is the path of the API endpoint to make the request.
-   *
-   * This can either be a relative or absolute URL path on the current or another domain.
-   *
-   * ### How to set this
-   * 1. Making an API call to a relative URL endpoint on the same domain as the site
-   *    - Leave baseUrl blank by not setting a baseUrl and use the relative path directly like `oof.GET(path)`
-   *    - If baseUrl has already been set to another domain, then use the relative path directly with a call to the `once` method like `oof.GET(path).once()`
-   * 1. Making an API call to a relative URL endpoint on a seperate API domain
-   *    - Set the baseUrl using `oof.setBaseUrl(baseUrl)` and use the relative path directly like `oof.GET(path)`
-   * 1. Making an API call to an absolute URL endpoint on a seperate API domain once
-   *    - Use the full path directly like `oof.GET(fullUrlPath).once()`
-   */
-  readonly #url: string;
-
-  /**
-   * Instance variable to set the `RequestInit` type options passed to the `fetch` function.
-   */
-  readonly #opts: RequestInit;
-
-  /**
-   * An array of headers to be combined before being used in this instance's API call.
-   *
-   * This cannot be optional because in the `header` method, it assumes that `this.#headers`
-   * is already an array and inside the `#fetch` method it also assumes that it is already
-   * an array by default when calling the `map` method on this.
-   *
-   * Therefore this is not optional and has to be initialized through the constructor using
-   * default options set on the `Builder` instance.
-   */
-  readonly #headers: Array<Header>;
-
-  /**
-   * The `body` field will be used for the `body` prop of the `fetch` function.
-   * Since that function accepts the type of `BodyInit | null` and we can also
-   * pass it strings that are stringified with JSON.stringify, `body` can be any
-   * type as JSON.stringify accepts any type that is serializable.
-   *
-   * The JSON.stringify method takes many types of arguments as specified in the reference links below.
-   * Due to the huge variety of argument types and the lack of a standard TypeScript interface/type
-   * describing it, this is explicitly typed as `any`, which means that this type is basically anything
-   * that can be serialized by JSON.stringify and also any child types of `BodyInit | null`
-   *
-   * References:
-   * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description
-   * - https://tc39.es/ecma262/#sec-json.stringify
-   */
-  #body?: any;
+  // readonly #request: Request;
+  #request: Request;
 
   /**
    * Optional `AbortController` used for the custom timeout set by `timeoutAfter()`
@@ -89,20 +37,14 @@ export class Final<ResponseType> {
    * instance methods mutate the values on the instance itself.
    */
   constructor(
-    method: HTTPMethod,
-    url: string,
-    defaultOpts: RequestInit,
-    headers: Array<Header>,
-    body: any,
+    request: Request,
     timeoutInMilliseconds: number | undefined,
+    abortController: AbortController | undefined,
     valueExtractor: (res: Response) => Promise<ResponseType>
   ) {
-    this.#method = method;
-    this.#url = url;
-    this.#opts = defaultOpts;
-    this.#headers = headers;
-    this.#body = body;
+    this.#request = request;
     this.#timeoutInMilliseconds = timeoutInMilliseconds;
+    this.#abortController = abortController;
     this.#responseParser = valueExtractor;
   }
 
@@ -130,52 +72,7 @@ export class Final<ResponseType> {
   async #fetch(): Promise<Response> | never {
     // This library does not check if `fetch` is available in the global scope,
     // it assumes it exists, if it does not exists, please load a `fetch` polyfill first!
-    return fetch(this.#url, {
-      /*
-        Properties are set following the order of specificity:
-        1. `RequestInit` options is applied first
-        2. HTTP method, which cannot be overwritten by options object
-        3. Instance specific headers, which cannot be overwritten by options object
-        4. Instance specific body data, which cannot be overwritten by options object
-        5. Instance specific timeout abortController's signal, which cannot be overwritten by options object
-
-        From this order, we can see that options cannot override method set by constructor, headers
-        set by the `header` method and `body` set by any of the body methods.
-      */
-
-      // Apply options by spreading it, since the final object is of the same `RequestInit` type
-      ...this.#opts,
-
-      method: this.#method,
-
-      // Run header functions if any to ensure array of headers is now an array of header objects,
-      // The array of headers have the type of `object | Promise<object>` because header generator
-      // functions can be async to let users delay generating headers until `run` time. Use case
-      // include only generating a very short lived token at the last minute before the API call
-      // is made to ensure that it does not expire by the time it reaches the API server.
-      //
-      // `await Promise.all` on the array of headers to ensure all are resolved to `object` type,
-      // before reducing the array of header objects into a single header object.
-      headers: (
-        await Promise.all(
-          this.#headers.map((header) =>
-            typeof header === "function" ? header() : header
-          )
-        )
-      ).reduce((obj, item) => ({ ...obj, ...item }), {}),
-
-      // Because fetch's body prop can accept many different types of data, instead
-      // of doing transformations like JSON.stringify here, this library relies
-      // on helper methods like `bodyJSON` to set a JSON data type as the body
-      // and to also set the content-type and do any transformations as needed.
-      //
-      // See #body prop's docs on its type
-      body: this.#body,
-
-      // Using optional chaining as `#abortController` may be undefined if not set using the `timeoutAfter`
-      // method, if so, just let it be undefined and it will just be ignored.
-      signal: this.#abortController?.signal,
-    });
+    return fetch(this.#request);
   }
 
   /**
@@ -205,10 +102,7 @@ export class Final<ResponseType> {
    */
   async #run(): Promise<Response> | never {
     // If there is no custom timeout specified, just directly run and return the result of `#fetch`
-    if (this.#timeoutInMilliseconds === undefined) return this.#fetch();
-
-    // Create abortController dynamically
-    this.#abortController = new AbortController();
+    if (this.#abortController === undefined) return this.#fetch();
 
     // Create a new timeout using the custom timeout milliseconds value, and save the timeoutID so
     // that the timer can be cleared to skip the callback if the API returns before the timeout.
