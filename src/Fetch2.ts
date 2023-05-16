@@ -343,10 +343,61 @@ export class RequestBuilder {
       signal: this.#abortController?.signal,
     });
 
+    // Create a new timeout using the custom timeout milliseconds value, and save the timeoutID so
+    // that the timer can be cleared to skip the callback if the API returns before the timeout.
+    // @todo It is a waste to init this if there is no timeout though
+    const startTimeout = (): ReturnType<typeof setTimeout> =>
+      setTimeout(
+        // On timeout, abort the API call with a custom reason with the caller specified timeout value.
+        //
+        // As TS notes, the `this.#abortController` variable could be changed and became  undefined/null
+        // between the time that this setTimeout callback function is defined and when this is triggered.
+        // Since there is no other code that will modify this variable, its value can be safely assumed
+        // to not be deleted when this callback is called, which means that a non-null assertion operator
+        // can be used. However just to be extra safe, an optional chaining operator is used instead, so
+        // in the event where it is somehow undefined/null, this will not error out.
+        //
+        // If `this.#fetch` method call throws an Error that is not caused by this timeout, for e.g. an
+        // error like DNS failed, the `clearTimeout` call will be skipped since the custom catch block
+        // re-throws any error it gets. That means that this abort method will still be called even if
+        // the API call has already errored out. However this is fine since calling abort after the API
+        // call completes will just be ignored and will not cause any new errors to be thrown.
+        () =>
+          this.#abortController?.abort(
+            `${this.#timeoutInMilliseconds}ms time out exceeded`
+          ),
+
+        this.#timeoutInMilliseconds
+      );
+
+    // Map an error into a specific error message if it is a timeout issue
+    const timeoutErrorTransformer = (err: unknown) => {
+      // If the error is caused by the abort signal, throw a new custom error,
+      // Else, re-throw original error to let method caller handle it.
+      if (
+        err instanceof DOMException &&
+        err.name === "AbortError" &&
+        // This can be thought of as an almost redundant check, since the first 2 conditions
+        // should already ensure that it is an `AbortError`. This checks just makes sure that
+        // the AbortError is in fact caused by the internal `#abortController` used for custom
+        // timeouts rather than a abort controller passed in via options.
+        //
+        // This also ensures that `.signal.reason` access is properly typed after narrowing the
+        // optional abortController's type in this control flow conditional.
+        this.#abortController?.signal.aborted
+      )
+        // Throw new error with abort reason as message instead of the generic 'DOMException'
+        // If reason is somehow empty, default to err.message to prevent throwing an empty error.
+        throw new Error(this.#abortController.signal.reason ?? err.message);
+
+      // Throw err to continue if not an abort error as we dont have to override the message
+      throw err;
+    };
+
     return new Fetch(
       request,
-      this.#timeoutInMilliseconds,
-      this.#abortController,
+      startTimeout,
+      timeoutErrorTransformer,
       valueExtractor
     );
   }
