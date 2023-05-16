@@ -124,6 +124,12 @@ export class Fetch<ResponseType> {
   validateWith(responseValidator: Validator<ResponseType>) {
     this.#optionalResponseValidator = responseValidator;
     return this;
+
+    // This forces the user to only be able to chain `call` method as the next method.
+    // @todo
+    // Cant this be just used in the original Fetch class?
+    // E.g. run methods can only return an object with 2 methods, either validateWith or the call method
+    return { call: this.call.bind(this) };
   }
 
   /**
