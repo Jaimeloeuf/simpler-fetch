@@ -6,7 +6,7 @@ import { safe } from "./safe";
  *
  * This object oriented approach gives users a easy to use chainable interface to build their API calls
  */
-export class Fetch<ResponseType extends any> {
+export class Fetch<ResponseType extends any = any> {
   /* Private Instance variables that are only accessible internally */
 
   /**
