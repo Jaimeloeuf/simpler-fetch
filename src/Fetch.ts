@@ -6,7 +6,7 @@ import { safe } from "./safe";
  *
  * This object oriented approach gives users a easy to use chainable interface to build their API calls
  */
-export class Fetch<ResponseType> {
+export class Fetch<ResponseType extends any> {
   /* Private Instance variables that are only accessible internally */
 
   /**
@@ -575,11 +575,11 @@ export class Fetch<ResponseType> {
    */
   validateWith<ConcreteType extends ResponseType = ResponseType>(
     validator: Validator<ConcreteType>
-  ): Fetch<ConcreteType> {
+  ) {
     this.#optionalResponseValidator = validator;
 
     // Doing this to cast current Fetch type with a new generic.
-    return this as unknown as Fetch<ConcreteType>;
+    return this as Fetch<ConcreteType>;
   }
 
   /**
@@ -598,7 +598,7 @@ export class Fetch<ResponseType> {
    * ```
    */
   runText() {
-    return (this as unknown as Fetch<string>).#runner((res) => res.text());
+    return (this as Fetch<string>).#runner((res) => res.text());
   }
 
   /**
@@ -617,7 +617,7 @@ export class Fetch<ResponseType> {
    * ```
    */
   runBlob() {
-    return (this as unknown as Fetch<Blob>).#runner((res) => res.blob());
+    return (this as Fetch<Blob>).#runner((res) => res.blob());
   }
 
   /**
@@ -636,9 +636,7 @@ export class Fetch<ResponseType> {
    * ```
    */
   runFormData() {
-    return (this as unknown as Fetch<FormData>).#runner((res) =>
-      res.formData()
-    );
+    return (this as Fetch<FormData>).#runner((res) => res.formData());
   }
 
   /**
@@ -657,9 +655,7 @@ export class Fetch<ResponseType> {
    * ```
    */
   runArrayBuffer() {
-    return (this as unknown as Fetch<ArrayBuffer>).#runner((res) =>
-      res.arrayBuffer()
-    );
+    return (this as Fetch<ArrayBuffer>).#runner((res) => res.arrayBuffer());
   }
 
   /**
@@ -693,7 +689,7 @@ export class Fetch<ResponseType> {
    * Stricter version of `runJSON` method that requires runtime response validation.
    */
   runStrictJSON<T = unknown>(validator: Validator<T>) {
-    return (this as unknown as Fetch<T>)
+    return (this as Fetch<T>)
       .validateWith(validator)
       .#runner((res) => res.json());
   }
