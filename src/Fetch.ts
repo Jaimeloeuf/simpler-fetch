@@ -688,4 +688,13 @@ export class Fetch<ResponseType> {
   runJSON() {
     return this.#runner((res) => res.json());
   }
+
+  /**
+   * Stricter version of `runJSON` method that requires runtime response validation.
+   */
+  runStrictJSON<T = unknown>(validator: Validator<T>) {
+    return (this as unknown as Fetch<T>)
+      .validateWith(validator)
+      .#runner((res) => res.json());
+  }
 }
