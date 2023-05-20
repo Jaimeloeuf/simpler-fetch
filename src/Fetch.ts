@@ -6,7 +6,7 @@ import { safe } from "./safe";
  *
  * This object oriented approach gives users a easy to use chainable interface to build their API calls
  */
-export class Fetch<ResponseType extends any = any> {
+export class Fetch<ResponseType extends any = Response> {
   /* Private Instance variables that are only accessible internally */
 
   /**
@@ -455,45 +455,6 @@ export class Fetch<ResponseType extends any = any> {
   }
 
   /**
-   * # Warning
-   * This method is generally not used since this returns the raw HTTP Response object.
-   * Library users should use the other run methods that handle value extraction too,
-   * such as `runJSON`, `runFormData` and etc... This method is made available as an
-   * escape hatch for users who do not want value extraction done, so that they can build
-   * extra logic on top of this library by getting the raw Response object back.
-   *
-   * Safe version of the `#run` method that **will not throw** or let any errors bubble up,
-   * i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
-   *
-   * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
-   * ```javascript
-   * const { res, err } = await oof.useDefault().GET("/api").run();
-   *
-   * if (err) return console.log("API Call failed!");
-   *
-   * console.log("Res:", res); // Type narrowed to be the Response object
-   * ```
-   */
-  run() {
-    // Need to wrap the call to the `this.#run` method in an anonymous arrow function,
-    // so that the `this` binding is preserved when running the method.
-    return safe(() => this.#run());
-
-    // Alternatives:
-    //
-    // `return safe(this.#run);`
-    // If written like the way above, then it will fail, as there is no more `this`
-    // binding when the call to that method is made within the `safe` function.
-    //
-    // `return safe(this.#run.bind(this));`
-    // Above is an alternative that also works, but what they are trying to achieve is
-    // essentially the same, which is to preserve the current `this` binding in this
-    // run method, regardless of whether it is creating a new anonymous arrow function
-    // or binding the current this to create a new function using `this.#run`. The
-    // anonymous arrow function is used instead as it uses less characters.
-  }
-
-  /**
    * `#runner` method used to reduce duplicated logic of running the API call.
    *
    * ### About
@@ -587,15 +548,13 @@ export class Fetch<ResponseType extends any = any> {
    * however since the methods are called dynamically, this is
    * optional until it is set.
    */
-  #responseParser?: (res: Response) => Promise<ResponseType>;
+  #responseParser: (res: Response) => Promise<ResponseType> = (res) =>
+    Promise.resolve(res as ResponseType);
 
   /**
    * Call the API after configuration is all completed
    */
   call() {
-    if (this.#responseParser === undefined)
-      throw new Error("Parser must be set first");
-
     return this.#runner(this.#responseParser);
   }
 
