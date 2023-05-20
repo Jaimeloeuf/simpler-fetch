@@ -583,6 +583,23 @@ export class Fetch<ResponseType extends any = any> {
   }
 
   /**
+   * Response Parser must be set using on of the run methods,
+   * however since the methods are called dynamically, this is
+   * optional until it is set.
+   */
+  #responseParser?: (res: Response) => Promise<ResponseType>;
+
+  /**
+   * Call the API after configuration is all completed
+   */
+  call() {
+    if (this.#responseParser === undefined)
+      throw new Error("Parser must be set first");
+
+    return this.#runner(this.#responseParser);
+  }
+
+  /**
    * Abstraction on top of the `#run` method to return response body parsed as text.
    *
    * This method is 'safe' in the sense that this **will not throw** or let any errors bubble
@@ -598,7 +615,8 @@ export class Fetch<ResponseType extends any = any> {
    * ```
    */
   runText() {
-    return (this as Fetch<string>).#runner((res) => res.text());
+    (this as Fetch<string>).#responseParser = (res) => res.text();
+    return this as Fetch<string>;
   }
 
   /**
@@ -617,7 +635,8 @@ export class Fetch<ResponseType extends any = any> {
    * ```
    */
   runBlob() {
-    return (this as Fetch<Blob>).#runner((res) => res.blob());
+    (this as Fetch<Blob>).#responseParser = (res) => res.blob();
+    return this as Fetch<Blob>;
   }
 
   /**
@@ -636,7 +655,8 @@ export class Fetch<ResponseType extends any = any> {
    * ```
    */
   runFormData() {
-    return (this as Fetch<FormData>).#runner((res) => res.formData());
+    (this as Fetch<FormData>).#responseParser = (res) => res.formData();
+    return this as Fetch<FormData>;
   }
 
   /**
@@ -655,7 +675,8 @@ export class Fetch<ResponseType extends any = any> {
    * ```
    */
   runArrayBuffer() {
-    return (this as Fetch<ArrayBuffer>).#runner((res) => res.arrayBuffer());
+    (this as Fetch<ArrayBuffer>).#responseParser = (res) => res.arrayBuffer();
+    return this as Fetch<ArrayBuffer>;
   }
 
   /**
@@ -682,15 +703,7 @@ export class Fetch<ResponseType extends any = any> {
    * type narrowing it down to the generic type T passed in.
    */
   runJSON() {
-    return this.#runner((res) => res.json());
-  }
-
-  /**
-   * Stricter version of `runJSON` method that requires runtime response validation.
-   */
-  runStrictJSON<T = unknown>(validator: Validator<T>) {
-    return (this as Fetch<T>)
-      .validateWith(validator)
-      .#runner((res) => res.json());
+    this.#responseParser = (res) => res.json();
+    return this;
   }
 }
