@@ -1,4 +1,10 @@
-import type { Header, HTTPMethod, ApiResponse, Validator } from "./types";
+import type {
+  Header,
+  HTTPMethod,
+  ApiResponse,
+  Validator,
+  JsonResponse,
+} from "./types";
 import { safe } from "./safe";
 
 /**
@@ -6,7 +12,7 @@ import { safe } from "./safe";
  *
  * This object oriented approach gives users a easy to use chainable interface to build their API calls
  */
-export class Fetch<ResponseType extends any = Response> {
+export class Fetch {
   /* Private Instance variables that are only accessible internally */
 
   /**
@@ -128,7 +134,7 @@ export class Fetch<ResponseType extends any = Response> {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  options(opts: RequestInit): Fetch<ResponseType> {
+  options(opts: RequestInit): Fetch {
     // Using Object.assign to mutate the original object instead of creating a new one.
     // this.#opts = { ...this.#opts, ...opts };
     Object.assign(this.#opts, opts);
@@ -155,7 +161,7 @@ export class Fetch<ResponseType extends any = Response> {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  header(...headers: [Header, ...Header[]]): Fetch<ResponseType> {
+  header(...headers: [Header, ...Header[]]): Fetch {
     this.#headers.push(...headers);
     return this;
   }
@@ -166,7 +172,7 @@ export class Fetch<ResponseType extends any = Response> {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  timeoutAfter(timeoutInMilliseconds: number): Fetch<ResponseType> {
+  timeoutAfter(timeoutInMilliseconds: number): Fetch {
     this.#timeoutInMilliseconds = timeoutInMilliseconds;
     this.#abortController = new AbortController();
     return this;
@@ -223,7 +229,7 @@ export class Fetch<ResponseType extends any = Response> {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  body<T = any>(body: T, optionalContentType?: string): Fetch<ResponseType> {
+  body<T = any>(body: T, optionalContentType?: string): Fetch {
     // Only add in the content-type header if user chooses to set it,
     //
     // Ref: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
@@ -455,12 +461,35 @@ export class Fetch<ResponseType extends any = Response> {
   }
 
   /**
-   * `#runner` method used to reduce duplicated logic of running the API call.
+   * # Warning
+   * This method is generally not used since this returns the raw HTTP Response object.
+   * Library users should use the other run methods that handle value extraction too,
+   * such as `runJSON`, `runFormData` and etc... This method is made available as an
+   * escape hatch for users who do not want value extraction done, so that they can build
+   * extra logic on top of this library by getting the raw Response object back.
    *
+   * Safe version of the `#run` method that **will not throw** or let any errors bubble up,
+   * i.e. no try/catch or .catch method needed to handle the jumping control flow of errors.
+   *
+   * @example <caption>Call API and handle any errors sequentially at the same scope level</caption>
+   * ```javascript
+   * const { res, err } = await oof.useDefault().GET("/api").run();
+   *
+   * if (err) return console.log("API Call failed!");
+   *
+   * console.log("Res:", res); // Type narrowed to be the Response object
+   * ```
+   */
+  run() {
+    // Need to wrap the call to the `this.#run` method in an anonymous arrow function,
+    // so that the `this` binding is preserved when running the method.
+    return safe(() => this.#run());
+  }
+
+  /**
    * ### About
-   * This internal method calls the run method, calls the provided value extractor and
-   * runs the validator type predicate if provided, before formatting the return value
-   * to satisfy the expected `ApiResponse<T>` type.
+   * This private method wraps the raw `#run` method to parse the response, validate the response if
+   * a validator is provided, before formatting the return value to satisfy `ApiResponse<T>`.
    *
    * ### Type Safety (for both Compile time and Run time)
    * The return type of this method is the generic type T, where the data will be casted as type T.
@@ -493,7 +522,10 @@ export class Fetch<ResponseType extends any = Response> {
    * the `ok` value set with the final HTTP response code.
    *
    */
-  #runner(valueExtractor: (res: Response) => Promise<ResponseType>) {
+  #runner<T>(
+    responseParser: (res: Response) => Promise<T>,
+    optionalResponseValidator?: Validator<T>
+  ) {
     return safe(async () => {
       const res = await this.#run();
 
@@ -506,14 +538,14 @@ export class Fetch<ResponseType extends any = Response> {
       // but confuses lib users, where it is probably caused by .json value extraction that
       // returns `any` so the conversion here does not properly take place.
       // Reference: https://github.com/microsoft/TypeScript/issues/47144
-      const data = (await valueExtractor(res)) as ResponseType;
+      const data: T = await responseParser(res);
 
       // Only run validation if a validator is passed in
       // User's validator can throw an error, which will be safely bubbled up to them,
       // if they want to receive a custom error instead of the generic `Error("Validation Failed")`
       if (
-        this.#optionalResponseValidator !== undefined &&
-        !this.#optionalResponseValidator(data)
+        optionalResponseValidator !== undefined &&
+        !optionalResponseValidator(data)
       )
         throw new Error("Validation Failed");
 
@@ -522,40 +554,8 @@ export class Fetch<ResponseType extends any = Response> {
         status: res.status,
         headers: res.headers,
         data,
-      } satisfies ApiResponse<ResponseType>;
+      } satisfies ApiResponse<T>;
     });
-  }
-
-  /**
-   * Optional Response Validator function to run after getting back API response
-   */
-  #optionalResponseValidator?: Validator<ResponseType>;
-
-  /**
-   * Set a Response Validator function and use a concrete type
-   */
-  validateWith<ConcreteType extends ResponseType = ResponseType>(
-    validator: Validator<ConcreteType>
-  ) {
-    this.#optionalResponseValidator = validator;
-
-    // Doing this to cast current Fetch type with a new generic.
-    return this as Fetch<ConcreteType>;
-  }
-
-  /**
-   * Response Parser must be set using on of the run methods,
-   * however since the methods are called dynamically, this is
-   * optional until it is set.
-   */
-  #responseParser: (res: Response) => Promise<ResponseType> = (res) =>
-    Promise.resolve(res as ResponseType);
-
-  /**
-   * Call the API after configuration is all completed
-   */
-  call() {
-    return this.#runner(this.#responseParser);
   }
 
   /**
@@ -573,9 +573,8 @@ export class Fetch<ResponseType extends any = Response> {
    * console.log("Res:", res); // Type narrowed to be be a string
    * ```
    */
-  runText() {
-    (this as Fetch<string>).#responseParser = (res) => res.text();
-    return this as Fetch<string>;
+  runText(optionalValidator?: Validator<string>) {
+    return this.#runner((res) => res.text(), optionalValidator);
   }
 
   /**
@@ -593,9 +592,8 @@ export class Fetch<ResponseType extends any = Response> {
    * console.log("Res:", res); // Type narrowed to be a Blob
    * ```
    */
-  runBlob() {
-    (this as Fetch<Blob>).#responseParser = (res) => res.blob();
-    return this as Fetch<Blob>;
+  runBlob(optionalValidator?: Validator<Blob>) {
+    return this.#runner((res) => res.blob(), optionalValidator);
   }
 
   /**
@@ -613,9 +611,8 @@ export class Fetch<ResponseType extends any = Response> {
    * console.log("Res:", res); // Type narrowed to be form data
    * ```
    */
-  runFormData() {
-    (this as Fetch<FormData>).#responseParser = (res) => res.formData();
-    return this as Fetch<FormData>;
+  runFormData(optionalValidator?: Validator<FormData>) {
+    return this.#runner((res) => res.formData(), optionalValidator);
   }
 
   /**
@@ -633,9 +630,8 @@ export class Fetch<ResponseType extends any = Response> {
    * console.log("Res:", res); // Type narrowed to be an Array Buffer
    * ```
    */
-  runArrayBuffer() {
-    (this as Fetch<ArrayBuffer>).#responseParser = (res) => res.arrayBuffer();
-    return this as Fetch<ArrayBuffer>;
+  runArrayBuffer(optionalValidator?: Validator<ArrayBuffer>) {
+    return this.#runner((res) => res.arrayBuffer(), optionalValidator);
   }
 
   /**
@@ -661,8 +657,7 @@ export class Fetch<ResponseType extends any = Response> {
    * For run time type safety, please pass in a type predicate validator to do response data validation before
    * type narrowing it down to the generic type T passed in.
    */
-  runJSON() {
-    (this as Fetch<any>).#responseParser = (res) => res.json();
-    return this as Fetch<any>;
+  runJSON<T = JsonResponse>(optionalValidator?: Validator<T>) {
+    return this.#runner<T>((res) => res.json(), optionalValidator);
   }
 }
