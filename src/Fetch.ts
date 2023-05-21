@@ -662,7 +662,7 @@ export class Fetch<ResponseType extends any = Response> {
    * type narrowing it down to the generic type T passed in.
    */
   runJSON() {
-    this.#responseParser = (res) => res.json();
-    return this;
+    (this as Fetch<any>).#responseParser = (res) => res.json();
+    return this as Fetch<any>;
   }
 }
