@@ -229,7 +229,10 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  body<T = any>(body: T, optionalContentType?: string): Fetch {
+  body<RequestBodyType = any>(
+    body: RequestBodyType,
+    optionalContentType?: string
+  ): Fetch {
     // Only add in the content-type header if user chooses to set it,
     //
     // Ref: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
@@ -259,8 +262,8 @@ export class Fetch {
    * on what type of data can be passed in.
    *
    * ### What if you have no data to send?
-   * Even though there is no default arguement, you do not have to call the `.data` method with an empty object when
-   * calling a method like `oof.POST` as `fetch` and API services will just treat it as an empty object by default.
+   * Even though there is no default arguement, you do not have to call this method with an empty object when
+   * using a method like `POST` as `fetch` and API services will just treat it as an empty object by default.
    *
    * ### Why does this method exists?
    * Because, the `#run` method needs to accept too many data input types,
@@ -274,6 +277,7 @@ export class Fetch {
    * JS object and set the content-type header to 'application/json', instead
    * of requiring them to explicitly call `.body(JSON.stringify(data), "application/json")`
    * every single time they want to send JSON data to their API servers.
+   * This also allows the library user to specify a type of the data object for type checking.
    *
    * ### Using generics for TS Type Safety
    * ```javascript
@@ -291,10 +295,10 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  bodyJSON<T = any>(data: T): Fetch<ResponseType> {
+  bodyJSON<JsonRequestBodyType = any>(data: JsonRequestBodyType): Fetch {
     // Content-type needs to be set manually even though `fetch` is able to guess most
-    // content-type because once object is stringified, the data will be a string, and
-    // fetch will guess that it is 'text/plain' rather than 'application/json'.
+    // content-type, because once object is stringified, the data will be a string,
+    // and fetch will guess that it is 'text/plain' rather than 'application/json'.
     return this.body(JSON.stringify(data), "application/json");
   }
 
