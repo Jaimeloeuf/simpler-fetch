@@ -1,5 +1,5 @@
-import type { ApiResponse, Validator } from "./types";
-import { safe } from "./safe";
+import type { ApiResponse, Validator } from "../../src/types";
+import { safe } from "../../src/safe";
 
 /**
  * Class used to create an Object Oriented `Fetch` abstraction

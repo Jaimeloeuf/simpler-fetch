@@ -1,5 +1,5 @@
-import type { Header, HTTPMethod } from "./types";
-import { Fetch } from "./Final";
+import type { Header, HTTPMethod } from "../../src/types";
+import { Fetch } from "./Fetch";
 
 /**
  * `RequestBuilder` class uses the builder pattern to build the `Request` Object
