@@ -295,7 +295,7 @@ export class RequestBuilder {
    * Utility method used to unify the creation of `Final` instance
    * to pass in all the config values
    */
-  async #runner<T>(valueExtractor: (res: Response) => Promise<T>) {
+  async #runner<T>(responseParser: (res: Response) => Promise<T>) {
     /**
      * Create the request object before passing it in
      */
@@ -348,9 +348,9 @@ export class RequestBuilder {
 
     return new Fetch(
       request,
+      responseParser,
       this.#abortController,
-      this.#timeoutInMilliseconds,
-      valueExtractor
+      this.#timeoutInMilliseconds
     );
   }
 

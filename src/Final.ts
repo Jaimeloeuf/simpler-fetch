@@ -16,6 +16,10 @@ export class Fetch<ResponseType> {
 
   /**
    */
+  readonly #responseParser: (res: Response) => Promise<ResponseType>;
+
+  /**
+   */
   readonly #abortController?: AbortController;
 
   /**
@@ -35,14 +39,14 @@ export class Fetch<ResponseType> {
    */
   constructor(
     request: Request,
+    responseParser: (res: Response) => Promise<ResponseType>,
     abortController: AbortController | undefined,
-    timeoutInMilliseconds: number | undefined,
-    valueExtractor: (res: Response) => Promise<ResponseType>
+    timeoutInMilliseconds: number | undefined
   ) {
     this.#request = request;
+    this.#responseParser = responseParser;
     this.#abortController = abortController;
     this.#timeoutInMilliseconds = timeoutInMilliseconds;
-    this.#responseParser = valueExtractor;
   }
 
   /**
@@ -66,7 +70,7 @@ export class Fetch<ResponseType> {
    * flow is not enforced / not possible with TS. This is more for documentation purposes for
    * library writers and users who want to learn more about this API.
    */
-  async #fetch(): Promise<Response> | never {
+  #fetch(): Promise<Response> | never {
     // This library does not check if `fetch` is available in the global scope,
     // it assumes it exists, if it does not exists, please load a `fetch` polyfill first!
     return fetch(this.#request);
@@ -162,7 +166,6 @@ export class Fetch<ResponseType> {
     return res;
   }
 
-  #responseParser: (res: Response) => Promise<ResponseType>;
   #optionalResponseValidator?: Validator<ResponseType>;
 
   validateWith(responseValidator: Validator<ResponseType>) {
