@@ -112,7 +112,7 @@ export class Builder {
    * to do so using our library instead of doing some crazy hack,
    * since there is no method for those specific HTTP methods.
    */
-  HTTP = (method: HTTPMethod, path: string) =>
+  HTTP = (method: HTTPMethod, path: string = "") =>
     new Fetch(
       method,
       this.#baseUrl + path,
@@ -133,17 +133,17 @@ export class Builder {
     );
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
-  GET = (path: string = "") => this.HTTP("GET", path);
+  GET = (path?: string) => this.HTTP("GET", path);
 
   /** Construct a new `Fetch` instance to make a `POST` API call */
-  POST = (path: string = "") => this.HTTP("POST", path);
+  POST = (path?: string) => this.HTTP("POST", path);
 
   /** Construct a new `Fetch` instance to make a `PUT` API call */
-  PUT = (path: string = "") => this.HTTP("PUT", path);
+  PUT = (path?: string) => this.HTTP("PUT", path);
 
   /** Construct a new `Fetch` instance to make a `PATCH` API call */
-  PATCH = (path: string = "") => this.HTTP("PATCH", path);
+  PATCH = (path?: string) => this.HTTP("PATCH", path);
 
   /** Construct a new `Fetch` instance to make a `DELETE` API call */
-  DEL = (path: string = "") => this.HTTP("DELETE", path);
+  DEL = (path?: string) => this.HTTP("DELETE", path);
 }
