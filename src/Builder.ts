@@ -105,6 +105,10 @@ export class Builder {
   /**
    * Use this method to explicitly set the flag to use default
    * options when creating the new Fetch class.
+   *
+   * The flag will be automatically reset after creating the
+   * new class so that every single API call need to explicitly
+   * call this method if default options should be used.
    */
   useDefaultOptions() {
     this.#useDefaultOptions = true;
@@ -121,6 +125,10 @@ export class Builder {
   /**
    * Use this method to explicitly set the flag to use default
    * headers when creating the new Fetch class.
+   *
+   * The flag will be automatically reset after creating the
+   * new class so that every single API call need to explicitly
+   * call this method if default headers should be used.
    */
   useDefaultHeaders() {
     this.#useDefaultHeaders = true;
@@ -144,8 +152,8 @@ export class Builder {
    * to do so using our library instead of doing some crazy hack,
    * since there is no method for those specific HTTP methods.
    */
-  HTTP = (method: HTTPMethod, path: string = "") =>
-    new Fetch(
+  HTTP(method: HTTPMethod, path: string = "") {
+    const newFetch = new Fetch(
       method,
       this.#baseUrl + path,
 
@@ -163,6 +171,17 @@ export class Builder {
       this.#useDefaultOptions ? { ...this.#defaultOpts } : {},
       this.#useDefaultHeaders ? [...this.#defaultHeaders] : []
     );
+
+    // Flags need to be reset after every use, since this class is
+    // used in a 'singleton' style where there is a single instance of
+    // this class for every single base Url. If this is not reset then
+    // every subsequent API call using the same base Url will inherit
+    // the same behaviour of using the default options/headers.
+    this.#useDefaultOptions = false;
+    this.#useDefaultHeaders = false;
+
+    return newFetch;
+  }
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
   GET = (path?: string) => this.HTTP("GET", path);
