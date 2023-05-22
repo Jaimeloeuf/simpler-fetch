@@ -96,6 +96,38 @@ export class Builder {
   }
 
   /**
+   * Flag used to determine if default options should be used
+   * for creating the new Fetch class, allowing library users
+   * to explicitly specify when to use default options.
+   */
+  #useDefaultOptions: boolean = false;
+
+  /**
+   * Use this method to explicitly set the flag to use default
+   * options when creating the new Fetch class.
+   */
+  useDefaultOptions() {
+    this.#useDefaultOptions = true;
+    return this;
+  }
+
+  /**
+   * Flag used to determine if default headers should be used
+   * for creating the new Fetch class, allowing library users
+   * to explicitly specify when to use default headers.
+   */
+  #useDefaultHeaders: boolean = false;
+
+  /**
+   * Use this method to explicitly set the flag to use default
+   * headers when creating the new Fetch class.
+   */
+  useDefaultHeaders() {
+    this.#useDefaultHeaders = true;
+    return this;
+  }
+
+  /**
    * tl;dr Do not use this unless you know what you are doing.
    *
    * ### About
@@ -128,8 +160,8 @@ export class Builder {
       //
       // Using spread operator instead of Object.assign to maintain
       // uniformity across both the object and array shallow copy.
-      { ...this.#defaultOpts },
-      [...this.#defaultHeaders]
+      this.#useDefaultOptions ? { ...this.#defaultOpts } : {},
+      this.#useDefaultHeaders ? [...this.#defaultHeaders] : []
     );
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
