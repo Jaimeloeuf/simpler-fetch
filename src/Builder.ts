@@ -125,6 +125,9 @@ export class Builder {
       // A shallow copy will do since the values itself will not be
       // touched by `Fetch`, only the target container, i.e. only
       // the options object and the headers array will be modified.
+      //
+      // Using spread operator instead of Object.assign to maintain
+      // uniformity across both the object and array shallow copy.
       { ...this.#defaultOpts },
       [...this.#defaultHeaders]
     );

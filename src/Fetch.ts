@@ -138,6 +138,7 @@ export class Fetch {
    */
   options(opts: RequestInit): Fetch {
     // Using Object.assign to mutate the original object instead of creating a new one.
+    // Spread syntax is not used since it transpiles to more bytes
     // this.#opts = { ...this.#opts, ...opts };
     Object.assign(this.#opts, opts);
     return this;
