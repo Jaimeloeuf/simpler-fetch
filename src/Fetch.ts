@@ -3,6 +3,7 @@ import type {
   HTTPMethod,
   ApiResponse,
   Validator,
+  JsonTypeAlias,
   JsonResponse,
 } from "./types";
 import { safe } from "./safe";
@@ -62,10 +63,11 @@ export class Fetch {
    * pass it strings that are stringified with JSON.stringify, `body` can be any
    * type as JSON.stringify accepts any type that is serializable.
    *
-   * The JSON.stringify method takes many types of arguments as specified in the reference links below.
-   * Due to the huge variety of argument types and the lack of a standard TypeScript interface/type
-   * describing it, this is explicitly typed as `any`, which means that this type is basically anything
-   * that can be serialized by JSON.stringify and also any child types of `BodyInit | null`
+   * The JSON.stringify method takes many types of arguments as specified in the
+   * reference links below. Due to the huge variety of argument types and the lack
+   * of a standard TypeScript interface/type describing it, this is explicitly
+   * typed as `any`, which means that this type is basically anything that can be
+   * serialized by JSON.stringify and also any child types of `BodyInit | null`.
    *
    * References:
    * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description
@@ -295,7 +297,9 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  bodyJSON<JsonRequestBodyType = any>(data: JsonRequestBodyType): Fetch {
+  bodyJSON<JsonRequestBodyType = JsonTypeAlias>(
+    data: JsonRequestBodyType
+  ): Fetch {
     // Content-type needs to be set manually even though `fetch` is able to guess most
     // content-type, because once object is stringified, the data will be a string,
     // and fetch will guess that it is 'text/plain' rather than 'application/json'.
