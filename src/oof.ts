@@ -16,7 +16,7 @@ export class oof {
    */
   static addBase(identifier: string, url: string) {
     if (oof.#baseUrls.has(identifier))
-      throw new Error(`Identifier (${identifier}) must be unique`);
+      throw new Error(`oof.addBase: Identifier '${identifier}' already set`);
 
     oof.#baseUrls.set(identifier, new Builder(url));
 
@@ -35,7 +35,7 @@ export class oof {
     const builder = oof.#baseUrls.get(identifier);
 
     if (builder === undefined)
-      throw new Error(`Identifier (${identifier}) not found`);
+      throw new Error(`oof.useBase: Identifier '${identifier}' not found`);
 
     return builder;
   }
@@ -53,9 +53,7 @@ export class oof {
    */
   static setDefault(identifier: string) {
     if (!oof.#baseUrls.has(identifier))
-      throw new Error(
-        `Identifier (${identifier}) not found, cannot set as default`
-      );
+      throw new Error(`oof.setDefault: Identifier '${identifier}' not found`);
 
     oof.#defaultIdentifier = identifier;
   }
@@ -65,7 +63,7 @@ export class oof {
    */
   static useDefault() {
     if (oof.#defaultIdentifier === undefined)
-      throw new Error("Cannot 'useDefault' as default identifier not set");
+      throw new Error("oof.useDefault: Default identifier not set");
 
     return oof.useBase(oof.#defaultIdentifier);
   }
