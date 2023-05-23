@@ -43,7 +43,7 @@ export class Fetch {
   /**
    * Instance variable to set the `RequestInit` type options passed to the `fetch` function.
    */
-  readonly #opts: RequestInit;
+  readonly #options: RequestInit;
 
   /**
    * An array of headers to be combined before being used in this instance's API call.
@@ -99,13 +99,13 @@ export class Fetch {
   constructor(
     readonly method: HTTPMethod,
     url: string,
-    defaultOpts: RequestInit,
-    headers: Array<Header>
+    defaultOptions: RequestInit,
+    defaultHeaders: Array<Header>
   ) {
     this.#method = method;
     this.#url = url;
-    this.#opts = defaultOpts;
-    this.#headers = headers;
+    this.#options = defaultOptions;
+    this.#headers = defaultHeaders;
   }
 
   /**
@@ -136,11 +136,11 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  options(opts: RequestInit): Fetch {
+  options(options: RequestInit): Fetch {
     // Using Object.assign to mutate the original object instead of creating a new one.
     // Spread syntax is not used since it transpiles to more bytes
-    // this.#opts = { ...this.#opts, ...opts };
-    Object.assign(this.#opts, opts);
+    // this.#options = { ...this.#options, ...options };
+    Object.assign(this.#options, options);
     return this;
   }
 
@@ -345,7 +345,7 @@ export class Fetch {
       */
 
       // Apply options by spreading it, since the final object is of the same `RequestInit` type
-      ...this.#opts,
+      ...this.#options,
 
       method: this.#method,
 
