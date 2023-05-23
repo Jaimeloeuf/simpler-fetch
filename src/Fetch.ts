@@ -42,9 +42,29 @@ export class Fetch {
   readonly #url: string;
 
   /**
-   * Instance variable to set the `RequestInit` type options passed to the `fetch` function.
+   * Instance variable to hold the default `RequestInit` options object for the specified
+   * base url, which is only used if the library user chooses to use the default options
+   * object using the `useDefaultOptions` method.
    */
-  readonly #options: RequestInit;
+  readonly #defaultOptions: RequestInit;
+
+  /**
+   * Instance variable to set the `RequestInit` type options passed to the `fetch` function.
+   *
+   * This is not `readonly` since a call to `useDefaultOptions` method will cause a new
+   * options object to be created and assigned to this variable.
+   */
+  #options: RequestInit = {};
+
+  /**
+   * Instance variable to hold the default `headers` array for the specified base url,
+   * which is only used if the library user chooses to use the default headers using
+   * the `useDefaultHeaders` method.
+   *
+   * This is not `readonly` since this will be reset to an empty array after the call
+   * to `useDefaultHeaders` method to keep the method indempotent.
+   */
+  #defaultHeaders: Array<Header>;
 
   /**
    * An array of headers to be combined before being used in this instance's API call.
@@ -53,10 +73,9 @@ export class Fetch {
    * is already an array and inside the `#fetch` method it also assumes that it is already
    * an array by default when calling the `map` method on this.
    *
-   * Therefore this is not optional and has to be initialized through the constructor using
-   * default options set on the `Builder` instance.
+   * This is readonly since only the content of this headers array can be changed.
    */
-  readonly #headers: Array<Header>;
+  readonly #headers: Array<Header> = [];
 
   /**
    * The `body` field will be used for the `body` prop of the `fetch` function.
@@ -105,8 +124,70 @@ export class Fetch {
   ) {
     this.#method = method;
     this.#url = url;
-    this.#options = defaultOptions;
-    this.#headers = defaultHeaders;
+    this.#defaultOptions = defaultOptions;
+    this.#defaultHeaders = defaultHeaders;
+  }
+
+  /**
+   * Method to use default `RequestInit` object of the selected base Url for this
+   * specific API call.
+   *
+   * You can override any default options set through this method once off for this
+   * specific API call with the `useOptions` method.
+   *
+   * @returns Returns the current instance to let you chain method calls
+   */
+  useDefaultOptions(): Fetch {
+    // Create new object for `this.#options` by combining the properties
+    // `this.#defaultOptions` is spread first so that the API specific
+    // options can override the default options.
+    this.#options = { ...this.#defaultOptions, ...this.#options };
+
+    // Alternative method using `Object.assign` not used as it transpiles to more bytes.
+    //
+    // Object.assign overwrite properties in target object if source(s) have properties of
+    // the same key. Later sources' properties also overwrite earlier ones.
+    // Since Fetch instance specific options should be able to override default options,
+    // default options has to come first in the list of sources.
+    // Since default options should not be modified, both the sources should be combined
+    // together and have their properties copied into a new empty object, before the new
+    // object is returned, and set as the new `#options` object.
+    // this.#options = Object.assign({}, this.#defaultOptions, this.#options);
+
+    // Delete default options by setting it to {} so that this method is indempotent,
+    // making subsequent spread calls effectively a no-op.
+    //
+    // Howver, this is technically not needed, since the options above are indempotent
+    // in the sense that it will always generate the same options object even after the
+    // first time, as the `#options` object will contain all the keys that were only set
+    // in `#defaultOptions` after the first time.
+    // The only difference is that, by setting it to {}, it will technically be more
+    // efficient since it does not need to do any extra computation, however it will
+    // increase the library size, and the library users are not expected to call this
+    // more than once anyways, so this is not used.
+    // this.#defaultOptions = {};
+
+    return this;
+  }
+
+  /**
+   * Method to use default header(s) of the selected base Url for this specific API call.
+   *
+   * You can override any default headers set through this method once off for this
+   * specific API call with the `useHeader` method.
+   *
+   * @returns Returns the current instance to let you chain method calls
+   */
+  useDefaultHeaders(): Fetch {
+    // Using `unshift` instead of `push`, because headers set first will be overwritten
+    // by headers set afterwards, during the header generation process in `#fetch`.
+    this.#headers.unshift(...this.#defaultHeaders);
+
+    // Deleting default headers by setting it to [] so that this method is indempotent,
+    // making subsequent calls to `unshift` a no-op.
+    this.#defaultHeaders = [];
+
+    return this;
   }
 
   /**
