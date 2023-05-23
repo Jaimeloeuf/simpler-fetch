@@ -1,4 +1,5 @@
 import { Builder } from "./Builder";
+import { oofError } from "./errors";
 
 /**
  * Class used to create an Object Oriented `Fetch` abstraction.
@@ -16,7 +17,7 @@ export class oof {
    */
   static addBase(identifier: string, url: string) {
     if (oof.#baseUrls.has(identifier))
-      throw new Error(`oof.addBase: Identifier '${identifier}' already set`);
+      throw new oofError(`oof.addBase: Identifier '${identifier}' already set`);
 
     oof.#baseUrls.set(identifier, new Builder(url));
 
@@ -35,7 +36,7 @@ export class oof {
     const builder = oof.#baseUrls.get(identifier);
 
     if (builder === undefined)
-      throw new Error(`oof.useBase: Identifier '${identifier}' not found`);
+      throw new oofError(`oof.useBase: Identifier '${identifier}' not found`);
 
     return builder;
   }
@@ -53,7 +54,9 @@ export class oof {
    */
   static setDefault(identifier: string) {
     if (!oof.#baseUrls.has(identifier))
-      throw new Error(`oof.setDefault: Identifier '${identifier}' not found`);
+      throw new oofError(
+        `oof.setDefault: Identifier '${identifier}' not found`
+      );
 
     oof.#defaultIdentifier = identifier;
   }
@@ -63,7 +66,7 @@ export class oof {
    */
   static useDefault() {
     if (oof.#defaultIdentifier === undefined)
-      throw new Error("oof.useDefault: Default identifier not set");
+      throw new oofError("oof.useDefault: Default identifier not set");
 
     return oof.useBase(oof.#defaultIdentifier);
   }
