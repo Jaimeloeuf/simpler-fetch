@@ -136,7 +136,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  options(options: RequestInit): Fetch {
+  useOptions(options: RequestInit): Fetch {
     // Using Object.assign to mutate the original object instead of creating a new one.
     // Spread syntax is not used since it transpiles to more bytes
     // this.#options = { ...this.#options, ...options };
@@ -159,12 +159,12 @@ export class Fetch {
    * of the same type so that you can call this method just once if you have all the headers
    * instead of invoking this method multiple times.
    *
-   * The `headers` function parameter forces the caller to pass in at least one argument
+   * The `useHeader` function parameter forces the caller to pass in at least one argument
    * for this variadic method. See https://stackoverflow.com/a/72286990
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  header(...headers: [Header, ...Header[]]): Fetch {
+  useHeader(...headers: [Header, ...Header[]]): Fetch {
     this.#headers.push(...headers);
     return this;
   }
@@ -246,7 +246,7 @@ export class Fetch {
     // This means that if none is passed in, fetch API's implementation will guess and
     // set the content-type automatically, which is why this method parameter is optional.
     if (optionalContentType)
-      this.header({ "Content-Type": optionalContentType });
+      this.useHeader({ "Content-Type": optionalContentType });
 
     this.#body = body;
     return this;

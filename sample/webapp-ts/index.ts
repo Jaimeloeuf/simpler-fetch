@@ -119,11 +119,11 @@ import { zodToValidator } from "../../dist/index.js";
         .useDefault()
         .GET("/test")
         // Hardcoded header object
-        .header({ someAuthenticationToken: "superSecureTokenString" })
+        .useHeader({ someAuthenticationToken: "superSecureTokenString" })
         // Synchronous function that returns a header object
-        .header(() => ({ anotherAuthenticationToken: "secret" }))
+        .useHeader(() => ({ anotherAuthenticationToken: "secret" }))
         // Asynchronous function that returns a promise that resolves to a header object
-        .header(async () => ({ yetAnotherHeaderValue: "123456789" }))
+        .useHeader(async () => ({ yetAnotherHeaderValue: "123456789" }))
         .runJSON();
 
       console.log("res 6", res, err);
@@ -135,7 +135,7 @@ import { zodToValidator } from "../../dist/index.js";
       const { res, err } = await oof
         .useDefault()
         .GET("/test")
-        .header(async () => {
+        .useHeader(async () => {
           throw new Error("Header Function failed");
         })
         .runJSON();
