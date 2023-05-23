@@ -6,6 +6,7 @@ import type {
   JsonTypeAlias,
   JsonResponse,
 } from "./types";
+import { TimeoutError, ValidationError } from "./errors";
 import { safe } from "./safe";
 
 /**
@@ -450,7 +451,12 @@ export class Fetch {
       )
         // Throw new error with abort reason as message instead of the generic 'DOMException'
         // If reason is somehow empty, default to err.message to prevent throwing an empty error.
-        throw new Error(this.#abortController.signal.reason ?? err.message);
+        //
+        // Use custom named class instead of the generic Error class so
+        // that users can check failure cause with `instanceof` operator.
+        throw new TimeoutError(
+          this.#abortController.signal.reason ?? err.message
+        );
 
       // Throw err to continue if not an abort error as we dont have to override the message
       throw err;
@@ -529,7 +535,6 @@ export class Fetch {
    * even though it is outside of the 2XX range because by default, fetch API's option will have redirect
    * set to "follow", which means it will follow the redirect to the final API end point and only then is
    * the `ok` value set with the final HTTP response code.
-   *
    */
   #runner<T>(
     responseParser: (res: Response) => Promise<T>,
@@ -556,7 +561,9 @@ export class Fetch {
         optionalResponseValidator !== undefined &&
         !optionalResponseValidator(data)
       )
-        throw new Error("Validation Failed");
+        // Use custom named class instead of the generic Error class so
+        // that users can check failure cause with `instanceof` operator.
+        throw new ValidationError("Validation Failed");
 
       return {
         ok: res.ok,

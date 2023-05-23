@@ -3,6 +3,7 @@
  */
 
 export { oof } from "./oof";
+export * from "./errors/index";
 export * from "./utils/index";
 
 // Export type only works with named exports
