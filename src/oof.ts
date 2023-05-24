@@ -94,7 +94,7 @@ export class oof {
    * set a `baseUrl` first. Usually used when you need to make an API call to
    * another domain. E.g. calling a third party API for some integration.
    */
-  static useOnce(fullUrlString: string) {
-    return new Builder(fullUrlString);
-  }
+  static useOnce = (fullUrlString: string) =>
+    // Using arrow function for a smaller build output size
+    new Builder(fullUrlString);
 }
