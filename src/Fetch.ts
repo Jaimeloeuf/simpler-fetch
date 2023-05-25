@@ -429,8 +429,13 @@ export class Fetch {
       // call is made to ensure that it does not expire by the time it reaches
       // the API server.
       //
-      // `await Promise.all` on the array of headers ensure all resolved before
+      // `await Promise.all` on the array of headers ensure all resolves before
       // reducing the array of header objects into a single header object.
+      //
+      // Using `Promise.all` instead of `Promise.allSettled` so that it will
+      // stop running if any of the header generator function fails instead of
+      // waiting for everything to complete since even if the rest resolves
+      // they will be thrown away and not used, so no point awaiting on them.
       headers: (
         await Promise.all(
           this.#headers.map((header) =>
