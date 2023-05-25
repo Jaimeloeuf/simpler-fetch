@@ -97,12 +97,6 @@ export class Fetch {
   /**
    * Low level constructor API that should not be used by library users.
    * This is only used by the `Builder` class.
-   *
-   * ### Important
-   * When passing in the default options and headers, make sure to pass in a new
-   * object and array, as these will be passed in by reference, which means that
-   * the original options object and header array will be mutated when `Fetch`
-   * instance methods mutate the values on the instance itself.
    */
   constructor(
     readonly method: HTTPMethod,

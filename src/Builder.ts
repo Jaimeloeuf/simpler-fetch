@@ -45,7 +45,15 @@ export class Builder {
    *
    * Note that everytime this is called, all the default options are overwritten
    * to use the options passed in as the new default options without merging
-   * with the original default options.
+   * with the original default options. Note that this behavior **CANNOT** be
+   * changed since the `HTTP` method's `Fetch` instantiation relies on this.
+   * This is to ensure that any modifications to the default values will not
+   * affect the already instantiated `Fetch` instances, since the `Fetch`
+   * instances will still hold on to the original container value's reference.
+   * This prevent certain security risks such as dynamically changing the
+   * `credentials` property to include it even when the original default option
+   * is to omit it.
+   * See commit f947ec0b590286b45dfccfc6229dba3550411c6a
    *
    * @returns Returns the current instance to let you chain method calls
    */
@@ -83,7 +91,14 @@ export class Builder {
    *
    * Note that everytime this is called, the default headers is overwritten
    * to use the headers passed in as the new default headers without merging
-   * with the original default headers.
+   * with the original default headers. Note that this behavior **CANNOT** be
+   * changed since the `HTTP` method's `Fetch` instantiation relies on this.
+   * This is to ensure that any modifications to the default values will not
+   * affect the already instantiated `Fetch` instances, since the `Fetch`
+   * instances will still hold on to the original container value's reference.
+   * This prevent certain security risks such as dynamically changing the
+   * certain sensitive header values.
+   * See commit f947ec0b590286b45dfccfc6229dba3550411c6a
    *
    * The `headers` function parameter forces the caller to pass in at least one
    * argument for this variadic method. See https://stackoverflow.com/a/72286990
