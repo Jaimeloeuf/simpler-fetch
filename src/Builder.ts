@@ -115,19 +115,27 @@ export class Builder {
       method,
       this.#baseUrl + path,
 
-      // Use spread operator to create shallow copies, so that the default
-      // options and headers value in this builder instance will not be modified
-      // when the `Fetch` instance modifies the values by adding more headers or
-      // merging in options.
+      // Pass default options object and default headers array as references
+      // to the new Fetch instance, so that library users can use the Fetch
+      // methods `useDefaultOptions` and `useDefaultHeaders` to update the
+      // options object or headers array to use the default values.
       //
-      // A shallow copy will do since the values itself will not be touched by
-      // `Fetch`, only the target container, i.e. only the options object and
-      // the headers array will be modified.
+      // Passing as reference is safe since these containers and the inner
+      // content will not be mutated by the Fetch instance.
       //
-      // Using spread operator instead of Object.assign to maintain uniformity
-      // across both the object and array shallow copy.
-      { ...this.#defaultOpts },
-      [...this.#defaultHeaders]
+      // Even if the default values are mutated before the API call is ran and
+      // finalized, it is still fine, since all modification to the default
+      // values through the `setDefaultOptions` and `setDefaultHeaders` methods
+      // replaces the entire object/array, meaning that the Fetch instance will
+      // still hold the reference to the original container value and not be
+      // affected by the change. This the reason why those methods cannot be
+      // modified, they must replace the original container value instead of
+      // extending/merging them which will cause default values in the already
+      // created Fetch instance to be modified dynamically, potentially causing
+      // bugs that might have security risks, e.g. modifying the credentials
+      // property on the options object dynamically.
+      this.#defaultOpts,
+      this.#defaultHeaders
     );
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
