@@ -6,7 +6,7 @@ import type {
   JsonTypeAlias,
   JsonResponse,
 } from "./types";
-import { TimeoutError, ValidationError } from "./errors";
+import { TimeoutError, HeaderError, ValidationError } from "./errors";
 import { safe } from "./safe";
 
 /**
@@ -436,12 +436,18 @@ export class Fetch {
       // stop running if any of the header generator function fails instead of
       // waiting for everything to complete since even if the rest resolves
       // they will be thrown away and not used, so no point awaiting on them.
+      //
+      // Any errors thrown here will be converted into a `HeaderError` instance
+      // and get bubbled up to the library user through the `safe` function.
       headers: (
         await Promise.all(
           this.#headers.map((header) =>
             typeof header === "function" ? header() : header
           )
-        )
+        ).catch((err) => {
+          // Wrap with HeaderError, see docs on `HeaderError` class on purpose.
+          throw new HeaderError(err);
+        })
       ).reduce((obj, item) => ({ ...obj, ...item }), {}),
 
       // Because fetch's body property accepts many different types, instead
