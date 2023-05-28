@@ -1,40 +1,41 @@
 import { oof } from "simpler-fetch";
 import { baseIdentifier } from "./0 Base Identifiers.js";
-import { Print } from "../utils.js";
+import { printGroup } from "../utils.js";
 
-/**
- * All sample API calls are nested in block scopes to reuse variable names
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
- */
 export async function basics() {
-  // API call with the default base Url
-  {
-    const { res, err } = await oof.useDefault().GET("/test").runJSON();
+  await printGroup(
+    "API call with the default base Url",
 
-    Print.group("API call with the default base Url", res, err);
-  }
+    async () => {
+      const { res, err } = await oof.useDefault().GET("/test").runJSON();
 
-  // API call with a non default base Url
-  {
-    const { res, err } = await oof
-      .useBase(baseIdentifier.v2)
-      .GET("/test")
-      .runJSON();
+      console.log(res, err);
+    }
+  );
 
-    Print.group("API call with a non default base Url", res, err);
-  }
+  await printGroup(
+    "API call with a non default base Url",
 
-  // Make a one off API call to an external API service with a full URL path without using any base Urls
-  {
-    const { res, err } = await oof
-      .useOnce("https://jsonplaceholder.typicode.com/todos/1")
-      .GET()
-      .runJSON();
+    async () => {
+      const { res, err } = await oof
+        .useBase(baseIdentifier.v2)
+        .GET("/test")
+        .runJSON();
 
-    Print.group(
-      "One off call to an external API whose base URL is not saved",
-      res,
-      err
-    );
-  }
+      console.log(res, err);
+    }
+  );
+
+  await printGroup(
+    "One off call to an external API whose base URL is not saved",
+
+    async () => {
+      const { res, err } = await oof
+        .useOnce("https://jsonplaceholder.typicode.com/todos/1")
+        .GET()
+        .runJSON();
+
+      console.log(res, err);
+    }
+  );
 }
