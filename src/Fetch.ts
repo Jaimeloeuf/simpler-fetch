@@ -6,7 +6,11 @@ import type {
   JsonTypeAlias,
   JsonResponse,
 } from "./types";
-import { TimeoutError, HeaderError, ValidationError } from "./errors";
+import {
+  TimeoutException,
+  HeaderException,
+  ValidationException,
+} from "./errors";
 import { safe } from "./safe";
 
 /**
@@ -387,8 +391,8 @@ export class Fetch {
    * the timeout logic.
    *
    * ### Method 'safety'
-   * This is the underlying raw `fetch` function call that might throw an error
-   * when something goes wrong.
+   * This is the underlying raw `fetch` function call that might throw an
+   * exception when something goes wrong.
    *
    * ### Return type
    * The return type is unioned with `never` because this function can throw, ie
@@ -437,16 +441,16 @@ export class Fetch {
       // waiting for everything to complete since even if the rest resolves
       // they will be thrown away and not used, so no point awaiting on them.
       //
-      // Any errors thrown here will be converted into a `HeaderError` instance
-      // and get bubbled up to the library user through the `safe` function.
+      // Any errors thrown here will be converted into `HeaderException` and get
+      // bubbled up to the library user through the `safe` function wrapper.
       headers: (
         await Promise.all(
           this.#headers.map((header) =>
             typeof header === "function" ? header() : header
           )
         ).catch((err) => {
-          // Wrap with HeaderError, see docs on `HeaderError` class on purpose.
-          throw new HeaderError(err);
+          // Wrap with HeaderException, see reasoning in `HeaderException` docs.
+          throw new HeaderException(err);
         })
       ).reduce((obj, item) => ({ ...obj, ...item }), {}),
 
@@ -471,8 +475,8 @@ export class Fetch {
    * timeout logic.
    *
    * ### Method 'safety'
-   * This is calls the `#fetch` method which might throw an error when something
-   * goes wrong, and this also throws an error if the request timed out. So any
+   * This calls `#fetch` which might throw an exception when something goes
+   * wrong, and this also throws an exception if the request timed out. So any
    * use of this method should be wrapped with the `safe` function.
    *
    * ### Return type
@@ -503,13 +507,13 @@ export class Fetch {
       // an optional chaining operator is used instead, so in the event where it
       // is somehow undefined/null, this will not error out.
       //
-      // If `this.#fetch` method call throws an Error that is not caused by this
-      // timeout, for e.g. an error caused by DNS failure, the `clearTimeout`
-      // call will be skipped since the custom catch block re-throws any error
-      // it gets. That means that this abort method will still be called even if
-      // the API call has already errored out. However this is fine since
-      // calling abort after the API call completes will just be ignored and
-      // will not cause any new errors to be thrown.
+      // If `this.#fetch` method call throws an exception that is not caused by
+      // this timeout, for e.g. an exception caused by DNS failure, the call to
+      // `clearTimeout` will be skipped since the catch block re-throws any
+      // exception it gets. That means that this abort method will still be
+      // called even if the API call has already errored out. However this is
+      // fine since calling abort after the API call completes will just be
+      // ignored and will not throw a new error.
       () =>
         this.#abortController?.abort(
           `${this.#timeoutInMilliseconds}ms time out exceeded`
@@ -519,8 +523,8 @@ export class Fetch {
     );
 
     const res = await this.#fetch().catch((err) => {
-      // If the error is caused by the abort signal, throw a new custom error,
-      // Else, re-throw original error to let method caller handle it.
+      // If the exception is caused by the abort signal, throw new exception,
+      // Else, re-throw original exception to let method caller handle it.
       if (
         err instanceof DOMException &&
         err.name === "AbortError" &&
@@ -534,13 +538,13 @@ export class Fetch {
         // the abortController's type with this control flow conditional.
         this.#abortController?.signal.aborted
       )
-        // Throw new error with abort reason as message instead of the generic
-        // 'DOMException'. If abort reason is somehow empty, default to
-        // `err.message` to prevent throwing an empty error.
+        // Throw new exception with abort reason as message instead of the
+        // generic 'DOMException'. If abort reason is somehow empty, default to
+        // `err.message` to prevent throwing an empty exception.
         //
         // Use custom named class instead of the generic Error class so that
         // users can check failure cause with `instanceof` operator.
-        throw new TimeoutError(
+        throw new TimeoutException(
           this.#abortController.signal.reason ?? err.message
         );
 
@@ -556,7 +560,7 @@ export class Fetch {
     // it gets. That means that the timeout callback will still call the abort
     // method even if the API call has already errored out. However that is fine
     // since calling abort after the API call completes will just be ignored and
-    // will not cause any new errors.
+    // will not cause a new error.
     clearTimeout(timeoutID);
 
     // Return response from `#fetch` after completing timeout wrapper logic.
@@ -572,11 +576,11 @@ export class Fetch {
    * library to do response parsing for them, so that they can build extra logic
    * on top of this library by getting the raw Response object back.
    *
-   * This is `safe`, i.e. this method **will not throw** or let errors bubble up
-   * so no try/catch wrapper block or .catch method is needed to handle the
-   * jumping control flow of errors.
+   * This is `safe`, i.e. this method **will not throw** or let exceptions
+   * bubble up so no try/catch wrapper block or .catch method is needed to
+   * handle the jumping control flow of exceptions.
    *
-   * @example Call API and handle any errors sequentially in the same scope
+   * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
    * const { res, err } = await oof.useDefault().GET("/api").run();
    *
@@ -612,7 +616,7 @@ export class Fetch {
    * 2. Validator passed in, and validation passed
    *     - Data will be ***type narrowed*** as type `T`
    * 3. Validator passed in, validation failed
-   *     - Returns an **Error**
+   *     - Returns an **Exception**
    *
    * ### Return type
    * Return type will always be `ApiResponse<T>` where T is the expected type of
@@ -652,15 +656,15 @@ export class Fetch {
       const data: T = await responseParser(res);
 
       // Only run validation if a validator is passed in
-      // User's validator can throw an error, which will be safely bubbled up to
-      // them if they want to receive a custom error instead.
+      // User's validator can throw an exception, which will be safely bubbled
+      // up to them if they want to receive a custom exception instead.
       if (
         optionalResponseValidator !== undefined &&
         !optionalResponseValidator(data)
       )
         // Use custom named class instead of the generic Error class so
         // that users can check failure cause with `instanceof` operator.
-        throw new ValidationError("Validation Failed");
+        throw new ValidationException("Validation Failed");
 
       return {
         ok: res.ok,
@@ -674,11 +678,11 @@ export class Fetch {
   /**
    * Call API after configuring and get back response parsed as a **string**.
    *
-   * This is `safe`, i.e. this method **will not throw** or let errors bubble up
-   * so no try/catch wrapper block or .catch method is needed to handle the
-   * jumping control flow of errors.
+   * This is `safe`, i.e. this method **will not throw** or let exceptions
+   * bubble up so no try/catch wrapper block or .catch method is needed to
+   * handle the jumping control flow of exceptions.
    *
-   * @example Call API and handle any errors sequentially in the same scope
+   * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
    * const { res, err } = await oof.useDefault().GET("/api").runText();
    *
@@ -694,11 +698,11 @@ export class Fetch {
   /**
    * Call API after configuring and get back response parsed as a **Blob**.
    *
-   * This is `safe`, i.e. this method **will not throw** or let errors bubble up
-   * so no try/catch wrapper block or .catch method is needed to handle the
-   * jumping control flow of errors.
+   * This is `safe`, i.e. this method **will not throw** or let exceptions
+   * bubble up so no try/catch wrapper block or .catch method is needed to
+   * handle the jumping control flow of exceptions.
    *
-   * @example Call API and handle any errors sequentially in the same scope
+   * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
    * const { res, err } = await oof.useDefault().GET("/api").runBlob();
    *
@@ -714,11 +718,11 @@ export class Fetch {
   /**
    * Call API after configuring and get back response parsed as **FormData**.
    *
-   * This is `safe`, i.e. this method **will not throw** or let errors bubble up
-   * so no try/catch wrapper block or .catch method is needed to handle the
-   * jumping control flow of errors.
+   * This is `safe`, i.e. this method **will not throw** or let exceptions
+   * bubble up so no try/catch wrapper block or .catch method is needed to
+   * handle the jumping control flow of exceptions.
    *
-   * @example Call API and handle any errors sequentially in the same scope
+   * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
    * const { res, err } = await oof.useDefault().GET("/api").runFormData();
    *
@@ -734,11 +738,11 @@ export class Fetch {
   /**
    * Call API after configuring and get back response parsed as **ArrayBuffer**.
    *
-   * This is `safe`, i.e. this method **will not throw** or let errors bubble up
-   * so no try/catch wrapper block or .catch method is needed to handle the
-   * jumping control flow of errors.
+   * This is `safe`, i.e. this method **will not throw** or let exceptions
+   * bubble up so no try/catch wrapper block or .catch method is needed to
+   * handle the jumping control flow of exceptions.
    *
-   * @example Call API and handle any errors sequentially in the same scope
+   * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
    * const { res, err } = await oof.useDefault().GET("/api").runArrayBuffer();
    *
@@ -754,11 +758,11 @@ export class Fetch {
   /**
    * Call API after configuring and get back response parsed as **JSON**.
    *
-   * This is `safe`, i.e. this method **will not throw** or let errors bubble up
-   * so no try/catch wrapper block or .catch method is needed to handle the
-   * jumping control flow of errors.
+   * This is `safe`, i.e. this method **will not throw** or let exceptions
+   * bubble up so no try/catch wrapper block or .catch method is needed to
+   * handle the jumping control flow of exceptions.
    *
-   * @example Call API and handle any errors sequentially in the same scope
+   * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
    * const { res, err } = await oof.useDefault().GET("/api").runJSON<MyResponseObjectType>();
    *

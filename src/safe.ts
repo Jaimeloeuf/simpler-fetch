@@ -1,17 +1,17 @@
-import type { RequestError } from "./types";
+import type { RequestException } from "./types";
 
 /**
- * @param fn Wraps any function to prevent errors from bubbling up
- * @returns Returns either the result of the function call or an error if any is
- * thrown, encapsulating both in an object that can be destructured.
+ * @param fn Wraps any function to prevent exceptions from bubbling up
+ * @returns Returns either the result of the function call or an exception if
+ * any is thrown, encapsulating both in an object that can be destructured.
  *
  * ### About
  * Function wrapper to ensure that any of the `run` methods will not throw /
- * bubble up any errors to library users. Instead all values and errors will be
- * encapsulated into a monadic like structure for user to destructure out.
- * This takes inspiration from how Go-lang does error handling, where they can
- * deal with errors sequentially, without having to deal with jumping control
- * flows with try/catch blocks.
+ * bubble up any exceptions to library users. Instead all values and exceptions
+ * will be encapsulated into a monadic like structure for user to destructure.
+ * This takes inspiration from how Go-lang does error handling, where they deal
+ * with errors as any other regular returned value sequentially, without having
+ * to deal with jumping control flows with try/catch blocks.
  *
  * Go-lang error handling reference: https://go.dev/blog/error-handling-and-go
  *
@@ -49,8 +49,8 @@ import type { RequestError } from "./types";
  * that are undefined. This is unnecessary because in JS, any prop that isn't
  * defined on an object will have 'undefined' as its value when you try to
  * access it by destructuring it out. Therefore the `ts-ignore` flag is used to
- * ignore the error of missing 'undefined' props to reduce library size while
- * not affecting its usage.
+ * ignore the type error of missing 'undefined' props to reduce library size
+ * while not affecting its usage.
  *
  * Implementation without using the `ts-ignore` flag
  * ```typescript
@@ -75,7 +75,7 @@ import type { RequestError } from "./types";
  *
  * Because the inferred type will be a union type of `{res} | {err}`, which
  * means that if the user attempts to write `{ res, err }` to destructure out
- * the values, it will result in an error, because TS thinks that the return
+ * the values, it will result in a type error, because TS thinks that the return
  * type will either be `{res}` or `{err}` only without letting the other
  * counterpart be destructured to undefined unless explicitly annotated.
  *
@@ -106,7 +106,7 @@ import type { RequestError } from "./types";
 export const safe = <T>(
   fn: () => Promise<T>
 ): Promise<
-  { res: T; err: undefined } | { res: undefined; err: RequestError }
+  { res: T; err: undefined } | { res: undefined; err: RequestException }
 > =>
   // @ts-ignore See the JSDoc on why this is used
   fn()

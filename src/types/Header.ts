@@ -42,7 +42,7 @@ export type HeaderValue = Exclude<HeadersInit, Headers>;
  * errors because spreading `undefined` into an object will just do nothing
  * `{ something: true, ...undefined }` will just be `{ something: true }`
  *
- * If function throws, the API call will be cancelled and the error will be
+ * If function throws, the API call will be cancelled and the exception will be
  * caught by the `safe` function wrapper before they are bubbled up and returned
  * to the library user.
  */
