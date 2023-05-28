@@ -40,7 +40,9 @@ import type {
  * https://developer.mozilla.org/en-US/docs/Web/API/fetch#exceptions
  */
 export type RequestException =
-  // AbortError caused by custom timeouts
+  // AbortError on timeout will throw a DOMException error, however there is a
+  // possibility that the error can be of DOMException type while not being an
+  // 'AbortError', which is why this exception type is still included.
   | DOMException
 
   // If the network / API call itself fails
