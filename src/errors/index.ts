@@ -1,8 +1,5 @@
 /**
- * Barrel file for all the errors / exceptions.
+ * Barrel file for all the errors.
  */
 
 export * from "./oofError";
-export * from "./TimeoutException";
-export * from "./HeaderException";
-export * from "./ValidationException";

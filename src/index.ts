@@ -4,6 +4,7 @@
 
 export { oof } from "./oof";
 export * from "./errors/index";
+export * from "./exceptions/index";
 export * from "./utils/index";
 
 // Use type modifier to ensure only types are exported. This only works with

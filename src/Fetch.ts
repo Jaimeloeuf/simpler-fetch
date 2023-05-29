@@ -10,7 +10,7 @@ import {
   TimeoutException,
   HeaderException,
   ValidationException,
-} from "./errors";
+} from "./exceptions";
 import { safe } from "./safe";
 
 /**
