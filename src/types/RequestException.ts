@@ -2,7 +2,7 @@ import type {
   TimeoutException,
   HeaderException,
   ValidationException,
-} from "../errors";
+} from "../exceptions";
 
 /**
  * Union type for all 'simpler-fetch' defined exceptions that could be
