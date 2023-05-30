@@ -27,7 +27,7 @@
  * ```typescript
  * class MyCustomError extends Error {}
  *
- * const { res, err } = await oof
+ * const { res, err } = await sf
  *     .useOnce("https://example.com/test")
  *     .GET()
  *     .useHeader(async () => { throw new MyCustomError("some failure"); })

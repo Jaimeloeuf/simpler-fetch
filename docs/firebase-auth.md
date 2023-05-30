@@ -5,7 +5,7 @@ Using firebase authentication with this library is easy as it is easy to use asy
 ```javascript
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { oof } from "simpler-fetch";
+import { sf } from "simpler-fetch";
 
 // Sample firebaseConfig used, find yours in your firebase project settings
 const firebaseApp = initializeApp({
@@ -33,7 +33,7 @@ oof.setBaseURL("https://example.com");
 
 // The function that will actually get the auth header and make the API call
 async function API_call() {
-  const { res, err } = await oof
+  const { res, err } = await sf
     .GET("/some/end/point/that/requires/authentication")
     .header(getAuthHeader) // See section below on passing this in
     .runJSON();

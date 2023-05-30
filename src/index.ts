@@ -2,7 +2,7 @@
  * Barrel file to export everything a library user can access.
  */
 
-export { oof } from "./oof";
+export { sf } from "./sf";
 export * from "./errors/index";
 export * from "./exceptions/index";
 export * from "./utils/index";

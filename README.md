@@ -40,25 +40,25 @@ npm i https://github.com/Enkel-Digital/simpler-fetch/
 
 
 ## Using the library
-This library exports `oof`, which stands for Object Oriented Fetch. This object oriented builder pattern approach gives users a familiar chainable interface to build their API calls with chainable methods to configure API options for `fetch` before every API call.
+This library exports `sf` (simpler-fetch), which lets library users use a object oriented builder pattern approach to build their API calls with chainable methods to configure API options for `fetch` before every API call.
 
 This library exports everything as [named exports](https://listed.to/@JJ/37419/named-exports-are-better-than-default-ones-mostly).
 
-See the [sample project provided](./sample/) for a full example on using `oof` and install it to play around with it. Below are some simpler examples to get you started quickly.
+See the [sample project provided](./sample/) for a full example on using `sf` and install it to play around with it. Below are some simpler examples to get you started quickly.
 
 ### Quickstart
 ```typescript
 // Import the library as a npm dependency
-import { oof } from "simpler-fetch";
+import { sf } from "simpler-fetch";
 
 // Alternatively you can import this library directly from a CDN link
 // You can use any provider, however jsDelivr is shown here as it can be used in China and it is backed by multiple CDNs
 // For CDN use, PEG your code to a specific version to ensure it does not break between upgrades, e.g.
-// import { oof } from "https://cdn.jsdelivr.net/npm/simpler-fetch@9.0.0/dist/index.js";
+// import { sf } from "https://cdn.jsdelivr.net/npm/simpler-fetch@9.0.0/dist/index.js";
 
 // Basic GET example
 function getExample() {
-    const { res, err } = await oof
+    const { res, err } = await sf
         // Make a one off API call to this URL without any base Urls
         .useOnce("https://jsonplaceholder.typicode.com/todos/1")
         .GET()
@@ -69,7 +69,7 @@ function getExample() {
 
 // POST request example
 function postExample() {
-    const { res, err } = await oof
+    const { res, err } = await sf
         // Make a one off API call to this URL without any base Urls
         .useOnce("https://jsonplaceholder.typicode.com/posts")
         .POST()
@@ -83,13 +83,13 @@ function postExample() {
 
 ### Basic POST Example
 ```typescript
-import { oof } from "simpler-fetch";
+import { sf } from "simpler-fetch";
 
 // Add a base Url and set it to be the default base Url.
-oof.addBase("default", "https://deployed-api.com").setDefault("default");
+sf.addBase("default", "https://deployed-api.com").setDefault("default");
 
 // Make a POST request and use a bunch of different ways to generate header values
-const { res, err } = await oof
+const { res, err } = await sf
     // Use the default base Url
     .useDefault()
     .POST("/test")
@@ -136,7 +136,7 @@ This library does not have as many advanced features as libraries like `Axios` (
 - This library does error handling better.
     - This is subjective but take a look at it yourself.
     - All the `run` methods do not throw any errors / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
-        - Read more about how [this library views error handling](./docs/oof%20error%20handling.md)
+        - Read more about how [this library views error handling](./docs/sf%20error%20handling.md)
 - This library is extremely small compared to other popular HTTP clients like `Axios` and `superagent`, here is a comparison of the minified library after using brotli compression
     1. 1.2kb - `simpler-fetch`
     1. 14.3kb - [`axios v1.4.0`](https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js) is XYZ times larger than `simpler-fetch`
@@ -178,18 +178,18 @@ These are some similar projects that are all simple wrappers/abstractions on top
 ## Technical Details
 Most of the detailed technical explanations are all written in the [source code](./src/index.ts) itself, either as generic comments or within JSDocs so do explore that for more details. This section just documents some details to understand why certain technical decisions were made that cannot be found in the source code.
 
-1. `oof` does error handling alot differently compared to other HTTP client libraries
-    - [See this to learn more](./docs/oof%20error%20handling.md)
+1. `sf` does error handling alot differently compared to other HTTP client libraries
+    - [See this to learn more](./docs/Exceptions%20handling.md)
 1. POST, PUT and PATCH HTTP methods are all supported, see this link on the difference
     - <https://en.wikipedia.org/wiki/PATCH_(HTTP)#:~:text=The%20main%20difference%20between%20the,instructions%20to%20modify%20the%20resource.>
-1. This library implements the builder pattern with 3 levels of indirection (`oof`, `Builder` and `Fetch` classes)
+1. This library implements the builder pattern with 3 levels of indirection (`sf`, `Builder` and `Fetch` classes)
     - Why 3? Why cant we use less classes for a smaller library?
         - Yes, the library can be smaller. But with this setup, the DX is improved as it forces you to use the method chaining in a specific order / sequence that makes the more sense.
         - For example
             1. Users can only set the JSON body after you set the base Url and path.
             1. Users can only set API call specific headers after you set things like HTTP methods.
     - The flow of method chaining configuration
-        1. `oof` class
+        1. `sf` class
             - At the root layer, you can either
                 1. Configure the base Urls and default base Url.
                 1. Select what base Url you would like to use.

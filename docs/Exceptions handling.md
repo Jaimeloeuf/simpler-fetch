@@ -1,7 +1,7 @@
 # Exceptions handling
 Exceptions handling in libraries like `axios v0.27.2` and `superagent v8.0.0` means writing boilerplate code yourself to catch any exceptions that bubbles up / get thrown. This makes their method calls 'unsafe' in the sense that you either spend alot of time writing boilerplate code over and over again yourself or let the exception bubble up somewhere else in the control flow which could make things much harder to debug and break your applications in unexpected ways.
 
-This article only applies to exceptions, and errors, specifically `oofError` can still be thrown. See [Errors vs Exceptions](../../docs/Errors%20vs%20Exceptions.md) for more details on the differences.
+This article only applies to exceptions, and errors, specifically `sfError` can still be thrown. See [Errors vs Exceptions](./Errors%20vs%20Exceptions.md) for more details on the differences.
 
 
 ## Motivation

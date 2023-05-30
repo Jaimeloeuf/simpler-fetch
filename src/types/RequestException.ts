@@ -24,7 +24,7 @@ import type {
  * ```
  *
  * ## Errors are not included
- * Error types are not part of this union, specifically `oofError`. `oofError`
+ * Error types are not part of this union, specifically `sfError`. `sfError`
  * will be **thrown** and not returned when the library is not correctly
  * configured / used.
  *

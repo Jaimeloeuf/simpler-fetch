@@ -3,7 +3,7 @@ import type { Header, HTTPMethod } from "./types";
 
 /**
  * Class used to implement the Builder pattern for creating `Fetch` instances.
- * This class should only be used internally by `oof` and should not be exposed
+ * This class should only be used internally by `sf` and should not be exposed
  * to library users since they should not be using this to make API calls.
  */
 export class Builder {

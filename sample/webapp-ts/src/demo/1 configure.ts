@@ -1,15 +1,15 @@
-import { oof } from "simpler-fetch";
+import { sf } from "simpler-fetch";
 import { baseIdentifier } from "./0 Base Identifiers.js";
 
 // Set Base URLs of your API services.
 // Leave out the trailing '/' if you plan to use a starting '/' for every API call.
 //
 // Alternatively, if you would like to have your URL injected from a .env file, e.g. using VITE
-// oof.addBase("identifier", import.meta.env.VITE_API_URL);
+// sf.addBase("identifier", import.meta.env.VITE_API_URL);
 //
 // Alternatively, if you would like to use different base URLs for different build modes,
 // Base URL can be set like this if using a bundler that injects NODE_ENV in
-// oof.addBase(
+// sf.addBase(
 //   "identifier",
 //   process.env.NODE_ENV === "production"
 //     ? "https://deployed-api.com"
@@ -18,14 +18,13 @@ import { baseIdentifier } from "./0 Base Identifiers.js";
 //
 // Alternatively, if you would like to use different base URLs for different build modes,
 // Base URL can be set like this if using a bundler that sets the `import.meta` attributes
-// oof.addBase(
+// sf.addBase(
 //   "identifier",
 //   import.meta.env.MODE === "development"
 //     ? "http://localhost:3000"
 //     : "https://api.example.com"
 // );
-oof
-  .addBase(baseIdentifier.v1, "http://localhost:3000/v1")
+sf.addBase(baseIdentifier.v1, "http://localhost:3000/v1")
 
   // Different base Urls can be useful for API service with different versions
   .addBase(baseIdentifier.v2, "http://localhost:3000/v2")

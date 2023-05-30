@@ -2,7 +2,7 @@
 Zod can be used to validate what the API service responds with. This library exports a utility method to make it easier for you to use Zod parsers for Response validation.
 
 ```typescript
-import { oof, zodToValidator } from "simpler-fetch";
+import { sf, zodToValidator } from "simpler-fetch";
 import { z } from "zod";
 
 async function callAPI() {
@@ -26,7 +26,7 @@ async function callAPI() {
   // Convert a zod parser into a validator for the response data
   const validator = zodToValidator(zodParser);
 
-  const { res, err } = await oof
+  const { res, err } = await sf
     .useOnce("https://jsonplaceholder.typicode.com/todos/1")
     .GET()
     .runJSON<Todo>(validator);

@@ -34,12 +34,11 @@ import type { RequestException } from "./types";
  * object returned will have both properties `{ res, err }` defined even if one
  * of the values is `undefined`. The problem with the inferred return type is
  * that TS library users cannot write code that allows them to destructure both
- * values out first like `const { res, err } = await oof.GET("/api").run()`,
- * which is kind of the main style that this library encourages users to use
- * because TS will complain that the user is trying to destructure a property
- * that does not exist on the object. Even though the value does not exist as
- * what TS suggests, accessing an unknown property on an object produces the
- * value `undefined` anyways.
+ * values out first like `const { res, err } = ... API call ... `, which is kind
+ * of the main style that this library encourages users to use because TS will
+ * complain that the user is trying to destructure a property that does not
+ * exist on the object. Even though the value does not exist as TS suggests,
+ * accessing an unknown property on an object produces `undefined` anyways.
  *
  *
  * ### Why is `@ts-ignore` used?
