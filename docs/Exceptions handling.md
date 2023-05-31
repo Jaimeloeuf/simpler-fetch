@@ -5,7 +5,7 @@ Exceptions handling in other libraries like `axios v1.4.0` and `superagent v8.0.
 
 This doc showcases how `simpler-fetch` handles exceptions differently from these other libraries.
 
-**NOTE** This article only applies to exceptions, and errors, specifically `sfError` can still be thrown. See [Errors vs Exceptions](./Errors%20vs%20Exceptions.md) for more details on the differences.
+**NOTE** This article only applies to exceptions, and errors, specifically `sfError` can still be thrown. See [Errors vs Exceptions](./Errors%20vs%20Exceptions.md) for more details on the differences. `sfError` is supposed to be thrown to bring visibility to the error as it is deemed unrecoverable during run time as it is most likely a library user configuration / setup issue.
 
 
 ## Motivation
