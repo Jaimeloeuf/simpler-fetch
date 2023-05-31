@@ -1,5 +1,5 @@
 # Errors vs Exceptions
-30/05/2023
+Updated on **31/05/2023** for **simpler-fetch@v10.0.0**
 
 This library handles errors and exceptions differently, before that is explored, this document explores the differences between errors and exceptions for context.
 

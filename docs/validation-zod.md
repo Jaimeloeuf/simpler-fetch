@@ -1,4 +1,6 @@
 # Response validation with Zod
+Updated on **31/05/2023** for **simpler-fetch@v10.0.0**
+
 Zod can be used to validate what the API service responds with. This library exports a utility method to make it easier for you to use Zod parsers for Response validation.
 
 ```typescript
