@@ -1,25 +1,68 @@
-import { Fetch } from "./Fetch";
-import type { Header, HTTPMethod } from "./types";
+import { Fetch } from "../../src/Fetch";
+import type { Header, HTTPMethod } from "../../src/types";
 
 /**
  * Class used to implement the Builder pattern for creating `Fetch` instances.
  * This class should only be used internally by `sf` and should not be exposed
  * to library users since they should not be using this to make API calls.
  */
-export class Builder {
-  constructor(baseUrl: string) {
-    this.#baseUrl = baseUrl;
-  }
+export class SimpleBuilder {
+  constructor(
+    /**
+     * This is the base URL used for all API calls made through this instance.
+     *
+     * This is a readonly property as it should not be changed once set via the
+     * constructor. This is a protected instance variable as it does not need to
+     * be accessed by any library users since they can find the baseUrl at the
+     * location where it is being set in their own code, while still allowing
+     * the `Builder` class that extends this class to access this variable.
+     */
+    protected readonly baseUrl: string
+  ) {}
 
   /**
-   * This is the base URL used for all API calls made through this instance.
+   * tl;dr Do not use this unless you know what you are doing.
    *
-   * This is a readonly property as it should not be changed once set via the
-   * constructor. This is a private variable as it does not need to be accessed
-   * by any library users since they can find the baseUrl at the location where
-   * it is being set in their own code.
+   * ### About
+   * Wrapper over `Fetch` constructor to construct a new instance with the given
+   * HTTP method and path alongside the values set on this `Builder` instance.
+   *
+   * ### Library Users
+   * For the most part, library users ***SHOULD NOT*** be using this low level
+   * API, instead they should use the methods named after the HTTP methods such
+   * as `.GET`, `.POST` and so on. The only reason why this is made public is
+   * for advanced library users who want to use HTTP methods like `HEAD` and
+   * `OPTION` to still be able to do so using our library instead of doing some
+   * crazy hack, since there is no method for those specific HTTP methods.
    */
-  readonly #baseUrl: string;
+  HTTP = (method: HTTPMethod, path: string = "") =>
+    new Fetch(method, this.baseUrl + path, {}, []);
+
+  /** Construct a new `Fetch` instance to make a `GET` API call */
+  GET = (path?: string) => this.HTTP("GET", path);
+
+  /** Construct a new `Fetch` instance to make a `POST` API call */
+  POST = (path?: string) => this.HTTP("POST", path);
+
+  /** Construct a new `Fetch` instance to make a `PUT` API call */
+  PUT = (path?: string) => this.HTTP("PUT", path);
+
+  /** Construct a new `Fetch` instance to make a `PATCH` API call */
+  PATCH = (path?: string) => this.HTTP("PATCH", path);
+
+  /** Construct a new `Fetch` instance to make a `DELETE` API call */
+  DEL = (path?: string) => this.HTTP("DELETE", path);
+}
+
+/**
+ * Class used to implement the Builder pattern for creating `Fetch` instances.
+ * This class should only be used internally by `sf` and should not be exposed
+ * to library users since they should not be using this to make API calls.
+ */
+export class Builder extends SimpleBuilder {
+  constructor(baseUrl: string) {
+    super(baseUrl);
+  }
 
   /**
    * Default options that will be applied to all API calls, which can be set
@@ -110,25 +153,11 @@ export class Builder {
     return this;
   }
 
-  /**
-   * tl;dr Do not use this unless you know what you are doing.
-   *
-   * ### About
-   * Wrapper over `Fetch` constructor to construct a new instance with the given
-   * HTTP method and path alongside the values set on this `Builder` instance.
-   *
-   * ### Library Users
-   * For the most part, library users ***SHOULD NOT*** be using this low level
-   * API, instead they should use the methods named after the HTTP methods such
-   * as `.GET`, `.POST` and so on. The only reason why this is made public is
-   * for advanced library users who want to use HTTP methods like `HEAD` and
-   * `OPTION` to still be able to do so using our library instead of doing some
-   * crazy hack, since there is no method for those specific HTTP methods.
-   */
-  HTTP = (method: HTTPMethod, path: string = "") =>
+  // Refer to original implementation for TSDoc
+  override HTTP = (method: HTTPMethod, path: string = "") =>
     new Fetch(
       method,
-      this.#baseUrl + path,
+      this.baseUrl + path,
 
       // Pass default options object and default headers array as references
       // to the new Fetch instance, so that library users can use the Fetch
@@ -152,19 +181,4 @@ export class Builder {
       this.#defaultOpts,
       this.#defaultHeaders
     );
-
-  /** Construct a new `Fetch` instance to make a `GET` API call */
-  GET = (path?: string) => this.HTTP("GET", path);
-
-  /** Construct a new `Fetch` instance to make a `POST` API call */
-  POST = (path?: string) => this.HTTP("POST", path);
-
-  /** Construct a new `Fetch` instance to make a `PUT` API call */
-  PUT = (path?: string) => this.HTTP("PUT", path);
-
-  /** Construct a new `Fetch` instance to make a `PATCH` API call */
-  PATCH = (path?: string) => this.HTTP("PATCH", path);
-
-  /** Construct a new `Fetch` instance to make a `DELETE` API call */
-  DEL = (path?: string) => this.HTTP("DELETE", path);
 }

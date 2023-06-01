@@ -1,0 +1,4 @@
+# Restricted sf.useOnce
+This is an archive of an experiment where the `Builder` class is split into 2 so that the useOnce method on `sf` can use the `SimpleBuilder` class that does not have the ability to set default options and header values, since it was assumed that single use API calls should not be dealing with that anyways.
+
+However since library users can save the returned `Builder` instance from `sf.useOnce` in a variable, they could technically still use it as it was originally built, although this is not recommended at all as it breaks the usage flow and manually reuses the `Builder` instances which could potentially cause bugs.

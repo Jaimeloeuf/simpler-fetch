@@ -1,5 +1,5 @@
-import { Builder } from "./Builder";
-import { sfError } from "./errors";
+import { Builder, SimpleBuilder } from "./Builder";
+import { sfError } from "../../src/errors";
 
 /**
  * `sf` (simpler-fetch) is used to create an Object Oriented `Fetch` abstraction
@@ -94,5 +94,5 @@ export class sf {
    */
   static useOnce = (fullUrlString: string) =>
     // Using arrow function for a smaller build output size
-    new Builder(fullUrlString);
+    new SimpleBuilder(fullUrlString);
 }
