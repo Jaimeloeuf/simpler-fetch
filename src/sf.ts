@@ -1,4 +1,4 @@
-import { Builder } from "./Builder";
+import { Builder, SimpleBuilder } from "./Builder";
 import { sfError } from "./errors";
 
 /**
@@ -94,5 +94,5 @@ export class sf {
    */
   static useOnce = (fullUrlString: string) =>
     // Using arrow function for a smaller build output size
-    new Builder(fullUrlString);
+    new SimpleBuilder(fullUrlString);
 }
