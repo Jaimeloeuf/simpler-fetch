@@ -13,8 +13,7 @@ export async function responseValidation() {
 
     async () => {
       const validator = (data: unknown): data is { someCustomData: boolean } =>
-        (data as any)?.someCustomData === true ||
-        (data as any)?.someCustomData === false;
+        typeof (data as any)?.someCustomData === "boolean";
 
       const { res, err } = await sf
         .useDefault()
