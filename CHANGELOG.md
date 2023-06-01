@@ -14,6 +14,40 @@
 
 
 
+## [10.0.0] - 2023-06-01
+[Migration guide for v9 to v10 major breaking change upgrade](./docs/v9%20to%20v10%20migration%20guide.md)
+
+### Main Breaking Changes
+The API is now completely changed, it is better to just use the new API directly instead of migrating 1 by 1.
+
+1. Rename `oof` to `sf` to better reflect the library name.
+
+### Changed
+1. Rename `oof` to `sf` to better reflect the library name.
+1. Require library users to use the methods `useDefaultOptions` and `useDefaultHeaders` to use the default options object and default headers array as they are no longer automatically injected.
+    - This is done to remove hidden implicit behaviours.
+1. `options` and `header` method is renamed to `useOptions` and `useHeader` to keep the naming consistent.
+1. Rewrote the sample web app to include more examples and in more detail.
+1. Change behavior of how exceptions thrown from within Header functions are returned.
+    - They are now wrapped in the new `HeaderException` class, so that library users can easily check that the failure happened in a header function, before using `HeaderException.error` to narrow down the exact cause.
+1. Change `RequestError` type to `RequestException` to better reflect what the union type represents.
+    - `RequestException` now uses the specific named exception classes instead of the generic Error class to make the type stricter.
+1. Change Error thrown from `sf` to use the named `sfError` class so that users can type narrow and figure out the exact cause.
+
+### Fixed
+1. Re-formatted all internal JSDoc, to ensure that all doc comments break on column 80 for consistency.
+1. Fix all the technical docs, and update them to use the latest v10 APIs.
+
+### Added
+1. Refactored `Fetch` to add the methods `useDefaultOptions` and `useDefaultHeaders`, so that the default options object and default headers array are no longer automatically injected. Requiring users to explicitly specify the intention to use any default options or headers.
+    - This is done to remove hidden implicit behaviours.
+1. Named error and exception classes, so that library users can easily check for failure mode using the `instanceof` operator.
+1. Add `JsonTypeAlias` to represent the JSON type better by using an alias for any.
+
+### Others
+1. Update dependencies
+
+
 ## [9.0.0] - 2023-05-07
 [Migration guide for v8 to v9 major breaking change upgrade](./docs/v8%20to%20v9%20migration%20guide.md)
 
