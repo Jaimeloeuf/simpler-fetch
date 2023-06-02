@@ -13,6 +13,10 @@ import {
 } from "./exceptions";
 import { safe } from "./safe";
 
+import { Fetch2 } from "./Fetch2";
+
+type ResponseParser<T> = (res: Response) => Promise<T>;
+
 /**
  * Class used to configure `fetch` request options with the builder pattern
  * using a simple chainable interface before finally making the API call itself
@@ -21,7 +25,7 @@ import { safe } from "./safe";
  * This **SHOULD NOT** be used by library users directly, this should be
  * constructed using the `Builder` class.
  */
-export class Fetch {
+export class Fetch<ErrorType, ResponseType> {
   /* Private Instance variables that are only accessible internally */
 
   /**
@@ -123,7 +127,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useDefaultOptions(): Fetch {
+  useDefaultOptions(): Fetch<unknown, unknown> {
     // Create new object for `this.#options` by combining the properties
     // `this.#defaultOptions` is spread first so that the API specific
     // options can override the default options.
@@ -166,7 +170,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useDefaultHeaders(): Fetch {
+  useDefaultHeaders(): Fetch<unknown, unknown> {
     // `unshift` instead of `push`, because headers set first should be
     // overwritten by headers set later in `#fetch` header generation process.
     this.#headers.unshift(...this.#defaultHeaders);
@@ -206,7 +210,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useOptions(options: RequestInit): Fetch {
+  useOptions(options: RequestInit): Fetch<unknown, unknown> {
     // Use Object.assign to mutate original object instead of creating a new one
     // Spread syntax is not used since it transpiles to more bytes
     // this.#options = { ...this.#options, ...options };
@@ -235,7 +239,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useHeader(...headers: [Header, ...Header[]]): Fetch {
+  useHeader(...headers: [Header, ...Header[]]): Fetch<unknown, unknown> {
     this.#headers.push(...headers);
     return this;
   }
@@ -246,7 +250,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  timeoutAfter(timeoutInMilliseconds: number): Fetch {
+  timeoutAfter(timeoutInMilliseconds: number): Fetch<unknown, unknown> {
     this.#timeoutInMilliseconds = timeoutInMilliseconds;
     this.#abortController = new AbortController();
     return this;
@@ -311,7 +315,7 @@ export class Fetch {
   body<RequestBodyType = any>(
     body: RequestBodyType,
     optionalContentType?: string
-  ): Fetch {
+  ): Fetch<unknown, unknown> {
     // Only add in the content-type header if user chooses to set it,
     // Ref:
     // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
@@ -375,7 +379,7 @@ export class Fetch {
    */
   bodyJSON<JsonRequestBodyType = JsonTypeAlias>(
     data: JsonRequestBodyType
-  ): Fetch {
+  ): Fetch<unknown, unknown> {
     // Content-type needs to be set manually even though `fetch` is able to
     // guess most content-type, because once object is stringified, the data
     // will be a string and fetch will guess that it is 'text/plain' rather than
@@ -675,6 +679,90 @@ export class Fetch {
     });
   }
 
+
+  /**
+   * Final builder method to call to start the Build process.
+   */
+  build() {
+    const request = new Request(this.#url, {
+      /*
+        Properties are set following the order of specificity:
+        1. `RequestInit` options object is applied first
+        2. HTTP method, which cannot be overwritten by `options`
+        3. Instance specific headers, which cannot be overwritten by `options`
+        4. Instance specific body data, which cannot be overwritten by `options`
+        5. Instance specific timeout abortController's signal, which cannot be
+           overwritten by `options`.
+
+        From this order, we can see that the values in `options` object cannot
+        override HTTP method set in the constructor, headers set with the
+        `useHeader` method and `body` set by any of the body methods.
+      */
+
+      // Apply with spread, since final object is the same `RequestInit` type
+      ...this.#options,
+
+      method: this.#method,
+
+      // Header generation process
+      //
+      // Run header functions if any to ensure array of headers is now an array
+      // of header objects, the array of headers have the type of `object |
+      // Promise<object>` because header generator functions can be async to let
+      // users delay generating headers until API call. Use case include only
+      // generating a very short lived token at the last minute before the API
+      // call is made to ensure that it does not expire by the time it reaches
+      // the API server.
+      //
+      // `await Promise.all` on the array of headers ensure all resolves before
+      // reducing the array of header objects into a single header object.
+      //
+      // Using `Promise.all` instead of `Promise.allSettled` so that it will
+      // stop running if any of the header generator function fails instead of
+      // waiting for everything to complete since even if the rest resolves
+      // they will be thrown away and not used, so no point awaiting on them.
+      //
+      // Any errors thrown here will be converted into `HeaderException` and get
+      // bubbled up to the library user through the `safe` function wrapper.
+      // headers: (
+      //   await Promise.all(
+      //     this.#headers.map((header) =>
+      //       typeof header === "function" ? header() : header
+      //     )
+      //   ).catch((err) => {
+      //     // Wrap with HeaderException, see reasoning in `HeaderException` docs.
+      //     throw new HeaderException(err);
+      //   })
+      // ).reduce((obj, item) => ({ ...obj, ...item }), {}),
+      // @todo do this in `Fetch2`
+
+      // Because fetch's body property accepts many different types, instead
+      // of doing transformations like JSON.stringify here, this library relies
+      // on helper methods like `bodyJSON` to set body as JSON data type, and to
+      // also set the content-type and do any transformations as needed.
+      //
+      // See #body prop's docs on its type
+      body: this.#body,
+
+      // Using optional chaining as `#abortController` may be undefined if not
+      // library user did not set a custom timeout with `timeoutAfter` method,
+      // if so, just let it be undefined and it will just be ignored.
+      signal: this.#abortController?.signal,
+    });
+
+    return new Fetch2<ErrorType, ResponseType>(
+      request,
+
+      this.#responseParser ?? ((res) => res.json()),
+
+      // Just nice default here then the next Class dont have to default it and can set the generic properly
+      this.#optionalErrorParser ?? ((res) => res.json()),
+
+      this.#abortController,
+      this.#timeoutInMilliseconds
+    );
+  }
+
   /**
    * Call API after configuring and get back response parsed as a **string**.
    *
@@ -782,5 +870,38 @@ export class Fetch {
    */
   runJSON<T = JsonResponse>(optionalValidator?: Validator<T>) {
     return this.#runner<T>((res) => res.json(), optionalValidator);
+  }
+
+  /**
+   * Optional as it will parse the same way as original data type if undefined.
+   */
+  #optionalErrorParser?: ResponseParser<ErrorType>;
+
+  /**
+   * Use this to set a custom response parser when `Response.ok === false` if
+   * the error data type is different from the Response data type.
+   *
+   * E.g. expected data type to be `string` but on error, API will return a
+   * `JSON` object instead. Therefore you can use this to set a custom error
+   * response parser for the specific error type.
+   *
+   * Defaults to use a `JSON` response parser since that is the most popular
+   * error response data types.
+   */
+  parserErrorWith<ErrorResponseDataType extends ErrorType = ErrorType>(
+    errorParser: ResponseParser<ErrorResponseDataType>
+  ): Fetch<ResponseType, ErrorResponseDataType> {
+    this.#optionalErrorParser = errorParser;
+    return this as unknown as Fetch<ResponseType, ErrorResponseDataType>;
+  }
+
+  /**
+   * Optional so that it can be defined outside of the constructor.
+   */
+  #responseParser?: ResponseParser<ResponseType>;
+
+  parseAsJSON<T = any>(): Fetch<T, ErrorType> {
+    this.#responseParser = (res) => res.json();
+    return this as unknown as Fetch<T, ErrorType>;
   }
 }
