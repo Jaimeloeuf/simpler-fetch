@@ -11,6 +11,7 @@ import { uncommonMethods } from "./demo/9 Uncommon HTTP Methods.js";
 import { exceptionTypeNarrowing } from "./demo/10 Exception type narrowing.js";
 import { lazyLoading } from "./demo/11 Lazy Loading.js";
 import { overrideDefaultValues } from "./demo/12 Override default values.js";
+import { otherResponseDataTypes } from "./demo/13 Other response data types.js";
 
 /* Utilities */
 import { printGroup } from "./utils.js";
@@ -34,7 +35,9 @@ import { printGroup } from "./utils.js";
 
   await printGroup("Error Type Narrowing", exceptionTypeNarrowing);
 
+  await printGroup("Lazy Loading", lazyLoading);
+
   await printGroup("Safely override default values", overrideDefaultValues);
 
-  await printGroup("Lazy Loading", lazyLoading);
+  await printGroup("Other Response data types", otherResponseDataTypes);
 })();

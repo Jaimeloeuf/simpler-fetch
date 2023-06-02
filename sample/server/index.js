@@ -39,6 +39,29 @@ router.all("/delay", express.json(), (_, res) =>
   setTimeout(() => res.status(200).json({ processCompleted: true }), 500)
 );
 
+// Route to return 'text' data type
+router.get("/datatype/text", (_, res) => {
+  res.status(200).send("sample text response");
+});
+
+// Route to return 'blob' data type
+router.all("/datatype/blob", (_, res) => {
+  res.status(200).send(Buffer.from("sample blob response"));
+});
+
+// Route to return 'formdata' data type
+router.get("/datatype/formdata", (_, res) => {
+  const fd = new FormData();
+  fd.append("some-value", "test");
+  res.status(200).send(fd);
+});
+
+// Route to return 'arraybuffer' data type
+router.all("/datatype/arraybuffer", (_, res) => {
+  const ab = new ArrayBuffer(0);
+  res.status(200).send(Buffer.from(ab));
+});
+
 express()
   // Allow all origins since the sample Web App is ran on a different port
   .use(require("cors")({ origin: "*" }))
