@@ -4,7 +4,7 @@ import {
   HeaderException,
   ValidationException,
 } from "./exceptions";
-import { safe, createApiResponse } from "./utils";
+import { safe, createApiResponse } from "./utils/internal";
 
 /**
  * Class used to configure `fetch` request options with the builder pattern

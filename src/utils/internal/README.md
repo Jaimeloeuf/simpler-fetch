@@ -1,4 +1,4 @@
-# utils/
+# utils/internal
 Folder for all internal library utility modules.
 
 ## Why?

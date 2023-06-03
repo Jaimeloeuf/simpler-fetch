@@ -1,5 +1,5 @@
 /**
- * Barrel file for all the utils.
+ * Barrel file
  */
 
 export * from "./safe";

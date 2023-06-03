@@ -1,4 +1,4 @@
-import type { ApiResponse } from "../types";
+import type { ApiResponse } from "../../types";
 
 /**
  * Utility function to create a new ApiResponse object that satisfies
