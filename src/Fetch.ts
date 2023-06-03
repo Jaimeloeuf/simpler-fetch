@@ -3,6 +3,7 @@ import type {
   HTTPMethod,
   Validator,
   JsonTypeAlias,
+  ApiResponse,
   ResponseParser,
 } from "./types";
 import {
@@ -11,7 +12,7 @@ import {
   ValidationException,
 } from "./exceptions";
 import { jsonParser } from "./utils";
-import { safe, createApiResponse } from "./utils/internal";
+import { safe } from "./utils/internal";
 
 /**
  * Class used to configure `fetch` request options with the builder pattern
@@ -680,7 +681,13 @@ export class Fetch {
           // that users can check failure cause with `instanceof` operator.
           throw new ValidationException("Validation Failed");
 
-        return createApiResponse(true, res, data);
+        return {
+          // Using boolean directly instead of `res.ok` for smaller build output
+          ok: true,
+          status: res.status,
+          headers: res.headers,
+          data,
+        } satisfies ApiResponse<SuccessType>;
       }
 
       // Parse error data, using `optionalErrorResponseParser` if available,
@@ -703,7 +710,13 @@ export class Fetch {
         res
       )) as ErrorType;
 
-      return createApiResponse(false, res, data);
+      return {
+        // Using boolean directly instead of `res.ok` for smaller build output
+        ok: false,
+        status: res.status,
+        headers: res.headers,
+        data,
+      } satisfies ApiResponse<ErrorType>;
     });
   }
 
