@@ -8,3 +8,4 @@ export * from "./JsonTypeAlias";
 export * from "./RequestException";
 export * from "./ApiResponse";
 export * from "./Validator";
+export * from "./ResponseParser";

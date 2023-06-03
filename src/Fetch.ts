@@ -1,4 +1,10 @@
-import type { Header, HTTPMethod, Validator, JsonTypeAlias } from "./types";
+import type {
+  Header,
+  HTTPMethod,
+  Validator,
+  JsonTypeAlias,
+  ResponseParser,
+} from "./types";
 import {
   TimeoutException,
   HeaderException,
@@ -641,9 +647,9 @@ export class Fetch {
    * then is the `ok` value set with the final HTTP response code.
    */
   #runner<SuccessType, ErrorType = SuccessType>(
-    responseParser: (res: Response) => Promise<SuccessType>,
+    responseParser: ResponseParser<SuccessType>,
     optionalResponseValidator?: Validator<SuccessType>,
-    optionalErrorResponseParser?: (res: Response) => Promise<ErrorType>
+    optionalErrorResponseParser?: ResponseParser<ErrorType>
   ) {
     return safe(async () => {
       const res = await this.#run();
@@ -808,7 +814,7 @@ export class Fetch {
    */
   runJSON<SuccessType, ErrorType>(
     optionalValidator?: Validator<SuccessType>,
-    optionalErrorResponseParser?: (res: Response) => Promise<ErrorType>
+    optionalErrorResponseParser?: ResponseParser<ErrorType>
   ) {
     return this.#runner<SuccessType, ErrorType>(
       jsonParser,
