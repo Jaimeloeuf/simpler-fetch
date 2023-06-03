@@ -1,6 +1,9 @@
 import { Builder } from "./Builder";
 import { sfError } from "./errors";
 
+import { jsonParser } from "./utils";
+import { NoOpValidator } from "./validation-utils";
+
 /**
  * `sf` (simpler-fetch) is used to create an Object Oriented `Fetch` abstraction
  * to use the builder pattern to give users an easy to use chainable interface
@@ -95,4 +98,18 @@ export class sf {
   static useOnce = (fullUrlString: string) =>
     // Using arrow function for a smaller build output size
     new Builder(fullUrlString);
+
+  // =========================================================================
+  // Everything below this section is extra utility attached on `sf` so that
+  // library users can access these without manually importing them separately.
+  // =========================================================================
+
+  /** `jsonParser` utility function is used to parse Response data as json. */
+  static readonly jsonParser = jsonParser;
+
+  /**
+   * No Op Validator is used when validator function is required but you do not
+   * want to provide one because it might not really matter to your use case.
+   */
+  static readonly NoOpValidator = NoOpValidator;
 }

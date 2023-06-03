@@ -4,6 +4,7 @@ import {
   HeaderException,
   ValidationException,
 } from "./exceptions";
+import { jsonParser } from "./utils";
 import { safe, createApiResponse } from "./utils/internal";
 
 /**
@@ -810,7 +811,7 @@ export class Fetch {
     optionalErrorResponseParser?: (res: Response) => Promise<ErrorType>
   ) {
     return this.#runner<SuccessType, ErrorType>(
-      (res) => res.json(),
+      jsonParser,
       optionalValidator,
       optionalErrorResponseParser
     );
