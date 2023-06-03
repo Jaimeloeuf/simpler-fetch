@@ -1,17 +1,11 @@
-import type {
-  Header,
-  HTTPMethod,
-  ApiResponse,
-  Validator,
-  JsonTypeAlias,
-  JsonResponse,
-} from "./types";
+import type { Header, HTTPMethod, Validator, JsonTypeAlias } from "./types";
 import {
   TimeoutException,
   HeaderException,
   ValidationException,
 } from "./exceptions";
 import { safe } from "./safe";
+import { createApiResponse } from "./utils";
 
 /**
  * Class used to configure `fetch` request options with the builder pattern
@@ -680,13 +674,7 @@ export class Fetch {
           // that users can check failure cause with `instanceof` operator.
           throw new ValidationException("Validation Failed");
 
-        return {
-          // Use boolean directly instead of `res.ok` for smaller build output.
-          ok: true,
-          status: res.status,
-          headers: res.headers,
-          data,
-        } satisfies ApiResponse<SuccessType>;
+        return createApiResponse(true, res, data);
       }
 
       // Parse error data, using `optionalErrorResponseParser` if available,
@@ -709,13 +697,7 @@ export class Fetch {
         res
       )) as ErrorType;
 
-      return {
-        // Use boolean directly instead of `res.ok` for smaller build output.
-        ok: false,
-        status: res.status,
-        headers: res.headers,
-        data,
-      } satisfies ApiResponse<ErrorType>;
+      return createApiResponse(false, res, data);
     });
   }
 
