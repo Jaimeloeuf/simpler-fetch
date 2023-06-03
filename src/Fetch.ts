@@ -599,29 +599,40 @@ export class Fetch {
    * ### About
    * This private method wraps the `#run` method to parse the response, type
    * cast the data returned, validate the response if a validator is provided,
-   * and before formatting the return value to satisfy `ApiResponse<T>`.
+   * and before formatting the return value as `ApiResponse<SuccessType>`.
+   *
+   * For the sad path where `#run` returns Response with `Response.ok === false`
+   * this method will parse the response with `optionalErrorResponseParser` if
+   * provided, else parse it with the same `responseParser` as the happy path
+   * and type cast the data to `ErrorType` before formatting the return value as
+   * `ApiResponse<ErrorType>`.
    *
    * ### Type Safety (for both Compile time and Run time)
-   * The return type of this method is the generic type T, where the data will
-   * be type casted as the generic type T. Although this makes using the library
-   * really simple, this is not super type safe since the casting may be wrong.
-   * Therefore this method allows you to pass in an optional validator acting as
-   * a type predicate to do response validation, ensuring that the data is
+   * The return type of this method is the generic type `SuccessType`, where the
+   * data will be type casted as this generic type. Although this makes using
+   * the library really simple, this is not super type safe since the casting
+   * may be wrong. Therefore this method allows you to pass in an optional type
+   * predicate to do runtime response validation, ensuring that the data is
    * actually of the correct type at **runtime**!
    * https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
    *
    * These are all the possible workflows:
-   * 1. No validator passed in
-   *     - Data will be ***CASTED*** as type `T`
-   * 2. Validator passed in, and validation passed
-   *     - Data will be ***type narrowed*** as type `T`
-   * 3. Validator passed in, validation failed
+   * 1. API call succeeded and no validator passed in
+   *     - Data will be ***CASTED*** to `SuccessType`
+   * 2. API call succeeded and a validator is passed in, and validation passed
+   *     - Data will be ***type narrowed*** to `SuccessType`
+   * 3. API call succeeded and a validator is passed in, but validation failed
    *     - Returns an **Exception**
+   * 4. API call failed and no custom `optionalErrorResponseParser` passed in
+   *     - Parse response with default `responseParser`
+   *     - Data will be ***CASTED*** to `ErrorType`
+   * 5. API call failed and a custom `optionalErrorResponseParser` is passed in
+   *     - Parse response with `optionalErrorResponseParser`
+   *     - Data will be ***CASTED*** to `ErrorType`
    *
    * ### Return type
-   * Return type will always be `ApiResponse<T>` where T is the expected type of
-   * the value after parsing the response with parsing methods on the Response
-   * object like `Response.json()` or `Response.formData()`.
+   * Return type will always be `ApiResponse<T>` where T is either `SuccessType`
+   * or `ErrorType` depending on `Response.ok` returned from `#run`.
    *
    * If API service responds with a status code of 200-299 inclusive,
    * `ApiResponse<T>.ok` is automatically set to true, else it will be `false`.
@@ -635,43 +646,76 @@ export class Fetch {
    * which means it will follow the redirect to the final API end point and only
    * then is the `ok` value set with the final HTTP response code.
    */
-  #runner<T>(
-    responseParser: (res: Response) => Promise<T>,
-    optionalResponseValidator?: Validator<T>
+  #runner<SuccessType, ErrorType = SuccessType>(
+    responseParser: (res: Response) => Promise<SuccessType>,
+    optionalResponseValidator?: Validator<SuccessType>,
+    optionalErrorResponseParser?: (res: Response) => Promise<ErrorType>
   ) {
     return safe(async () => {
       const res = await this.#run();
 
-      // Assume data to be the generic type T without any validation so that
-      // even if no validator is passed in by the library user, it can be
-      // assumed that the data is correctly shaped as `T` during compile time.
-      //
-      // If not annotated with the type T, inference works for the most part,
-      // but sometimes the type can end up as `Awaited<T>`. This only affects
-      // the `runJSON` method where data is inferred as `Awaited<T>` instead of
-      // `T`, which is technically the same type, but confuses library users.
-      // This is probably caused by .json value extraction that returns `any` so
-      // the conversion here does not properly take place.
-      // Reference: https://github.com/microsoft/TypeScript/issues/47144
-      const data: T = await responseParser(res);
+      if (res.ok) {
+        // Assume data to be generic `SuccessType` without validation so even if
+        // no validator is passed in by the library user, it can be assumed that
+        // the data is correctly shaped as `SuccessType` during compile time.
+        //
+        // If not annotated with the `SuccessType`, inference works for the most
+        // part, but sometimes the type can end up as `Awaited<SuccessType>`.
+        // This only affects the `runJSON` method where data is inferred as
+        // `Awaited<SuccessType>` instead of `SuccessType`, which is technically
+        // the same type, but confuses library users. This is probably caused by
+        // .json value extraction returning `any` so the conversion here does
+        // not properly take place.
+        // Reference: https://github.com/microsoft/TypeScript/issues/47144
+        const data: SuccessType = await responseParser(res);
 
-      // Only run validation if a validator is passed in
-      // User's validator can throw an exception, which will be safely bubbled
-      // up to them if they want to receive a custom exception instead.
-      if (
-        optionalResponseValidator !== undefined &&
-        !optionalResponseValidator(data)
-      )
-        // Use custom named class instead of the generic Error class so
-        // that users can check failure cause with `instanceof` operator.
-        throw new ValidationException("Validation Failed");
+        // Only run validation if a validator is passed in
+        // User's validator can throw an exception, which will be safely bubbled
+        // up to them if they want to receive a custom exception instead.
+        if (
+          optionalResponseValidator !== undefined &&
+          !optionalResponseValidator(data)
+        )
+          // Use custom named class instead of the generic Error class so
+          // that users can check failure cause with `instanceof` operator.
+          throw new ValidationException("Validation Failed");
+
+        return {
+          // Use boolean directly instead of `res.ok` for smaller build output.
+          ok: true,
+          status: res.status,
+          headers: res.headers,
+          data,
+        } satisfies ApiResponse<SuccessType>;
+      }
+
+      // Parse error data, using `optionalErrorResponseParser` if available,
+      // else default to `responseParser`.
+      //
+      // Assume data to be generic `ErrorType` without any validation so that it
+      // can be assumed that the data is correctly shaped as `ErrorType` during
+      // compile time because this library does not support validation for error
+      // response data.
+      //
+      // Casting to `ErrorType` because even though inference works for the most
+      // part, sometimes the type can end up as `Awaited<ErrorType>`. This only
+      // affects the `runJSON` method where data is inferred as
+      // `Awaited<ErrorType>` instead of `ErrorType`, which is technically the
+      // same type, but confuses library users. This is probably caused by .json
+      // value extraction returning `any` so the conversion here does not
+      // properly take place.
+      // Reference: https://github.com/microsoft/TypeScript/issues/47144
+      const data = (await (optionalErrorResponseParser ?? responseParser)(
+        res
+      )) as ErrorType;
 
       return {
-        ok: res.ok,
+        // Use boolean directly instead of `res.ok` for smaller build output.
+        ok: false,
         status: res.status,
         headers: res.headers,
         data,
-      } satisfies ApiResponse<T>;
+      } satisfies ApiResponse<ErrorType>;
     });
   }
 
@@ -778,9 +822,16 @@ export class Fetch {
    * does not mean that the response object is guaranteed to be what you typed
    * it to be. For run time type safety, please pass in a validator (type
    * predicate) to do runtime response data validation, so that the library can
-   * safely type narrow it down to the generic type T passed in.
+   * safely type narrow it down to the generic type `SuccessType` passed in.
    */
-  runJSON<T = JsonResponse>(optionalValidator?: Validator<T>) {
-    return this.#runner<T>((res) => res.json(), optionalValidator);
+  runJSON<SuccessType, ErrorType>(
+    optionalValidator?: Validator<SuccessType>,
+    optionalErrorResponseParser?: (res: Response) => Promise<ErrorType>
+  ) {
+    return this.#runner<SuccessType, ErrorType>(
+      (res) => res.json(),
+      optionalValidator,
+      optionalErrorResponseParser
+    );
   }
 }
