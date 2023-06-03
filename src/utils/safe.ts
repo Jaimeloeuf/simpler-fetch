@@ -1,4 +1,4 @@
-import type { RequestException } from "./types";
+import type { RequestException } from "../types";
 
 /**
  * @param fn Wraps any function to prevent exceptions from bubbling up
