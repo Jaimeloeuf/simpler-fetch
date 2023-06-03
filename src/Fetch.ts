@@ -736,8 +736,15 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be be a string
    * ```
    */
-  runText(optionalValidator?: Validator<string>) {
-    return this.#runner((res) => res.text(), optionalValidator);
+  runText<ErrorType>(
+    optionalValidator?: Validator<string>,
+    optionalErrorResponseParser?: ResponseParser<ErrorType>
+  ) {
+    return this.#runner(
+      (res) => res.text(),
+      optionalValidator,
+      optionalErrorResponseParser
+    );
   }
 
   /**
@@ -756,8 +763,15 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be a Blob
    * ```
    */
-  runBlob(optionalValidator?: Validator<Blob>) {
-    return this.#runner((res) => res.blob(), optionalValidator);
+  runBlob<ErrorType>(
+    optionalValidator?: Validator<Blob>,
+    optionalErrorResponseParser?: ResponseParser<ErrorType>
+  ) {
+    return this.#runner(
+      (res) => res.blob(),
+      optionalValidator,
+      optionalErrorResponseParser
+    );
   }
 
   /**
@@ -776,8 +790,15 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be form data
    * ```
    */
-  runFormData(optionalValidator?: Validator<FormData>) {
-    return this.#runner((res) => res.formData(), optionalValidator);
+  runFormData<ErrorType>(
+    optionalValidator?: Validator<FormData>,
+    optionalErrorResponseParser?: ResponseParser<ErrorType>
+  ) {
+    return this.#runner(
+      (res) => res.formData(),
+      optionalValidator,
+      optionalErrorResponseParser
+    );
   }
 
   /**
@@ -796,8 +817,15 @@ export class Fetch {
    * console.log("Res:", res); // Type narrowed to be an Array Buffer
    * ```
    */
-  runArrayBuffer(optionalValidator?: Validator<ArrayBuffer>) {
-    return this.#runner((res) => res.arrayBuffer(), optionalValidator);
+  runArrayBuffer<ErrorType>(
+    optionalValidator?: Validator<ArrayBuffer>,
+    optionalErrorResponseParser?: ResponseParser<ErrorType>
+  ) {
+    return this.#runner(
+      (res) => res.arrayBuffer(),
+      optionalValidator,
+      optionalErrorResponseParser
+    );
   }
 
   /**
