@@ -2,5 +2,5 @@
  * Barrel file for all the validation utils.
  */
 
-export * from "./NoOpValidator";
+export * from "./skipValidation";
 export * from "./zodToValidator";
