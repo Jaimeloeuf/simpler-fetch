@@ -102,7 +102,15 @@ export class sf {
    * importing them separately and potentially dealing with naming conflicts.
    */
   static readonly utils = {
+    /**
+     * Use this when validator function is required but you do not want to provide
+     * one because it might not really matter to your use case.
+     */
     skipValidation,
+
+    /**
+     * Utility function is used to parse Response data as json.
+     */
     jsonParser,
   };
 }
