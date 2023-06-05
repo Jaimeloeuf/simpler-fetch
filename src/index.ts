@@ -3,8 +3,8 @@
  */
 
 export { sf } from "./sf";
-export * from "./errors/index";
-export * from "./exceptions/index";
+export * from "./errors";
+export * from "./exceptions";
 export * from "./utils";
 
 // Use type modifier to ensure only types are exported. This only works with
