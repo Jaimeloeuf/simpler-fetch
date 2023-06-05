@@ -99,17 +99,12 @@ export class sf {
     // Using arrow function for a smaller build output size
     new Builder(fullUrlString);
 
-  // =========================================================================
-  // Everything below this section is extra utility attached on `sf` so that
-  // library users can access these without manually importing them separately.
-  // =========================================================================
-
-  /** `jsonParser` utility function is used to parse Response data as json. */
-  static readonly jsonParser = jsonParser;
-
   /**
-   * No Op Validator is used when validator function is required but you do not
-   * want to provide one because it might not really matter to your use case.
+   * Utilities attached to `sf` so that users can access these without manually
+   * importing them separately and potentially dealing with naming conflicts.
    */
-  static readonly NoOpValidator = NoOpValidator;
+  static readonly utils = {
+    NoOpValidator: NoOpValidator,
+    jsonParser: jsonParser,
+  };
 }
