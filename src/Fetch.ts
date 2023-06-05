@@ -853,13 +853,13 @@ export class Fetch {
    * predicate) to do runtime response data validation, so that the library can
    * safely type narrow it down to the generic type `SuccessType` passed in.
    *
-   * `ErrorType` generic defaults to unknown to force library users to either
-   * specify a generic `ErrorType` or type narrow the return data themselves
-   * after getting it back. If you do not want to type narrow it yourself and
-   * want to make it `any` instead, you need to explicitly use `<any, any>` for
-   * the method's generic.
+   * Both `SuccessType` and `ErrorType` generic defaults to unknown, to force
+   * library users to either specify a generic type or type narrow the return
+   * data themselves after getting it back. If you do not want to type narrow it
+   * yourself and want to make it `any` instead, you need to explicitly use
+   * `<any, any>` for the generics.
    */
-  runJSON<SuccessType, ErrorType = unknown>(
+  runJSON<SuccessType, ErrorType>(
     optionalValidator?: Validator<SuccessType>,
     optionalErrorResponseParser?: ResponseParser<ErrorType>
   ) {
