@@ -1,4 +1,4 @@
-import type { ResponseParser } from "../types";
+import type { ResponseParser } from "../../types";
 
 /**
  * `jsonParser` utility function is used to parse Response data as json.

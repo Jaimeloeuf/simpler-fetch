@@ -1,8 +1,6 @@
 import { Builder } from "./Builder";
 import { sfError } from "./errors";
-
-import { jsonParser } from "./utils";
-import { NoOpValidator } from "./validation-utils";
+import { NoOpValidator, jsonParser } from "./utils";
 
 /**
  * `sf` (simpler-fetch) is used to create an Object Oriented `Fetch` abstraction
