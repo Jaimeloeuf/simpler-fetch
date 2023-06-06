@@ -18,6 +18,7 @@ The main motivation for creating this breaking change is to make the library mor
     - This is done to remove hidden implicit behaviours.
 1. `options` and `header` method is renamed to `useOptions` and `useHeader` to keep the naming consistent.
 1. Exports named error and exception classes for type narrowing failure cause using `instanceof` operator.
+1. All the `run` methods have been extended to take a `ErrorType` generic to cast the Response data differently if `ApiResponse.ok === false`, and to accept an optional error response parser as their last function parameter to parse the error response data type differently.
 
 [See CHANGELOG for more details.](../CHANGELOG.md)
 

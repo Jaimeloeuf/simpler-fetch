@@ -14,7 +14,7 @@
 
 
 
-## [10.0.0] - 2023-06-01
+## [10.0.0] - 2023-06-06
 [Migration guide for v9 to v10 major breaking change upgrade](./docs/v9%20to%20v10%20migration%20guide.md)
 
 ### Main Breaking Changes
@@ -27,6 +27,10 @@ The API is now completely changed, it is better to just use the new API directly
 1. Require library users to use the methods `useDefaultOptions` and `useDefaultHeaders` to use the default options object and default headers array as they are no longer automatically injected.
     - This is done to remove hidden implicit behaviours.
 1. `options` and `header` method is renamed to `useOptions` and `useHeader` to keep the naming consistent.
+1. `ApiResponse` returned is now discriminated on the `ApiResponse.ok` property
+    - Where a different type can be set for `ApiResponse.ok === false` instead of having both share the same type.
+    - This helps library users write simpler code, as they do not need to create another discriminant on their own in the return data type, as they can just rely on the `ApiResponse.ok` property as the discriminant.
+1. All the `run` methods have been extended to take a `ErrorType` generic to cast the Response data differently if `ApiResponse.ok === false`, and to accept an optional error response parser as their last function parameter to parse the error response data type differently.
 1. Rewrote the sample web app to include more examples and in more detail.
 1. Change behavior of how exceptions thrown from within Header functions are returned.
     - They are now wrapped in the new `HeaderException` class, so that library users can easily check that the failure happened in a header function, before using `HeaderException.error` to narrow down the exact cause.
@@ -42,7 +46,8 @@ The API is now completely changed, it is better to just use the new API directly
 1. Refactored `Fetch` to add the methods `useDefaultOptions` and `useDefaultHeaders`, so that the default options object and default headers array are no longer automatically injected. Requiring users to explicitly specify the intention to use any default options or headers.
     - This is done to remove hidden implicit behaviours.
 1. Named error and exception classes, so that library users can easily check for failure mode using the `instanceof` operator.
-1. Add `JsonTypeAlias` to represent the JSON type better by using an alias for any.
+1. Add utilities onto `sf` class so that it can be accessed by library users without needing to import them separately and prevent polluting the namespace on import.
+    - The utilities are nested on the `sf.utils.` property.
 
 ### Others
 1. Update dependencies
