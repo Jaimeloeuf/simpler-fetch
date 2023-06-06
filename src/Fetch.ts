@@ -853,13 +853,31 @@ export class Fetch {
    * predicate) to do runtime response data validation, so that the library can
    * safely type narrow it down to the generic type `SuccessType` passed in.
    *
-   * Both `SuccessType` and `ErrorType` generic defaults to unknown, to force
-   * library users to either specify a generic type or type narrow the return
-   * data themselves after getting it back. If you do not want to type narrow it
-   * yourself and want to make it `any` instead, you need to explicitly use
-   * `<any, any>` for the generics.
+   * `SuccessType` generic defaults to unknown, to force library users to either
+   * specify a generic type or type narrow the return data themselves after
+   * getting it back. If you do not want to type narrow it yourself and want to
+   * make it `any` instead, you need to explicitly use `any` for the generic.
+   *
+   * However for `ErrorType` generic, it default to `SuccessType`. Why? This is
+   * because a library user might choose to create their own union type for both
+   * the success data and error data types, and use it as a single type before
+   * using a type discriminant to discrimiate between them, rather than relying
+   * on this library's `ApiResponse.ok` as the type discriminant.
+   *
+   * If function signature is `runJSON<SuccessType, ErrorType>`, it means that
+   * if the user only wants to pass in a single type, they can't do so since
+   * both have to be either unspecified or specified at the same time.
+   *
+   * If function signature is `runJSON<SuccessType, ErrorType = unknown>`, it
+   * means that although users can just pass in a single type, they cannot pass
+   * in their own union types since the library will treat API data with
+   * `ApiResponse.ok === false` as unknown instead, which prevents them from
+   * using a unified type.
+   *
+   * This behavior matches the other run methods where all of their `ErrorType`
+   * generics defaults to the same fixed success type.
    */
-  runJSON<SuccessType, ErrorType>(
+  runJSON<SuccessType, ErrorType = SuccessType>(
     optionalValidator?: Validator<SuccessType>,
     optionalErrorResponseParser?: ResponseParser<ErrorType>
   ) {
