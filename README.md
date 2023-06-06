@@ -2,9 +2,9 @@
 [![NPM version](https://img.shields.io/npm/v/simpler-fetch?style=flat-square)](https://npmjs.org/package/simpler-fetch)
 [![NPM downloads](https://img.shields.io/npm/dm/simpler-fetch?style=flat-square)](https://npmjs.org/package/simpler-fetch)
 
-> `simpler-fetch` is a super simple to use [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) abstraction with ZERO dependencies (there is only optional *Type level dependencies*), making it super small at just **1.2kb** with brotli compression!
+> `simpler-fetch` is a super simple to use [`fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) abstraction with ZERO dependencies (there is only optional *Type level dependencies*), making it super small at just **1.5kb** with brotli compression!
 
-It **DOES NOT** introduce any new features at all. It only simplifies the `fetch API` to make it easier and safer to work with by providing abstractions such as a chainable way to configure the `fetch` options before making the fetch call, a simple way to set baseUrls, a way to delay generating headers.
+It **DOES NOT** introduce any new features at all. It only simplifies the `fetch API` to make it easier and more ergonomic to work with, such as by using chainable builder pattern methods to configure the `fetch` options before making the fetch call, a simple way to set baseUrls, a way to delay generating headers and etc...
 
 Since this library is just a wrapper over `fetch`, it **can be used in an isomorphic context** as long as a spec compliant `fetch` function is available in the global scope as it is not tied to any specific fetch implementation.
 
@@ -14,12 +14,14 @@ This library only exports a JS ES6 module, which means that it can be tree shake
 
 
 ## Intended use
-This library is intended for any projects that want a simple to use and lightweight HTTP API client library without resorting to deal with the low level and cumbersome fetch API or use a super heavy library like `superagent`.
+This library is intended for any projects that want a simple to use ergonomic HTTP API client library without resorting to deal with the low level and cumbersome fetch API or use a super heavy library like `axios` or `superagent`.
 
-This library is designed to make working with APIs (especially JSON APIs) extremely easy, and provides first class TypeScript support to improve the development experience with strict type safety.
+This library is designed to make working with APIs (especially JSON APIs) extremely easy while providing first class TypeScript support to improve the development experience with strict type safety.
 
 
 ## Documentation & Changes
+***<a href="./docs/v9%20to%20v10%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v9 to v10 major breaking change upgrade</a>***
+
 ***<a href="./docs/v8%20to%20v9%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v8 to v9 major breaking change upgrade</a>***
 
 ***<a href="./docs/v7%20to%20v8%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v7 to v8 major breaking change upgrade</a>***
@@ -29,13 +31,9 @@ This library is designed to make working with APIs (especially JSON APIs) extrem
 
 
 ## Installation
-Install this library from npm or github using
 ```shell
 # Install from npm
 npm i simpler-fetch
-
-# Install from github
-npm i https://github.com/Enkel-Digital/simpler-fetch/
 ```
 
 
@@ -54,10 +52,10 @@ import { sf } from "simpler-fetch";
 // Alternatively you can import this library directly from a CDN link
 // You can use any provider, however jsDelivr is shown here as it can be used in China and it is backed by multiple CDNs
 // For CDN use, PEG your code to a specific version to ensure it does not break between upgrades, e.g.
-// import { sf } from "https://cdn.jsdelivr.net/npm/simpler-fetch@9.0.0/dist/index.js";
+// import { sf } from "https://cdn.jsdelivr.net/npm/simpler-fetch@10.0.0/dist/index.js";
 
 // Basic GET example
-function getExample() {
+async function getExample() {
     const { res, err } = await sf
         // Make a one off API call to this URL without any base Urls
         .useOnce("https://jsonplaceholder.typicode.com/todos/1")
@@ -68,12 +66,12 @@ function getExample() {
 }
 
 // POST request example
-function postExample() {
+async function postExample() {
     const { res, err } = await sf
         // Make a one off API call to this URL without any base Urls
         .useOnce("https://jsonplaceholder.typicode.com/posts")
         .POST()
-        .header({ someAuthenticationToken: "superSecureTokenString" })
+        .useHeader({ someAuthenticationToken: "superSecureTokenString" })
         .bodyJSON({ title: "foo", body: "bar", userId: 1 })
         .runJSON();
 
@@ -94,11 +92,11 @@ const { res, err } = await sf
     .useDefault()
     .POST("/test")
     // Can be a synchronous function that returns a header object
-    .header(() => ({ randomHeader: "true", anotherHeader: "value" }))
+    .useHeader(() => ({ randomHeader: "true", anotherHeader: "value" }))
     // Can be an asynchronous function that returns a header Promise<object>
-    .header(async () => ({ asyncAuthToken: await Promise.resolve("secret") }))
+    .useHeader(async () => ({ asyncAuthToken: await Promise.resolve("secret") }))
     // Can also just directly pass in a header object. Header method can be called multiple times
-    .header({ someAuthenticationToken: "superSecureTokenString" })
+    .useHeader({ someAuthenticationToken: "superSecureTokenString" })
     .bodyJSON({ test: "true", anotherTest: "testing" })
     .runJSON();
 
@@ -133,29 +131,28 @@ This library does not have as many advanced features as libraries like `Axios` (
 
 ### Advantages
 - This library is extremely simple to use compared to other libraries, with a simple and clear API built with strong types for type safety and leverages TS LSP for code completion.
-- This library does error handling better.
+- This library does exceptions handling better.
     - This is subjective but take a look at it yourself.
-    - All the `run` methods do not throw any errors / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
-        - Read more about how [this library views error handling](./docs/sf%20error%20handling.md)
+    - All the `run` methods do not throw any exceptions / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
+        - Read more about how [this library views error handling](./docs/Exceptions%20handling.md)
 - This library is extremely small compared to other popular HTTP clients like `Axios` and `superagent`, here is a comparison of the minified library after using brotli compression
-    1. 1.2kb - `simpler-fetch`
-    1. 14.3kb - [`axios v1.4.0`](https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js) is XYZ times larger than `simpler-fetch`
-    1. 19.1kb - [`superagent v8.0.9`](https://cdn.jsdelivr.net/npm/superagent@8.0.9/dist/superagent.min.js) is XYZ times larger than `simpler-fetch`
+    1. 1.5kb - `simpler-fetch`
+    1. 14.3kb - [`axios v1.4.0`](https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js) is 9.5 times larger than `simpler-fetch`
+    1. 19.1kb - [`superagent v8.0.9`](https://cdn.jsdelivr.net/npm/superagent@8.0.9/dist/superagent.min.js) is 12.7 times larger than `simpler-fetch`
 
 ### Disadvantages
-- This has less advanced features like a nice and elegant way to do retries
+- This library skips out on some more advanced features like a nice way to do automatic retries.
     - However, since this library is basically a wrapper around the `fetch` API to use the Builder pattern, you have the necessary tools and escape hatches to directly configure `fetch` options to implement something like that yourself.
-- This library is designed for newer platforms and doesn't support older platforms
+- This library is designed for newer platforms and doesn't support older platforms.
     - Although it can work with it, as long as you downlevel the code and use a `fetch` polyfill.
-- This library does not support users passing in custom AbortControllers
-    - The reason is because the main use case for AbortControllers are usually for setting custom timeouts
-        - And this is already supported by the `timeoutAfter` method on `Fetch`.
+- This library does not support users passing in custom AbortControllers.
+    - The reason is because the main use case for AbortControllers are usually for setting custom timeouts and this is already supported by the `timeoutAfter` method on `Fetch`.
     - Therefore this is not supported since there are not many specific use cases for it right now.
         - Might implement this in the future if there is an actual concrete use case for it.
-- Although this library supports using the `HEAD` and `OPTIONS` HTTP methods,
-    - They are not as easy to use as other common HTTP methods like `GET` and `POST`
-    - Since these are rather low level and extremely rarely used HTTP methods, users need to use the more cumbersome `HTTP` method on `Builder` instances.
+- Although this library supports using the `HEAD` and `OPTIONS` HTTP methods, they are not as easy to use as other common HTTP methods like `GET` and `POST` since they do not have methods named after them, e.g. there is `sf.useDefault().GET()` but no `sf.useDefault().HEAD()`.
+    - Since these are rather low level and extremely rarely used HTTP methods, users need to use the more cumbersome `HTTP` method on `Builder` instances like this `sf.useDefault().HTTP('HEAD', '/path')`.
         - See the sample project for example on this.
+- Yes 1.5kb is still extra overhead compared to using raw `fetch`, but if you used this library instead of `fetch` directly, this library will more than make up for the extra overhead with the amount of boilerplate code it removes compared to using raw `fetch` many times.
 
 
 ## Inspirations
