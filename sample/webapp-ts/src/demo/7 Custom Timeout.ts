@@ -5,7 +5,7 @@ export async function customTimeout() {
   await printGroup(
     [
       "Simulates a timeout failure",
-      "API call to simulate custom timeout of 0.1 seconds",
+      "API call to simulate custom timeout of 0.01 seconds",
       "where this will timeout before the API responds in 0.5 seconds",
     ],
 
@@ -13,12 +13,12 @@ export async function customTimeout() {
       const { res, err } = await sf
         .useDefault()
         .GET("/delay")
-        .timeoutAfter(100)
+        .timeoutAfter(10)
         .runJSON();
 
       console.log(res, err);
       console.log(
-        `Error is 'ValidationException'`,
+        `Error is 'TimeoutException'`,
         err instanceof TimeoutException
       );
     }

@@ -32,11 +32,12 @@ export async function headers() {
         .useDefault()
         .GET("/test")
         .useHeader(async () => {
-          throw new Error("Header Function failed");
+          throw new Error("custom Header Function failed");
         })
         .runJSON();
 
-      console.log(res, err);
+      console.log(res, err?.message);
+      if (err instanceof HeaderException) console.error(err?.error);
     }
   );
 
@@ -55,29 +56,6 @@ export async function headers() {
           Array.from(res.headers.entries()).map((header) => header),
           err
         );
-    }
-  );
-
-  await printGroup(
-    [
-      "API call where header function throws an error to show it bubbling up",
-      "The error will be caught and returned as `err`",
-    ],
-
-    async () => {
-      const { res, err } = await sf
-        .useDefault()
-        .GET("/test")
-        .useHeader(async () => {
-          throw new Error("custom Header Function failed");
-        })
-        .runJSON();
-
-      console.log(res, err);
-
-      console.log(res, err instanceof HeaderException, err?.name, err?.message);
-      console.error(err);
-      if (err instanceof HeaderException) console.error(err?.error);
     }
   );
 
