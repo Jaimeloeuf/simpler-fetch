@@ -887,4 +887,37 @@ export class Fetch {
       optionalErrorResponseParser
     );
   }
+
+  /**
+   * Call API after configuring and get back response as **null**. This is
+   * useful for calling APIs that you know explicitly returns nothing such as a
+   * POST request that returns just a 201 status code. By using this method and
+   * having the response data be `null` to represent void, it prevents
+   * accidental access of any methods that should not be accessed.
+   *
+   * This is `safe`, i.e. this method **will not throw** or let exceptions
+   * bubble up so no try/catch wrapper block or .catch method is needed to
+   * handle the jumping control flow of exceptions.
+   *
+   * @example Call API and handle any exception sequentially in the same scope
+   * ```typescript
+   * const { res, err } = await sf.useDefault().GET("/api").runVoid();
+   *
+   * if (err) return console.log("API Call failed!");
+   *
+   * console.log("Res:", res); // Res: null
+   * ```
+   */
+  runVoid<ErrorType>(optionalErrorResponseParser?: ResponseParser<ErrorType>) {
+    return this.#runner(
+      // This needs to be async to fulfil the return type of Promise<unknown>
+      async () => null,
+
+      // Undefined since if the value is alawys hard coded to null, a validator
+      // function is not needed to validate and type narrow it down.
+      undefined,
+
+      optionalErrorResponseParser
+    );
+  }
 }

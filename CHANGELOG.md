@@ -14,6 +14,11 @@
 
 
 
+## [10.1.0] - 2023-10-16
+### Added
+1. Add new `runVoid` method to always return null for the response data for better type safety to prevent users from accidentally accessing data that should not exist especially for API calls like POST which usually gets back just a 201 with no data at all.
+
+
 ## [10.0.0] - 2023-06-06
 [Migration guide for v9 to v10 major breaking change upgrade](./docs/v9%20to%20v10%20migration%20guide.md)
 
