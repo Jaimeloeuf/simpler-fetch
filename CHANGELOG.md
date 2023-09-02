@@ -14,7 +14,12 @@
 
 
 
-## [10.1.0] - 2023-10-16
+## [10.2.0] - 2023-09-02
+### Added
+1. Add new `getURL` method to get the fully formed URL. Useful for times when you need to reflect the full URL.
+
+
+## [10.1.0] - 2023-08-16
 ### Added
 1. Add new `runVoid` method to always return null for the response data for better type safety to prevent users from accidentally accessing data that should not exist especially for API calls like POST which usually gets back just a 201 with no data at all.
 
@@ -207,7 +212,9 @@ See the individual sections for more details
 1. Remove `fcf` function as it is not super useful and can be easily implemented by users if needed.
 
 
-[Unreleased]: https://github.com/Jaimeloeuf/simpler-fetch/compare/v10.0.0...HEAD
+[Unreleased]: https://github.com/Jaimeloeuf/simpler-fetch/compare/v10.2.0...HEAD
+[10.1.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.2.0
+[10.1.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.1.0
 [10.0.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.0.0
 [9.0.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v9.0.0
 [8.0.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v8.0.0

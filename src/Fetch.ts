@@ -116,6 +116,17 @@ export class Fetch {
   }
 
   /**
+   * Method to get the full generated URL. Use to get the full URL after
+   * constructing it to use for things like reflecting back to the URL.
+   *
+   * The alternative to this method would be to make `this.#url` publicly
+   * readable into `this.url`. However it will no longer be protected from
+   * writes with just the TS Readonly modifier, therefore to be safer, this
+   * method is used instead.
+   */
+  getURL = () => this.#url;
+
+  /**
    * Method to use default `RequestInit` object of the selected base Url for
    * this specific API call.
    *
