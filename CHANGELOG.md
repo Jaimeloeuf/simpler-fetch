@@ -14,6 +14,11 @@
 
 
 
+## [10.3.1] - 2023-10-13
+### Others
+1. Update dependencies.
+
+
 ## [10.3.0] - 2023-10-13
 ### Added
 1. Add new `useQuery` method to set Query Params with generics based type checking, to make it more ergonmic to use rather forcing users to set query params using string interpolation when setting their API's URL path.
