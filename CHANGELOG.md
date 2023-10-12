@@ -14,6 +14,11 @@
 
 
 
+## [10.3.0] - 2023-10-13
+### Added
+1. Add new `useQuery` method to set Query Params with generics based type checking, to make it more ergonmic to use rather forcing users to set query params using string interpolation when setting their API's URL path.
+
+
 ## [10.2.0] - 2023-09-02
 ### Added
 1. Add new `getURL` method to get the fully formed URL. Useful for times when you need to reflect the full URL.
@@ -212,8 +217,9 @@ See the individual sections for more details
 1. Remove `fcf` function as it is not super useful and can be easily implemented by users if needed.
 
 
-[Unreleased]: https://github.com/Jaimeloeuf/simpler-fetch/compare/v10.2.0...HEAD
-[10.1.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.2.0
+[Unreleased]: https://github.com/Jaimeloeuf/simpler-fetch/compare/v10.3.0...HEAD
+[10.3.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.3.0
+[10.2.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.2.0
 [10.1.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.1.0
 [10.0.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.0.0
 [9.0.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v9.0.0

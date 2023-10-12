@@ -31,10 +31,22 @@ export class Fetch {
   readonly #method: HTTPMethod;
 
   /**
+   * ### Warning
+   * This should not be accessed directly, use `getUrl` method instead.
+   *
    * This is the full URL path of the API endpoint to make the request, which
-   * can either be a relative or absolute URL path accepted by `fetch`.
+   * can either be a relative or absolute URL path accepted by `fetch`. Note
+   * that this may not contain all the Query Params yet since users can set more
+   * with `useQuery` method instead of setting it all as strings in the path.
    */
   readonly #url: string;
+
+  /**
+   * Instance variable for Query Params.
+   *
+   * This is not `readonly` since `useQuery` method will write to this variable.
+   */
+  #queryParams?: Record<string, string>;
 
   /**
    * Instance variable to hold the default `RequestInit` options object for the
@@ -119,12 +131,43 @@ export class Fetch {
    * Method to get the full generated URL. Use to get the full URL after
    * constructing it to use for things like reflecting back to the URL.
    *
-   * The alternative to this method would be to make `this.#url` publicly
-   * readable into `this.url`. However it will no longer be protected from
-   * writes with just the TS Readonly modifier, therefore to be safer, this
-   * method is used instead.
+   * This will generate the full URL including any search params used.
    */
-  getURL = () => this.#url;
+  getUrl(): string {
+    // If not query params specified, return URL directly.
+    if (this.#queryParams === undefined) return this.#url;
+
+    /* Generate URL by combining `#url` and query params set with `useQuery` */
+    const url = new URL(this.#url);
+
+    // Create new query params by merging existing query params in the URL set
+    // via the constructor and query params set using the `useQuery` method.
+    const newQueryParams = new URLSearchParams([
+      ...Array.from(url.searchParams.entries()),
+      ...Object.entries(this.#queryParams),
+    ]).toString();
+
+    return `${url.origin}${url.pathname}?${newQueryParams}`;
+  }
+
+  /**
+   * Method to add Query Params to the final URL.
+   *
+   * Note that any query params set here will be merged/added to any existing
+   * query params set via the URL Path string directly, and query params set
+   * here will appear **after** the existing query params.
+   *
+   * The query params are also lazily merged, either when the fetch call is just
+   * about to run and it calls `getUrl`, or if library user calls `getUrl`.
+   *
+   * @returns Returns the current instance to let you chain method calls
+   */
+  useQuery<T extends Record<string, string> = Record<string, string>>(
+    queryParams: T
+  ): Fetch {
+    this.#queryParams = queryParams;
+    return this;
+  }
 
   /**
    * Method to use default `RequestInit` object of the selected base Url for
@@ -415,7 +458,7 @@ export class Fetch {
   async #fetch(): Promise<Response> | never {
     // This library assumes `fetch` exists in the global scope and does not
     // check for it, if it does not exists please load a `fetch` polyfill first!
-    return fetch(this.#url, {
+    return fetch(this.getUrl(), {
       /*
         Properties are set following the order of specificity:
         1. `RequestInit` options object is applied first
