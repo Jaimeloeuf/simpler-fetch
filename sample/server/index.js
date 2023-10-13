@@ -18,6 +18,7 @@ router.all(
       headers: req.headers,
       version: req.params.version,
       body: req.body,
+      query: req.query,
     });
   }
 );
