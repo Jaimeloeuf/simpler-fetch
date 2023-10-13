@@ -4,8 +4,7 @@ import { printGroup } from "../utils.js";
 export async function customTimeout() {
   await printGroup(
     [
-      "Simulates a timeout failure",
-      "API call to simulate custom timeout of 0.01 seconds",
+      "Simulates timeout failure with a 0.01 second custom timeout",
       "where this will timeout before the API responds in 0.5 seconds",
     ],
 
@@ -26,8 +25,7 @@ export async function customTimeout() {
 
   await printGroup(
     [
-      "Simulates a timeout failure",
-      "API call to simulate custom timeout of 1 seconds",
+      "Simulates no error with a 1 second custom timeout",
       "where this will not timeout since the API responds in 0.5 seconds",
     ],
 

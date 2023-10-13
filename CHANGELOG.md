@@ -222,7 +222,8 @@ See the individual sections for more details
 1. Remove `fcf` function as it is not super useful and can be easily implemented by users if needed.
 
 
-[Unreleased]: https://github.com/Jaimeloeuf/simpler-fetch/compare/v10.3.0...HEAD
+[Unreleased]: https://github.com/Jaimeloeuf/simpler-fetch/compare/v10.3.1...HEAD
+[10.3.1]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.3.1
 [10.3.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.3.0
 [10.2.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.2.0
 [10.1.0]: https://github.com/Jaimeloeuf/simpler-fetch/releases/tag/v10.1.0

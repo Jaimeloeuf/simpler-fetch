@@ -6,10 +6,10 @@
     "build": "npx vite build"
   },
   "devDependencies": {
-    "vite": "^4.3.9"
+    "vite": "^4.4.11"
   },
   "dependencies": {
     "simpler-fetch": "file:../..",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   }
 }
