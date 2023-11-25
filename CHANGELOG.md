@@ -14,6 +14,24 @@
 
 
 
+## [10.4.0] - 2023-11-25
+### Changed
+1. Widen `useQuery` method's parameter type from `Record<string, string>` to `Record<string, string | undefined>`.
+    - This makes using optional values easier.
+    - Instead of doing this
+      ```typescript
+      .useQuery(
+          paginationID !== undefined
+          ? { count: "10", paginationID }
+          : { count: "10" }
+      )
+      ```
+    - They can do this instead
+      ```typescript
+      .useQuery({ count: "10", paginationID })
+      ```
+
+
 ## [10.3.1] - 2023-10-13
 ### Others
 1. Update dependencies.

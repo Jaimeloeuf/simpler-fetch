@@ -162,10 +162,22 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useQuery<T extends Record<string, string> = Record<string, string>>(
-    queryParams: T
-  ): Fetch {
-    this.#queryParams = queryParams;
+  useQuery<
+    T extends Record<string, string | undefined> = Record<
+      string,
+      string | undefined
+    >
+  >(queryParams: T): Fetch {
+    // Remove all undefined values so that the default type can accept optional
+    // values without having undefined be in the final generated query params.
+    Object.keys(queryParams).forEach(
+      (key) => queryParams[key] === undefined && delete queryParams[key]
+    );
+
+    // Type cast needed here since TSC cannot infer the removal of undefined
+    // values from the Record type.
+    this.#queryParams = queryParams as Record<string, string>;
+
     return this;
   }
 
