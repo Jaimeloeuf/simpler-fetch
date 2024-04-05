@@ -22,14 +22,9 @@ This library is designed to make working with APIs (especially JSON APIs) extrem
 ## Documentation & Changes
 ***<a href="./docs/migration-guides/v10%20to%20v11.md" target="_blank" style="color: red">Migration guide for v10 to v11 major breaking change upgrade</a>***
 
-***<a href="./docs/migration-guides/v9%20to%20v10.md" target="_blank" style="color: red">Migration guide for v9 to v10 major breaking change upgrade</a>***
-
-***<a href="./docs/migration-guides/v8%20to%20v9.md" target="_blank" style="color: red">Migration guide for v8 to v9 major breaking change upgrade</a>***
-
-***<a href="./docs/migration-guides/v7%20to%20v8.md" target="_blank" style="color: red">Migration guide for v7 to v8 major breaking change upgrade</a>***
-
 - [See full API and other technical documentations](./docs/README.md)
 - [See CHANGELOG for specific changes across versions!](./CHANGELOG.md)
+- [You can find migration guides for the other major versions here](./docs/migration-guides)
 
 
 ## Installation
