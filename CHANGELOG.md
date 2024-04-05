@@ -53,7 +53,7 @@
 
 
 ## [10.0.0] - 2023-06-06
-[Migration guide for v9 to v10 major breaking change upgrade](./docs/v9%20to%20v10%20migration%20guide.md)
+[Migration guide for v9 to v10 major breaking change upgrade](./docs/migration-guides/v9%20to%20v10.md)
 
 ### Main Breaking Changes
 The API is now completely changed, it is better to just use the new API directly instead of migrating 1 by 1.
@@ -92,7 +92,7 @@ The API is now completely changed, it is better to just use the new API directly
 
 
 ## [9.0.0] - 2023-05-07
-[Migration guide for v8 to v9 major breaking change upgrade](./docs/v8%20to%20v9%20migration%20guide.md)
+[Migration guide for v8 to v9 major breaking change upgrade](./docs/migration-guides/v8%20to%20v9.md)
 
 In version 9 of simpler-fetch
 1. Huge big breaking changes following a API redesign, but the core functionality and project goal remains the same.
@@ -142,7 +142,7 @@ The API is now completely changed, it is better to just use the new API directly
 
 
 ## [8.0.0] - 2022-09-04
-[Migration guide for v7 to v8 major breaking change upgrade](./docs/v7%20to%20v8%20migration%20guide.md)
+[Migration guide for v7 to v8 major breaking change upgrade](./docs/migration-guides/v7%20to%20v8.md)
 
 In version 8 of simpler-fetch
 1. Huge big breaking changes following a API redesign, but the core functionality and project goal remains the same

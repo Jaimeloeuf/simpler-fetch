@@ -3,11 +3,13 @@ All technical documents for this library.
 
 
 ## Table of content
-1.  **_<a href="./v9%20to%20v10%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v9 to v10 major breaking change upgrade</a>_**
+1.  **_<a href="./migration-guides/v10%20to%20v11.md" target="_blank" style="color: red">Migration guide for v10 to v11 major breaking change upgrade</a>_**
+    - This details how to migrate from v10 to v11 to handle the breaking API change, and explores the motivation behind the new API.
+1.  **_<a href="./migration-guides/v9%20to%20v10.md" target="_blank" style="color: red">Migration guide for v9 to v10 major breaking change upgrade</a>_**
     - This details how to migrate from v9 to v10 to handle the breaking API change, and explores the motivation behind the new API.
-1.  **_<a href="./v8%20to%20v9%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v8 to v9 major breaking change upgrade</a>_**
+1.  **_<a href="./migration-guides/v8%20to%20v9.md" target="_blank" style="color: red">Migration guide for v8 to v9 major breaking change upgrade</a>_**
     - This details how to migrate from v8 to v9 to handle the breaking API change, and explores the motivation behind the new API.
-1.  **_<a href="./v7%20to%20v8%20migration%20guide.md" target="_blank" style="color: red">Migration guide for v7 to v8 major breaking change upgrade</a>_** - This details how to migrate from v7 and earlier to v8 to handle the breaking API change, and explores the motivation behind the new API.
+1.  **_<a href="./migration-guides/v7%20to%20v8.md" target="_blank" style="color: red">Migration guide for v7 to v8 major breaking change upgrade</a>_** - This details how to migrate from v7 and earlier to v8 to handle the breaking API change, and explores the motivation behind the new API.
 1.  [Errors vs Exceptions](./Errors%20vs%20Exceptions.md)
     - Explores the difference between Errors and Exceptions, to lay the context for the doc on Exception handling.
 1.  [Exceptions handling](./Exceptions%20handling.md)
