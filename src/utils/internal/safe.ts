@@ -1,9 +1,12 @@
 import type { RequestException } from "../../types";
 
 /**
- * @param fn Wraps any function to prevent exceptions from bubbling up
- * @returns Returns either the result of the function call or an exception if
- * any is thrown, encapsulating both in an object that can be destructured.
+ * This function wraps any given function to prevent exceptions from bubbling up
+ * by returning either the result of the function call or an exception if
+ * any is thrown, encapsulating both in a tuple that can be destructured.
+ * 
+ * The return type's tuple order is always [err|null, res|null], always error
+ * first, value second, so users are forced to check for errors first.
  *
  * ### About
  * Function wrapper to ensure that any of the `run` methods will not throw /
@@ -23,72 +26,16 @@ import type { RequestException } from "../../types";
  * type to be not undefined, effectively only requiring the users to do type
  * narrowing once rather than twice.
  *
- * This function's return type is generically typed using the return type of the
- * `fn` parameter.
- *
- * The return type is manually/explicitly typed which is different from the TS
- * inferred type signature, because if `err: undefined` and `res: undefined` are
- * not explicitly written in the return objects of the 2 methods, TS will infer
- * the return type to be a union of the types `{ res }` and `{ err }`. This is
- * different from the explicit type signature given, which says that every
- * object returned will have both properties `{ res, err }` defined even if one
- * of the values is `undefined`. The problem with the inferred return type is
- * that TS library users cannot write code that allows them to destructure both
- * values out first like `const { res, err } = ... API call ... `, which is kind
- * of the main style that this library encourages users to use because TS will
- * complain that the user is trying to destructure a property that does not
- * exist on the object. Even though the value does not exist as TS suggests,
- * accessing an unknown property on an object produces `undefined` anyways.
- *
- *
- * ### Why is `@ts-ignore` used?
- * Although this type signature provides strong type safety, to implement this
- * type signature properly would mean that the code (and by extension the build
- * output) will be longer because the function would need to hardcode the props
- * that are undefined. This is unnecessary because in JS, any prop that isn't
- * defined on an object will have 'undefined' as its value when you try to
- * access it by destructuring it out. Therefore the `ts-ignore` flag is used to
- * ignore the type error of missing 'undefined' props to reduce library size
- * while not affecting its usage.
- *
- * Implementation without using the `ts-ignore` flag
+ * ### Why not use an opaque type for return type signature?
  * ```typescript
- * const safe = <T>(
- *   fn: () => Promise<T>
- * ): Promise<{ res: T; err: undefined } | { res: undefined; err: Error }> =>
- *    fn()
- *       // both blocks requires hardcoded undefined
- *      .then((res) => ({ res, err: undefined }))
- *      .catch((err) => ({ err, res: undefined }));
- * ```
- *
- *
- * ### Why can't the return type be inferred?
- * ```typescript
- * const safe = async <T>(fn: () => Promise<T>) =>
- *   fn()
- *     .then((res) => ({ res }))
- *     .catch((err) => ({ err }));
- * ```
- * Why can't the code be written like this and let TS infer the return type?
- *
- * Because the inferred type will be a union type of `{res} | {err}`, which
- * means that if the user attempts to write `{ res, err }` to destructure out
- * the values, it will result in a type error, because TS thinks that the return
- * type will either be `{res}` or `{err}` only without letting the other
- * counterpart be destructured to undefined unless explicitly annotated.
- *
- *
- * ### Why not use an opaque type?
- * ```typescript
- * type Success<T> = { res: T; err: undefined };
- * type Failed = { res: undefined; err: Error };
+ * type Success<T> = [null, T];
+ * type Failed = [Error, null];
  * type WrappedResponse<T> = Success<T> | Failed;
  *
  * const safe = <T>(fn: () => Promise<T>): Promise<WrappedResponse<T>> =>
  *   fn()
- *     .then((res) => ({ res, err: undefined }))
- *     .catch((err) => ({ err, res: undefined }));
+ *     .then((res) => [null, res])
+ *     .catch((err) => [err, null]);
  * ```
  * Why can't the code be written like this to use an opaque type for the return
  * type so that it reads off nicely rather than explicitly defining the return
@@ -104,10 +51,7 @@ import type { RequestException } from "../../types";
  */
 export const safe = <T>(
   fn: () => Promise<T>
-): Promise<
-  { res: T; err: undefined } | { res: undefined; err: RequestException }
-> =>
-  // @ts-ignore See the JSDoc on why this is used
+): Promise<readonly [null, T] | readonly [RequestException, null]> =>
   fn()
-    .then((res) => ({ res }))
-    .catch((err) => ({ err }));
+    .then((res) => [null, res] as const)
+    .catch((err) => [err, null] as const);
