@@ -9,7 +9,7 @@ export async function postRequest() {
       /** Example type used for type checking the `bodyJSON` input */
       type BodyContentType = { some: string };
 
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .POST("/test")
         .bodyJSON<BodyContentType>({ some: "data" })
@@ -26,7 +26,7 @@ export async function postRequest() {
     ],
 
     async () => {
-      const { res, err } = await sf.useDefault().POST("/test").runJSON();
+      const [err, res] = await sf.useDefault().POST("/test").runJSON();
 
       console.log(res, err);
     }

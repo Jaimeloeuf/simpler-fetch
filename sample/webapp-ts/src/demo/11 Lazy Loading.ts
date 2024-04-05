@@ -11,7 +11,7 @@ export async function lazyLoading() {
 
     async () => {
       const { sf } = await import("simpler-fetch");
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useOnce("https://jsonplaceholder.typicode.com/todos/1")
         .GET()
         .runJSON();

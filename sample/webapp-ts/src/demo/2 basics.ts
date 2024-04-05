@@ -7,7 +7,7 @@ export async function basics() {
     "API call with the default base Url",
 
     async () => {
-      const { res, err } = await sf.useDefault().GET("/test").runJSON();
+      const [err, res] = await sf.useDefault().GET("/test").runJSON();
 
       console.log(res, err);
     }
@@ -17,7 +17,7 @@ export async function basics() {
     "API call with a non default base Url",
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useBase(baseIdentifier.v2)
         .GET("/test")
         .runJSON();
@@ -30,7 +30,7 @@ export async function basics() {
     "One off call to an external API whose base URL is not saved",
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useOnce("https://jsonplaceholder.typicode.com/todos/1")
         .GET()
         .runJSON();

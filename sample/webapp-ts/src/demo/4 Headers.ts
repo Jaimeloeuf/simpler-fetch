@@ -6,7 +6,7 @@ export async function headers() {
     "API call with the default base Url with headers set in multiple ways",
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/test")
         // Hardcoded header object
@@ -28,7 +28,7 @@ export async function headers() {
     ],
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/test")
         .useHeader(async () => {
@@ -37,7 +37,10 @@ export async function headers() {
         .runJSON();
 
       console.log(res, err?.message);
-      if (err instanceof HeaderException) console.error(err?.error);
+
+      if (err instanceof HeaderException) {
+        console.error(err?.error);
+      }
     }
   );
 
@@ -49,9 +52,9 @@ export async function headers() {
     ],
 
     async () => {
-      const { res, err } = await sf.useDefault().GET("/test").runJSON();
+      const [err, res] = await sf.useDefault().GET("/test").runJSON();
 
-      if (err === undefined)
+      if (err === null)
         console.log(
           Array.from(res.headers.entries()).map((header) => header),
           err
@@ -63,7 +66,7 @@ export async function headers() {
     "Show case this example of overriding the header",
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/test")
         .useDefaultHeaders()

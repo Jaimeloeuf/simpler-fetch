@@ -15,7 +15,7 @@ export async function responseValidation() {
       const validator = (data: unknown): data is { someCustomData: boolean } =>
         typeof (data as any)?.someCustomData === "boolean";
 
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/response-validation/correct")
         .runJSON<ExpectedResponseType>(validator);
@@ -32,7 +32,7 @@ export async function responseValidation() {
         (data as any)?.someCustomData === true ||
         (data as any)?.someCustomData === false;
 
-      const { res, err } = await sf
+      const [err, _res] = await sf
         .useDefault()
         .GET("/response-validation/incorrect")
         .runJSON<ExpectedResponseType>(validator);
@@ -57,7 +57,7 @@ export async function responseValidation() {
     ],
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/response-validation/correct")
 
@@ -81,7 +81,7 @@ export async function responseValidation() {
     ],
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/response-validation/incorrect")
 
@@ -95,7 +95,7 @@ export async function responseValidation() {
 
       console.log("res validation with zod incorrect", res, err);
 
-      if (err !== undefined) {
+      if (err !== null) {
         // See RequestError
         // although ZodError not a child type of the RequestError union type,
         // you can still use instanceof to check if it is a ZodError or any other

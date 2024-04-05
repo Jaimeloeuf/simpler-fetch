@@ -7,7 +7,7 @@ export async function queryParams() {
     "Using query params in API URL Path string directly",
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/test?query=something")
         .runJSON();
@@ -23,7 +23,7 @@ export async function queryParams() {
     ],
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/test")
         .useQuery<{ query: string }>({ query: "something" })
@@ -40,7 +40,7 @@ export async function queryParams() {
     ],
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/test?query=something")
         .useQuery<{ secondQuery: string }>({ secondQuery: "something-else" })
@@ -59,7 +59,7 @@ export async function queryParams() {
     ],
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/test?query=something")
         .useQuery<{ query: string }>({ query: "something-else" })

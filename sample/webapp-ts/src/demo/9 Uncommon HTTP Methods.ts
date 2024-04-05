@@ -9,7 +9,7 @@ export async function uncommonMethods() {
     ],
 
     async () => {
-      const { res, err } = await sf.useDefault().HTTP("HEAD", "/test").run();
+      const [err, res] = await sf.useDefault().HTTP("HEAD", "/test").run();
 
       console.log(res, err);
     }

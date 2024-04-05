@@ -9,7 +9,7 @@ export async function customTimeout() {
     ],
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/delay")
         .timeoutAfter(10)
@@ -30,7 +30,7 @@ export async function customTimeout() {
     ],
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/delay")
         .timeoutAfter(1000)

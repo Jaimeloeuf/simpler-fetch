@@ -11,7 +11,7 @@ export async function exceptionHandling() {
 
     async () => {
       // API call to a definitely not available site to simulate an API call failure
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useOnce("https://hopefully-this-not-registered.com/some/invalid/path")
         .GET()
         .runJSON();

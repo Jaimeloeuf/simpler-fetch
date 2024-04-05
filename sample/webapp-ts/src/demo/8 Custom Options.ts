@@ -6,7 +6,7 @@ export async function customOptions() {
     "Demo to show how to set Options object for the API call",
 
     async () => {
-      const { res, err } = await sf
+      const [err, res] = await sf
         .useDefault()
         .GET("/test")
         .useOptions({ credentials: "omit" })

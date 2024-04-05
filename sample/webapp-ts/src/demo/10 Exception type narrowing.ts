@@ -8,7 +8,7 @@ export async function exceptionTypeNarrowing() {
     async () => {
       class MyCustomError extends Error {}
 
-      const { err } = await sf
+      const [err] = await sf
         .useDefault()
         .GET("/test")
         .useHeader(async () => {
@@ -17,7 +17,7 @@ export async function exceptionTypeNarrowing() {
         .runJSON();
 
       // Type narrow `err` to RequestException
-      if (err !== undefined) {
+      if (err !== null) {
         // Type narrow `err` to HeaderException
         if (err instanceof HeaderException) {
           // Type narrow `err` to MyCustomError

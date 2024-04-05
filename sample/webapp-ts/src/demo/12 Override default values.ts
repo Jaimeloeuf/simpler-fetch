@@ -17,7 +17,7 @@ export async function overrideDefaultValues() {
       // This is fine since this is a REPLACEMENT, replacing the old object
       sf.useDefault().setDefaultOptions({ credentials: "include" });
 
-      const { res } = await tmp.useDefaultOptions().runJSON();
+      const [_, res] = await tmp.useDefaultOptions().runJSON();
 
       console.log(res?.data);
     }
@@ -38,7 +38,7 @@ export async function overrideDefaultValues() {
       // This is fine since this is a REPLACEMENT, replacing the old object
       sf.useDefault().setDefaultHeaders({ credentials: "include" });
 
-      const { res } = await tmp.useDefaultHeaders().runJSON();
+      const [_, res] = await tmp.useDefaultHeaders().runJSON();
 
       console.log(res?.data);
     }
