@@ -28,12 +28,12 @@ async function callAPI() {
   // Convert a zod parser into a validator for the response data
   const validator = zodToValidator(zodParser);
 
-  const { res, err } = await sf
+  const [err, res] = await sf
     .useOnce("https://jsonplaceholder.typicode.com/todos/1")
     .GET()
     .runJSON<Todo>(validator);
 
-  if (err !== undefined) {
+  if (err !== null) {
     console.error(err);
   } else {
     // Compile time type safe AND runtime validated data structure

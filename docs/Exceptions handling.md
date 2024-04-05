@@ -156,17 +156,17 @@ async function getData() {
   
   // Exceptions are ALWAYS returned, they are NEVER THROWN!!!
   // Therefore, you do not need any try/catch blocks and can write code sequentially
-  const { res, err } = await sf
+  const [err, res] = await sf
     .useOnce("https://example.com/api")
     .GET()
     .runJSON<MyResponse>(validator); // Typed response with optional runtime validation
 
   // Check if there are any exceptions
-  if (err !== undefined) {
-    // type narrow `err` from `RequestException | undefined` to `RequestException`
+  if (err !== null) {
+    // type narrow `err` from `RequestException | null` to `RequestException`
     console.error("err", err);
 
-    // `res` will be type narrowed from `ApiResponse<MyResponse> | undefined` to `undefined`
+    // `res` will be type narrowed from `ApiResponse<MyResponse> | null` to `null`
     console.log("res", res);
 
     // Check for specific Exception type
@@ -181,8 +181,8 @@ async function getData() {
     return;
   }
 
-  // If `err` is undefined, that means that there was a valid response returned
-  // `res` will be type narrowed from `ApiResponse<MyResponse> | undefined` to `ApiResponse<MyResponse>`
+  // If `err` is null, that means that there was a valid response returned
+  // `res` will be type narrowed from `ApiResponse<MyResponse> | null` to `ApiResponse<MyResponse>`
   console.log(res.ok); // `Response.ok` boolean will be true if HTTP status < 300
   console.log(res.status); // HTTP status code
   console.log(res.data); // Data returned from API server, parsed as JSON and validated to be MyResponse

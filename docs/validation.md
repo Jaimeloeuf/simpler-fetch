@@ -1,5 +1,5 @@
 # Response validation with Validator functions
-Updated on **1/06/2023** for **simpler-fetch@v10.0.0**
+Updated on **5/04/2024** for **simpler-fetch@v11.0.0**
 
 You can write validation functions to do runtime response validation.
 
@@ -21,12 +21,12 @@ async function callAPI() {
     typeof obj.title === "string" &&
     typeof obj.completed === "boolean";
 
-  const { res, err } = await sf
+  const [err, res] = await sf
     .useOnce("https://jsonplaceholder.typicode.com/todos/1")
     .GET()
     .runJSON<Todo>(validator);
 
-  if (err !== undefined) {
+  if (err !== null) {
     console.error(err);
   } else if (res.ok) {
     // Compile time type safe AND runtime validated data structure
@@ -53,12 +53,12 @@ async function callAPI() {
   // Returns true no matter what!
   const validator = (obj: any): obj is Todo => true;
 
-  const { res, err } = await sf
+  const [err, res] = await sf
     .useOnce("https://jsonplaceholder.typicode.com/todos/1")
     .GET()
     .runJSON<Todo>(validator);
 
-  if (err !== undefined) {
+  if (err !== null) {
     console.error(err);
   } else if (res.ok) {
     // Compile time type safe AND runtime validated data structure

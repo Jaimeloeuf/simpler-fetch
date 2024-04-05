@@ -56,7 +56,7 @@ import { sf } from "simpler-fetch";
 
 // Basic GET example
 async function getExample() {
-    const { res, err } = await sf
+    const [err, res] = await sf
         // Make a one off API call to this URL without any base Urls
         .useOnce("https://jsonplaceholder.typicode.com/todos/1")
         .GET()
@@ -67,7 +67,7 @@ async function getExample() {
 
 // POST request example
 async function postExample() {
-    const { res, err } = await sf
+    const [err, res] = await sf
         // Make a one off API call to this URL without any base Urls
         .useOnce("https://jsonplaceholder.typicode.com/posts")
         .POST()
@@ -87,7 +87,7 @@ import { sf } from "simpler-fetch";
 sf.addBase("default", "https://deployed-api.com").setDefault("default");
 
 // Make a POST request and use a bunch of different ways to generate header values
-const { res, err } = await sf
+const [err, res] = await sf
     // Use the default base Url
     .useDefault()
     .POST("/test")

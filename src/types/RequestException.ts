@@ -18,7 +18,7 @@ import type {
  * Basically this is the exception type that can be returned from the API
  * call safely.
  * ```typescript
- * const { res, err } = ... --> API call
+ * const [err, res] = ... --> API call
  *
  * err; --> This `err` is `RequestException` type
  * ```

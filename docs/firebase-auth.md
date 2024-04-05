@@ -31,14 +31,16 @@ const getAuthHeader = async () => ({
 
 // The function that will actually get the auth header and make the API call
 async function API_call() {
-  const { res, err } = await sf
+  const [err, res] = await sf
     .useOnce('https://example.com/end-point-that-requires-auth')
     .GET()
     .useHeader(getAuthHeader) // See section below on passing this in
     .runJSON();
 
   // Quit function if the API call failed
-  if (err) return console.error(err);
+  if (err !== null) {
+    return console.error(err);
+  }
 
   // Else do something
   console.log(res);

@@ -10,7 +10,7 @@ import type { Validator } from "../../types";
  * which means that the API lib will always return its own Exception instance
  * with a Validation Failed exception message, while it might be preferrable for
  * users to receive the actual `ZodError` by having it bubble through our API
- * library. So that users can get it with `const { res, err } =` and they can
+ * library. So that users can get it with `const [err, res] =` and they can
  * check `err` type using `instanceof`.
  *
  * Alternative using safeParse
