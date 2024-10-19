@@ -6,7 +6,7 @@
  * to see the shape of the returned data clearly.
  */
 export type ApiResponse<T> = {
-  ok: Response["ok"];
+  ok: boolean;
   status: Response["status"];
   headers: Response["headers"];
   data: T;

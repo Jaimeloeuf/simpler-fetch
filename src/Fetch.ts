@@ -748,7 +748,6 @@ export class Fetch {
           throw new ValidationException("Validation Failed");
 
         return {
-          // Using boolean directly instead of `res.ok` for smaller build output
           ok: true,
           status: res.status,
           headers: res.headers,
@@ -777,7 +776,6 @@ export class Fetch {
       )) as ErrorType;
 
       return {
-        // Using boolean directly instead of `res.ok` for smaller build output
         ok: false,
         status: res.status,
         headers: res.headers,
