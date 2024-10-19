@@ -133,7 +133,7 @@ This library does not have as many advanced features as libraries like `Axios` (
     - All the `run` methods do not throw any exceptions / let any errors bubble up to the caller, instead errors are treated as values returned together with the response if any. This means that users do not have to always write extra boilerplate code at their API call sites just to handle errors.
         - Read more about how [this library views error handling](./docs/Exceptions%20handling.md)
 - This library is extremely small compared to other popular HTTP clients like `Axios` and `superagent`, here is a comparison of the minified library after using brotli compression
-    1. 1.5kb - `simpler-fetch`
+    1. 1.7kb - `simpler-fetch`
     1. 14.3kb - [`axios v1.4.0`](https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js) is 9.5 times larger than `simpler-fetch`
     1. 19.1kb - [`superagent v8.0.9`](https://cdn.jsdelivr.net/npm/superagent@8.0.9/dist/superagent.min.js) is 12.7 times larger than `simpler-fetch`
 
