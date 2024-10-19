@@ -4,7 +4,7 @@ import type { RequestException } from "../../types";
  * This function wraps any given function to prevent exceptions from bubbling up
  * by returning either the result of the function call or an exception if
  * any is thrown, encapsulating both in a tuple that can be destructured.
- * 
+ *
  * The return type's tuple order is always [err|null, res|null], always error
  * first, value second, so users are forced to check for errors first.
  *
@@ -22,9 +22,9 @@ import type { RequestException } from "../../types";
  * be more ergonomic for library users when using this library with TypeScript,
  * as the new type signature will help with type narrowing operations, as
  * narrowing the type of one of the return value also narrows the other value's
- * type. I.e. narrowing the `err` type to undefined will also narrow the `res`
- * type to be not undefined, effectively only requiring the users to do type
- * narrowing once rather than twice.
+ * type. I.e. narrowing the `err` type to null will also narrow the `res` type
+ * to be not null, effectively only requiring the users to do type narrowing
+ * once rather than twice.
  *
  * ### Why not use an opaque type for return type signature?
  * ```typescript

@@ -49,7 +49,7 @@ import { sf } from "simpler-fetch";
 // Alternatively you can import this library directly from a CDN link
 // You can use any provider, however jsDelivr is shown here as it can be used in China and it is backed by multiple CDNs
 // For CDN use, PEG your code to a specific version to ensure it does not break between upgrades, e.g.
-// import { sf } from "https://cdn.jsdelivr.net/npm/simpler-fetch@10.3.1/dist/index.js";
+// import { sf } from "https://cdn.jsdelivr.net/npm/simpler-fetch/dist/index.js";
 
 // Basic GET example
 async function getExample() {

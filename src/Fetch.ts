@@ -471,19 +471,17 @@ export class Fetch {
     // This library assumes `fetch` exists in the global scope and does not
     // check for it, if it does not exists please load a `fetch` polyfill first!
     return fetch(this.getUrl(), {
-      /*
-        Properties are set following the order of specificity:
-        1. `RequestInit` options object is applied first
-        2. HTTP method, which cannot be overwritten by `options`
-        3. Instance specific headers, which cannot be overwritten by `options`
-        4. Instance specific body data, which cannot be overwritten by `options`
-        5. Instance specific timeout abortController's signal, which cannot be
-           overwritten by `options`.
-
-        From this order, we can see that the values in `options` object cannot
-        override HTTP method set in the constructor, headers set with the
-        `useHeader` method and `body` set by any of the body methods.
-      */
+      // Properties are set following the order of specificity:
+      // 1. `RequestInit` options object is applied first
+      // 2. HTTP method, which cannot be overwritten by `options`
+      // 3. Instance specific headers, which cannot be overwritten by `options`
+      // 4. Instance specific body data, which cannot be overwritten by `options`
+      // 5. Instance specific timeout abortController's signal, which cannot be
+      // overwritten by `options`.
+      //
+      // From this order, we can see that the values in `options` object cannot
+      // override HTTP method set in the constructor, headers set with the
+      // `useHeader` method and `body` set by any of the body methods.
 
       // Apply with spread, since final object is the same `RequestInit` type
       ...this.#options,
@@ -556,7 +554,9 @@ export class Fetch {
    */
   async #run(): Promise<Response> | never {
     // If no custom timeout specified, run `#fetch` and return directly.
-    if (this.#abortController === undefined) return this.#fetch();
+    if (this.#abortController === undefined) {
+      return this.#fetch();
+    }
 
     // Create new timeout using the custom timeout milliseconds value, and save
     // the timeoutID so that the timer can be cleared to skip this callback if
@@ -739,12 +739,12 @@ export class Fetch {
         // Only run validation if a validator is passed in
         // User's validator can throw an exception, which will be safely bubbled
         // up to them if they want to receive a custom exception instead.
+        // Throwing a custom named class instead of the generic Error class so
+        // that users can check failure cause with `instanceof` operator.
         if (
           optionalResponseValidator !== undefined &&
           !optionalResponseValidator(data)
         )
-          // Use custom named class instead of the generic Error class so
-          // that users can check failure cause with `instanceof` operator.
           throw new ValidationException("Validation Failed");
 
         return {
