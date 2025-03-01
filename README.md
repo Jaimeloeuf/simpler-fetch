@@ -146,9 +146,6 @@ This library does not have as many advanced features as libraries like `Axios` (
     - The reason is because the main use case for AbortControllers are usually for setting custom timeouts and this is already supported by the `timeoutAfter` method on `Fetch`.
     - Therefore this is not supported since there are not many specific use cases for it right now.
         - Might implement this in the future if there is an actual concrete use case for it.
-- Although this library supports using the `HEAD` and `OPTIONS` HTTP methods, they are not as easy to use as other common HTTP methods like `GET` and `POST` since they do not have methods named after them, e.g. there is `sf.useDefault().GET()` but no `sf.useDefault().HEAD()`.
-    - Since these are rather low level and extremely rarely used HTTP methods, users need to use the more cumbersome `HTTP` method on `Builder` instances like this `sf.useDefault().HTTP('HEAD', '/path')`.
-        - See the sample project for example on this.
 - Yes 1.5kb is still extra overhead compared to using raw `fetch`, but if you used this library instead of `fetch` directly, this library will more than make up for the extra overhead with the amount of boilerplate code it removes compared to using raw `fetch` many times.
 
 
