@@ -51,7 +51,10 @@ import type { RequestException } from "../../types";
  */
 export const safe = <T>(
   fn: () => Promise<T>
-): Promise<readonly [null, T] | readonly [RequestException, null]> =>
+): Promise<
+  | readonly [exception: null, result: T]
+  | readonly [exception: RequestException, result: null]
+> =>
   fn()
     .then((res) => [null, res] as const)
     .catch((err) => [err, null] as const);
