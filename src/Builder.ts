@@ -111,19 +111,7 @@ export class Builder {
   }
 
   /**
-   * tl;dr Do not use this unless you know what you are doing.
-   *
-   * ### About
-   * Wrapper over `Fetch` constructor to construct a new instance with the given
-   * HTTP method and path alongside the values set on this `Builder` instance.
-   *
-   * ### Library Users
-   * For the most part, library users ***SHOULD NOT*** be using this low level
-   * API, instead they should use the methods named after the HTTP methods such
-   * as `.GET`, `.POST` and so on. The only reason why this is made public is
-   * for advanced library users who want to use HTTP methods like `HEAD` and
-   * `OPTION` to still be able to do so using our library instead of doing some
-   * crazy hack, since there is no method for those specific HTTP methods.
+   * Standard API for creating a new `Fetch` instance
    */
   HTTP = (method: HTTPMethod, path: string = "") =>
     new Fetch(
@@ -152,6 +140,12 @@ export class Builder {
       this.#defaultOpts,
       this.#defaultHeaders
     );
+
+  /** Construct a new `Fetch` instance to make a `GET` API call */
+  HEAD = (path?: string) => this.HTTP("HEAD", path);
+
+  /** Construct a new `Fetch` instance to make a `GET` API call */
+  OPTIONS = (path?: string) => this.HTTP("OPTIONS", path);
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
   GET = (path?: string) => this.HTTP("GET", path);
