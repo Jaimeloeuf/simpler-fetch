@@ -7,7 +7,6 @@ import { exceptionHandling } from "./demo/5 Exception Handling.js";
 import { responseValidation } from "./demo/6 Runtime Response Validation.js";
 import { customTimeout } from "./demo/7 Custom Timeout.js";
 import { customOptions } from "./demo/8 Custom Options.js";
-import { uncommonMethods } from "./demo/9 Uncommon HTTP Methods.js";
 import { exceptionTypeNarrowing } from "./demo/10 Exception type narrowing.js";
 import { lazyLoading } from "./demo/11 Lazy Loading.js";
 import { overrideDefaultValues } from "./demo/12 Override default values.js";
@@ -31,8 +30,6 @@ import { printGroup } from "./utils.js";
   await printGroup("Custom Timeout", customTimeout);
 
   await printGroup("Custom Options", customOptions);
-
-  await printGroup("Uncommon HTTP methods", uncommonMethods);
 
   await printGroup("Error Type Narrowing", exceptionTypeNarrowing);
 
