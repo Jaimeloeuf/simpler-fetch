@@ -2,6 +2,24 @@ import { Builder } from "./Builder";
 import { sfError } from "./errors";
 import { skipValidation, jsonParser } from "./utils";
 
+declare global {
+  /**
+   * `Record<string, string>` mapping of baseUrlIdentifier (like v1) to baseUrl
+   * (like http://localhost:3000/v1).
+   *
+   * ## Technical Details
+   * 1. This has to be an interface to do interface merging across files.
+   * 1. This should be `Record<string, string>` to derive BaseUrlIdentifiers /
+   * BaseUrls from the key / value.
+   */
+  interface sf_BaseUrlObject {}
+
+  /**
+   * Derived type from `sf_BaseUrlObject` for a union type of string literals.
+   */
+  type sf_BaseUrlIdentifiers = keyof sf_BaseUrlObject;
+}
+
 /**
  * `sf` (simpler-fetch) is used to create an Object Oriented `Fetch` abstraction
  * to use the builder pattern to give users an easy to use chainable interface
@@ -24,32 +42,73 @@ import { skipValidation, jsonParser } from "./utils";
  * propagate so that you can see it and fix it before this goes to production!
  */
 export class sf {
-  /** Mapping of BaseURL specifiers to `Builder` instances. */
+  /**
+   * Mapping of BaseURL specifiers to `Builder` instances.
+   */
   static readonly #baseUrls: Map<string, Builder> = new Map();
 
   /**
-   * Add a new baseUrl identifier and baseUrl mapping.
-   * For example, you can add different baseUrls for your APIs such
-   * as 'v1', 'v2', 'latest', 'billing' and etc...
+   * Set all the baseUrl identifiers to baseUrls mapping. This has to follow the
+   * interface `sf_BaseUrlObject` defined globally, and can only be called once.
+   *
+   * ## Example
+   * ```typescript
+   * sf.setBaseUrls({
+   *   v1: "http://localhost:3000/v1",
+   *
+   *   // Different base Urls can be useful for API versioning
+   *   v2: "http://localhost:3000/v2",
+   *
+   *   // It can also be useful for interfacing with external API
+   *   stripeBilling: "http://api.stripe.com/billing",
+   * });
+   * ```
    */
-  static addBase(identifier: string, url: string) {
-    if (sf.#baseUrls.has(identifier)) {
-      throw new sfError(`sf: Identifier '${identifier}' already set`);
+  static setBaseUrls(baseUrls: sf_BaseUrlObject) {
+    if (sf.#baseUrls.size !== 0) {
+      throw new sfError(`sf: BaseUrls can only be set once`);
     }
 
-    sf.#baseUrls.set(identifier, new Builder(url));
+    for (const [baseUrlIdentifier, baseUrl] of Object.entries(baseUrls)) {
+      sf.#baseUrls.set(baseUrlIdentifier, new Builder(baseUrl));
+    }
 
     // Return itself so that users can chain other static methods.
-    // This also allows users to call addBase a few times setting all identifier
-    // and baseUrl mappings at once.
     return sf;
   }
 
   /**
-   * Select a baseUrl to use, using a baseUrl identifier.
-   * For example, you can select 'v1' baseUrl after adding it with `sf.addBase`
+   * Private property used to track default base URL identifier set by user.
    */
-  static useBase(identifier: string) {
+  static #defaultBaseUrlIdentifier?: sf_BaseUrlIdentifiers;
+
+  /**
+   * Set a particular identifier and baseUrl mapping as the default mapping to
+   * use so that you can easily use this default mapping in your API calls.
+   */
+  static setDefaultBaseUrl(identifier: sf_BaseUrlIdentifiers) {
+    if (!sf.#baseUrls.has(identifier)) {
+      throw new sfError(`sf: Identifier '${identifier}' not found`);
+    }
+
+    sf.#defaultBaseUrlIdentifier = identifier;
+  }
+
+  /**
+   * Use the default baseUrl set with `setDefaultBaseUrl`.
+   */
+  static useDefaultBaseUrl() {
+    if (sf.#defaultBaseUrlIdentifier === undefined) {
+      throw new sfError("sf: Default identifier not set");
+    }
+
+    return sf.useBaseUrl(sf.#defaultBaseUrlIdentifier);
+  }
+
+  /**
+   * Use a baseUrl using its identifier, e.g. `v1`
+   */
+  static useBaseUrl(identifier: sf_BaseUrlIdentifiers) {
     const builder = sf.#baseUrls.get(identifier);
 
     if (builder === undefined) {
@@ -57,36 +116,6 @@ export class sf {
     }
 
     return builder;
-  }
-
-  /**
-   * Private property used to track default identifier set by user for the
-   * `useDefault` method.
-   */
-  static #defaultIdentifier?: string;
-
-  /**
-   * Set a particular identifier and baseUrl mapping as the default mapping to
-   * use so that you can easily use this default mapping in your API calls
-   * without having to import and specify the identifier.
-   */
-  static setDefault(identifier: string) {
-    if (!sf.#baseUrls.has(identifier)) {
-      throw new sfError(`sf: Identifier '${identifier}' not found`);
-    }
-
-    sf.#defaultIdentifier = identifier;
-  }
-
-  /**
-   * Use the default identifier and baseUrl mapping for an API call.
-   */
-  static useDefault() {
-    if (sf.#defaultIdentifier === undefined) {
-      throw new sfError("sf: Default identifier not set");
-    }
-
-    return sf.useBase(sf.#defaultIdentifier);
   }
 
   /**
