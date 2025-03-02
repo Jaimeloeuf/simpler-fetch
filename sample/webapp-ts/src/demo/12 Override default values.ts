@@ -10,12 +10,12 @@ export async function overrideDefaultValues() {
     ],
 
     async () => {
-      sf.useDefault().setDefaultOptions({ credentials: "omit" });
+      sf.useDefaultBaseUrl().setDefaultOptions({ credentials: "omit" });
 
-      const tmp = sf.useDefault().GET("/test");
+      const tmp = sf.useDefaultBaseUrl().GET("/test");
 
       // This is fine since this is a REPLACEMENT, replacing the old object
-      sf.useDefault().setDefaultOptions({ credentials: "include" });
+      sf.useDefaultBaseUrl().setDefaultOptions({ credentials: "include" });
 
       const [_, res] = await tmp.useDefaultOptions().runJSON();
 
@@ -31,12 +31,12 @@ export async function overrideDefaultValues() {
     ],
 
     async () => {
-      sf.useDefault().setDefaultHeaders({ credentials: "omit" });
+      sf.useDefaultBaseUrl().setDefaultHeaders({ credentials: "omit" });
 
-      const tmp = sf.useDefault().GET("/test");
+      const tmp = sf.useDefaultBaseUrl().GET("/test");
 
       // This is fine since this is a REPLACEMENT, replacing the old object
-      sf.useDefault().setDefaultHeaders({ credentials: "include" });
+      sf.useDefaultBaseUrl().setDefaultHeaders({ credentials: "include" });
 
       const [_, res] = await tmp.useDefaultHeaders().runJSON();
 

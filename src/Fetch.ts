@@ -349,7 +349,7 @@ export class Fetch {
    * ### Using generics for TS Type Safety
    * ```typescript
    * const [err, res] = await sf
-   *   .useDefault()
+   *   .useDefaultBaseUrl()
    *   .POST("/api")
    *   .body<FormData>(myValue) // TS will enforce that myValue is FormData
    *   .runJSON();
@@ -649,7 +649,7 @@ export class Fetch {
    *
    * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
-   * const [err, res] = await sf.useDefault().GET("/api").run();
+   * const [err, res] = await sf.useDefaultBaseUrl().GET("/api").run();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -793,7 +793,7 @@ export class Fetch {
    *
    * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
-   * const [err, res] = await sf.useDefault().GET("/api").runText();
+   * const [err, res] = await sf.useDefaultBaseUrl().GET("/api").runText();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -820,7 +820,7 @@ export class Fetch {
    *
    * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
-   * const [err, res] = await sf.useDefault().GET("/api").runBlob();
+   * const [err, res] = await sf.useDefaultBaseUrl().GET("/api").runBlob();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -847,7 +847,7 @@ export class Fetch {
    *
    * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
-   * const [err, res] = await sf.useDefault().GET("/api").runFormData();
+   * const [err, res] = await sf.useDefaultBaseUrl().GET("/api").runFormData();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -874,7 +874,10 @@ export class Fetch {
    *
    * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
-   * const [err, res] = await sf.useDefault().GET("/api").runArrayBuffer();
+   * const [err, res] = await sf
+   *        .useDefaultBaseUrl()
+   *        .GET("/api")
+   *        .runArrayBuffer();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -901,7 +904,10 @@ export class Fetch {
    *
    * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
-   * const [err, res] = await sf.useDefault().GET("/api").runJSON<MyResponseObjectType>();
+   * const [err, res] = await sf
+   *        .useDefaultBaseUrl()
+   *        .GET("/api")
+   *        .runJSON<MyResponseObjectType>();
    *
    * if (err) return console.log("API Call failed!");
    *
@@ -965,7 +971,7 @@ export class Fetch {
    *
    * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
-   * const [err, res] = await sf.useDefault().GET("/api").runVoid();
+   * const [err, res] = await sf.useDefaultBaseUrl().GET("/api").runVoid();
    *
    * if (err) return console.log("API Call failed!");
    *

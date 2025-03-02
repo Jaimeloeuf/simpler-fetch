@@ -1,5 +1,4 @@
 import { sf } from "simpler-fetch";
-import { baseIdentifier } from "./0 Base Identifiers.js";
 import { printGroup } from "../utils.js";
 
 export async function basics() {
@@ -7,7 +6,7 @@ export async function basics() {
     "API call with the default base Url",
 
     async () => {
-      const [err, res] = await sf.useDefault().GET("/test").runJSON();
+      const [err, res] = await sf.useDefaultBaseUrl().GET("/test").runJSON();
 
       console.log(res, err);
     }
@@ -17,10 +16,7 @@ export async function basics() {
     "API call with a non default base Url",
 
     async () => {
-      const [err, res] = await sf
-        .useBase(baseIdentifier.v2)
-        .GET("/test")
-        .runJSON();
+      const [err, res] = await sf.useBaseUrl("v2").GET("/test").runJSON();
 
       console.log(res, err);
     }

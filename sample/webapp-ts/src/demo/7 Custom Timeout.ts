@@ -10,7 +10,7 @@ export async function customTimeout() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/delay")
         .timeoutAfter(10)
         .runJSON();
@@ -31,7 +31,7 @@ export async function customTimeout() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/delay")
         .timeoutAfter(1000)
         .runJSON();

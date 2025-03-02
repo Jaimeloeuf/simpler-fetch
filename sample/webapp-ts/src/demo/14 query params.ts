@@ -8,7 +8,7 @@ export async function queryParams() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test?query=something")
         .runJSON();
 
@@ -24,7 +24,7 @@ export async function queryParams() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test")
         .useQuery<{ query: string }>({ query: "something" })
         .runJSON();
@@ -41,7 +41,7 @@ export async function queryParams() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test?query=something")
         .useQuery<{ secondQuery: string }>({ secondQuery: "something-else" })
         .runJSON();
@@ -60,7 +60,7 @@ export async function queryParams() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test?query=something")
         .useQuery<{ query: string }>({ query: "something-else" })
         .runJSON();

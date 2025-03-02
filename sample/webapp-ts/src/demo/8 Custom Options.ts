@@ -7,7 +7,7 @@ export async function customOptions() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test")
         .useOptions({ credentials: "omit" })
         .runJSON();

@@ -9,7 +9,7 @@ export async function exceptionTypeNarrowing() {
       class MyCustomError extends Error {}
 
       const [err] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test")
         .useHeader(async () => {
           throw new MyCustomError("some error");

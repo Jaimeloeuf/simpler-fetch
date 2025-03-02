@@ -16,7 +16,7 @@ export async function responseValidation() {
         typeof (data as any)?.someCustomData === "boolean";
 
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/response-validation/correct")
         .runJSON<ExpectedResponseType>(validator);
 
@@ -33,7 +33,7 @@ export async function responseValidation() {
         (data as any)?.someCustomData === false;
 
       const [err, _res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/response-validation/incorrect")
         .runJSON<ExpectedResponseType>(validator);
 
@@ -58,7 +58,7 @@ export async function responseValidation() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/response-validation/correct")
 
         // The generic here is optional since it can infer the response type from
@@ -82,7 +82,7 @@ export async function responseValidation() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/response-validation/incorrect")
 
         // The generic here is optional since it can infer the response type from

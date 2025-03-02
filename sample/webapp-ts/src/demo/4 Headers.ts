@@ -7,7 +7,7 @@ export async function headers() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test")
         // Hardcoded header object
         .useHeader({ someAuthenticationToken: "superSecureTokenString" })
@@ -29,7 +29,7 @@ export async function headers() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test")
         .useHeader(async () => {
           throw new Error("custom Header Function failed");
@@ -52,7 +52,7 @@ export async function headers() {
     ],
 
     async () => {
-      const [err, res] = await sf.useDefault().GET("/test").runJSON();
+      const [err, res] = await sf.useDefaultBaseUrl().GET("/test").runJSON();
 
       if (err === null)
         console.log(
@@ -67,7 +67,7 @@ export async function headers() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/test")
         .useDefaultHeaders()
         .useHeader(() => ({

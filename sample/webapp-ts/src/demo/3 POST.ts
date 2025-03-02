@@ -10,7 +10,7 @@ export async function postRequest() {
       type BodyContentType = { some: string };
 
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .POST("/test")
         .bodyJSON<BodyContentType>({ some: "data" })
         .runJSON();
@@ -26,7 +26,7 @@ export async function postRequest() {
     ],
 
     async () => {
-      const [err, res] = await sf.useDefault().POST("/test").runJSON();
+      const [err, res] = await sf.useDefaultBaseUrl().POST("/test").runJSON();
 
       console.log(res, err);
     }

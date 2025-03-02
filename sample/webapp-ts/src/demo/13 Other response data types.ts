@@ -6,7 +6,10 @@ export async function otherResponseDataTypes() {
     "runText",
 
     async () => {
-      const [err, res] = await sf.useDefault().GET("/datatype/text").runText();
+      const [err, res] = await sf
+        .useDefaultBaseUrl()
+        .GET("/datatype/text")
+        .runText();
 
       console.log(res, err);
     }
@@ -16,7 +19,10 @@ export async function otherResponseDataTypes() {
     "runBlob",
 
     async () => {
-      const [err, res] = await sf.useDefault().GET("/datatype/blob").runBlob();
+      const [err, res] = await sf
+        .useDefaultBaseUrl()
+        .GET("/datatype/blob")
+        .runBlob();
 
       console.log(res, err);
     }
@@ -27,7 +33,7 @@ export async function otherResponseDataTypes() {
 
     async () => {
       // const [err, res] = await sf
-      //   .useDefault()
+      //   .useDefaultBaseUrl()
       //   .GET("/datatype/formdata")
       //   .runFormData();
 
@@ -42,7 +48,7 @@ export async function otherResponseDataTypes() {
 
     async () => {
       const [err, res] = await sf
-        .useDefault()
+        .useDefaultBaseUrl()
         .GET("/datatype/arraybuffer")
         .runArrayBuffer();
 
