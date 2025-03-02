@@ -33,8 +33,9 @@ export class sf {
    * as 'v1', 'v2', 'latest', 'billing' and etc...
    */
   static addBase(identifier: string, url: string) {
-    if (sf.#baseUrls.has(identifier))
+    if (sf.#baseUrls.has(identifier)) {
       throw new sfError(`sf.addBase: Identifier '${identifier}' already set`);
+    }
 
     sf.#baseUrls.set(identifier, new Builder(url));
 
@@ -51,8 +52,9 @@ export class sf {
   static useBase(identifier: string) {
     const builder = sf.#baseUrls.get(identifier);
 
-    if (builder === undefined)
+    if (builder === undefined) {
       throw new sfError(`sf.useBase: Identifier '${identifier}' not found`);
+    }
 
     return builder;
   }
@@ -69,8 +71,9 @@ export class sf {
    * without having to import and specify the identifier.
    */
   static setDefault(identifier: string) {
-    if (!sf.#baseUrls.has(identifier))
+    if (!sf.#baseUrls.has(identifier)) {
       throw new sfError(`sf.setDefault: Identifier '${identifier}' not found`);
+    }
 
     sf.#defaultIdentifier = identifier;
   }
@@ -79,8 +82,9 @@ export class sf {
    * Use the default identifier and baseUrl mapping for an API call.
    */
   static useDefault() {
-    if (sf.#defaultIdentifier === undefined)
+    if (sf.#defaultIdentifier === undefined) {
       throw new sfError("sf.useDefault: Default identifier not set");
+    }
 
     return sf.useBase(sf.#defaultIdentifier);
   }
@@ -93,9 +97,7 @@ export class sf {
    * set a `baseUrl` first. Usually used when you need to make an API call to
    * another domain. E.g. calling a third party API for some integration.
    */
-  static useOnce = (fullUrlString: string) =>
-    // Using arrow function for a smaller build output size
-    new Builder(fullUrlString);
+  static useOnce = (fullUrlString: string) => new Builder(fullUrlString);
 
   /**
    * Utilities attached to `sf` so that users can access these without manually
