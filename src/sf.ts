@@ -34,7 +34,7 @@ export class sf {
    */
   static addBase(identifier: string, url: string) {
     if (sf.#baseUrls.has(identifier)) {
-      throw new sfError(`sf.addBase: Identifier '${identifier}' already set`);
+      throw new sfError(`sf: Identifier '${identifier}' already set`);
     }
 
     sf.#baseUrls.set(identifier, new Builder(url));
@@ -53,7 +53,7 @@ export class sf {
     const builder = sf.#baseUrls.get(identifier);
 
     if (builder === undefined) {
-      throw new sfError(`sf.useBase: Identifier '${identifier}' not found`);
+      throw new sfError(`sf: Identifier '${identifier}' not found`);
     }
 
     return builder;
@@ -72,7 +72,7 @@ export class sf {
    */
   static setDefault(identifier: string) {
     if (!sf.#baseUrls.has(identifier)) {
-      throw new sfError(`sf.setDefault: Identifier '${identifier}' not found`);
+      throw new sfError(`sf: Identifier '${identifier}' not found`);
     }
 
     sf.#defaultIdentifier = identifier;
@@ -83,7 +83,7 @@ export class sf {
    */
   static useDefault() {
     if (sf.#defaultIdentifier === undefined) {
-      throw new sfError("sf.useDefault: Default identifier not set");
+      throw new sfError("sf: Default identifier not set");
     }
 
     return sf.useBase(sf.#defaultIdentifier);
