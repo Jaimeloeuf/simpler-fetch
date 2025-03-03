@@ -1,6 +1,6 @@
 import { sf } from "simpler-fetch";
 
-declare global {
+declare module "simpler-fetch" {
   interface sf_BaseUrlObject {
     v1: string;
 
