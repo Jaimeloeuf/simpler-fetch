@@ -2,23 +2,49 @@ import { Builder } from "./Builder";
 import { sfError } from "./errors";
 import { skipValidation, jsonParser } from "./utils";
 
-declare global {
-  /**
-   * `Record<string, string>` mapping of baseUrlIdentifier (like v1) to baseUrl
-   * (like http://localhost:3000/v1).
-   *
-   * ## Technical Details
-   * 1. This has to be an interface to do interface merging across files.
-   * 1. This should be `Record<string, string>` to derive BaseUrlIdentifiers /
-   * BaseUrls from the key / value.
-   */
-  interface sf_BaseUrlObject {}
+/**
+ * `Record<string, string>` mapping of baseUrlIdentifier (like v1) to baseUrl
+ * (like http://localhost:3000/v1).
+ *
+ * ## Technical Details
+ * 1. This has to be an interface to do interface merging across files.
+ * 1. This should be `Record<string, string>` to derive BaseUrlIdentifiers /
+ * BaseUrls from the key / value.
+ *
+ * ## Example type
+ * ```typescript
+ * declare module "simpler-fetch" {
+ *   interface sf_BaseUrlObject {
+ *     v1: string;
+ *
+ *     // Different base Urls can be useful for API service with different versions
+ *     v2: string;
+ *
+ *     // It can also be useful for interfacing with external API
+ *     stripeBilling: string;
+ *   }
+ * }
+ * ```
+ *
+ * ## Example object
+ * ```typescript
+ * {
+ *   v1: "http://localhost:3000/v1",
+ *
+ *   // Different base Urls can be useful for API versioning
+ *   v2: "http://localhost:3000/v2",
+ *
+ *   // It can also be useful for interfacing with external API
+ *   stripeBilling: "http://api.stripe.com/billing",
+ * }
+ * ```
+ */
+export interface sf_BaseUrlObject {}
 
-  /**
-   * Derived type from `sf_BaseUrlObject` for a union type of string literals.
-   */
-  type sf_BaseUrlIdentifiers = keyof sf_BaseUrlObject;
-}
+/**
+ * Derived type from `sf_BaseUrlObject` for a union type of string literals.
+ */
+export type sf_BaseUrlIdentifiers = keyof sf_BaseUrlObject;
 
 /**
  * `sf` (simpler-fetch) is used to create an Object Oriented `Fetch` abstraction
