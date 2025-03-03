@@ -74,8 +74,8 @@ export class sf {
   static readonly #baseUrls: Map<string, Builder> = new Map();
 
   /**
-   * Set all the baseUrl identifiers to baseUrls mapping. This has to follow the
-   * interface `sf_BaseUrlObject` defined globally, and can only be called once.
+   * Set the baseUrl identifiers to baseUrls mapping. This has to follow the
+   * augmented interface `sf_BaseUrlObject`, and this can only be called once.
    *
    * ## Example
    * ```typescript
