@@ -69,7 +69,7 @@ export type sf_BaseUrlIdentifiers = keyof sf_BaseUrlObject;
  */
 export class sf {
   /**
-   * Mapping of BaseURL specifiers to `Builder` instances.
+   * Mapping of BaseURL identifiers to `Builder` instances.
    */
   static readonly #baseUrls: Map<string, Builder> = new Map();
 
