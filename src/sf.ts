@@ -155,7 +155,7 @@ export class sf {
    * set a `baseUrl` first. Usually used when you need to make an API call to
    * another domain. E.g. calling a third party API for some integration.
    */
-  static useOnce = (fullUrlString: string) => new Builder(fullUrlString);
+  static useFullUrl = (fullUrlString: string) => new Builder(fullUrlString);
 
   /**
    * Utilities attached to `sf` so that users can access these without manually
