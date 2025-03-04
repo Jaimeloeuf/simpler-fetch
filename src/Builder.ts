@@ -143,10 +143,10 @@ export class Builder {
       this.#defaultHeaders
     );
 
-  /** Construct a new `Fetch` instance to make a `GET` API call */
+  /** Construct a new `Fetch` instance to make a `HEAD` API call */
   HEAD = (path?: string) => this.#CreateFetch("HEAD", path);
 
-  /** Construct a new `Fetch` instance to make a `GET` API call */
+  /** Construct a new `Fetch` instance to make a `OPTIONS` API call */
   OPTIONS = (path?: string) => this.#CreateFetch("OPTIONS", path);
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
