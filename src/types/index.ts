@@ -9,3 +9,4 @@ export type * from "./RequestException";
 export type * from "./ApiResponse";
 export type * from "./Validator";
 export type * from "./ResponseParser";
+export type * from "./BaseUrlConfig";
