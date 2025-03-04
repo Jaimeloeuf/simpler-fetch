@@ -26,7 +26,7 @@ export class Builder {
   /**
    * Default options that will be applied to all API calls, which can be set
    * using the `setDefaultOptions` method. These options can be overwritten
-   * one-off in specific API calls with the `options` method of `Fetch` class.
+   * one-off in specific API calls with the `useOptions` method of `Fetch` class.
    *
    * Useful for doing things like setting the 'mode' of the request, e.g., cors,
    * no-cors, or same-origin. Use the link to see all the default options that
