@@ -7,7 +7,7 @@ export type BaseUrlConfig = {
   /**
    * This is the actual base URL string
    */
-  url: string;
+  readonly url: string;
 
   /**
    * Default options that will be applied to all API calls of this base URL.
@@ -19,7 +19,7 @@ export type BaseUrlConfig = {
    * you can set like mode/credentials/cache/redirect:
    * https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters
    */
-  defaultOptions?: RequestInit;
+  readonly defaultOptions?: RequestInit;
 
   /**
    * Default headers that will be applied to all API calls of this base URL.
@@ -30,5 +30,5 @@ export type BaseUrlConfig = {
    * so that the function does not need to be passed in for every API call made
    * with the `Fetch` instance.
    */
-  defaultHeaders?: Array<Header>;
+  readonly defaultHeaders?: Array<Header>;
 };
