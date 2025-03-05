@@ -31,17 +31,6 @@ export class Fetch {
   readonly #method: HTTPMethod;
 
   /**
-   * ### Warning
-   * This should not be accessed directly, use `getUrl` method instead.
-   *
-   * This is the full URL path of the API endpoint to make the request, which
-   * can either be a relative or absolute URL path accepted by `fetch`. Note
-   * that this may not contain all the Query Params yet since users can set more
-   * with `useQuery` method instead of setting it all as strings in the path.
-   */
-  readonly #url: string;
-
-  /**
    * Instance variable for Query Params.
    *
    * This is not `readonly` since `useQuery` method will write to this variable.
@@ -100,7 +89,17 @@ export class Fetch {
    */
   constructor(
     readonly method: HTTPMethod,
-    url: string,
+
+    /**
+     * ### Warning
+     * This should not be accessed directly, use `getUrl` method instead.
+     *
+     * This is the full URL path of the API endpoint to make the request, which
+     * can either be a relative or absolute URL path accepted by `fetch`. Note
+     * that this may not contain all the Query Params yet since users can set
+     * more with `useQuery` method instead of setting it all as strings in path.
+     */
+    private readonly url: string,
 
     /**
      * Instance variable to hold the default `RequestInit` options object for the
@@ -120,7 +119,6 @@ export class Fetch {
     private readonly defaultHeaders: Array<Header>
   ) {
     this.#method = method;
-    this.#url = url;
   }
 
   /**
@@ -131,10 +129,10 @@ export class Fetch {
    */
   getUrl(): string {
     // If not query params specified, return URL directly.
-    if (this.#queryParams === undefined) return this.#url;
+    if (this.#queryParams === undefined) return this.url;
 
     /* Generate URL by combining `#url` and query params set with `useQuery` */
-    const url = new URL(this.#url);
+    const url = new URL(this.url);
 
     // Create new query params by merging existing query params in the URL set
     // via the constructor and query params set using the `useQuery` method.
