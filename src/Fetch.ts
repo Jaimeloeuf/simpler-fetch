@@ -49,13 +49,6 @@ export class Fetch {
   #queryParams?: Record<string, string>;
 
   /**
-   * Instance variable to hold the default `RequestInit` options object for the
-   * specified base url, which is only used if the library user chooses to use
-   * the default options object using the `useDefaultOptions` method.
-   */
-  readonly #defaultOptions: RequestInit;
-
-  /**
    * Instance variable to set the `RequestInit` type options passed to the
    * `fetch` function.
    *
@@ -118,12 +111,17 @@ export class Fetch {
   constructor(
     readonly method: HTTPMethod,
     url: string,
-    defaultOptions: RequestInit,
+
+    /**
+     * Instance variable to hold the default `RequestInit` options object for the
+     * specified base url, which is only used if the library user chooses to use
+     * the default options object using the `useDefaultOptions` method.
+     */
+    private readonly defaultOptions: RequestInit,
     defaultHeaders: Array<Header>
   ) {
     this.#method = method;
     this.#url = url;
-    this.#defaultOptions = defaultOptions;
     this.#defaultHeaders = defaultHeaders;
   }
 
@@ -194,7 +192,7 @@ export class Fetch {
     // Create new object for `this.#options` by combining the properties
     // `this.#defaultOptions` is spread first so that the API specific
     // options can override the default options.
-    this.#options = { ...this.#defaultOptions, ...this.#options };
+    this.#options = { ...this.defaultOptions, ...this.#options };
 
     // Alternative method using `Object.assign` transpiles to more bytes.
     //
