@@ -58,16 +58,6 @@ export class Fetch {
   #options: RequestInit = {};
 
   /**
-   * Instance variable to hold the default `headers` array for the specified
-   * base Url, which is only used if the library user chooses to use the default
-   * headers using the `useDefaultHeaders` method.
-   *
-   * This is not `readonly` since this will be reset to an empty array after
-   * calling `useDefaultHeaders` method to keep the method indempotent.
-   */
-  #defaultHeaders: Array<Header>;
-
-  /**
    * An array of `Header` to be reduced into a single Headers object before
    * being used in this instance's API call.
    *
@@ -118,11 +108,19 @@ export class Fetch {
      * the default options object using the `useDefaultOptions` method.
      */
     private readonly defaultOptions: RequestInit,
-    defaultHeaders: Array<Header>
+
+    /**
+     * Instance variable to hold the default `headers` array for the specified
+     * base Url, which is only used if the library user chooses to use the default
+     * headers using the `useDefaultHeaders` method.
+     *
+     * This is not `readonly` since this will be reset to an empty array after
+     * calling `useDefaultHeaders` method to keep the method indempotent.
+     */
+    private readonly defaultHeaders: Array<Header>
   ) {
     this.#method = method;
     this.#url = url;
-    this.#defaultHeaders = defaultHeaders;
   }
 
   /**
@@ -234,11 +232,12 @@ export class Fetch {
   useDefaultHeaders(): Fetch {
     // `unshift` instead of `push`, because headers set first should be
     // overwritten by headers set later in `#fetch` header generation process.
-    this.#headers.unshift(...this.#defaultHeaders);
+    this.#headers.unshift(...this.defaultHeaders);
 
     // Deleting default headers by setting it to [] so that this method is
     // indempotent, making subsequent calls to `unshift` a no-op.
-    this.#defaultHeaders = [];
+    // @ts-ignore @todo
+    this.defaultHeaders = [];
 
     return this;
   }
