@@ -129,7 +129,9 @@ export class Fetch {
    */
   getUrl(): string {
     // If not query params specified, return URL directly.
-    if (this.#queryParams === undefined) return this.url;
+    if (this.#queryParams === undefined) {
+      return this.url;
+    }
 
     /* Generate URL by combining `#url` and query params set with `useQuery` */
     const url = new URL(this.url);
