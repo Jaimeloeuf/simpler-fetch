@@ -26,11 +26,6 @@ export class Fetch {
   /* Private Instance variables that are only accessible internally */
 
   /**
-   * Instance variable to set the HTTP method used for the API call.
-   */
-  readonly #method: HTTPMethod;
-
-  /**
    * Instance variable for Query Params.
    *
    * This is not `readonly` since `useQuery` method will write to this variable.
@@ -88,7 +83,10 @@ export class Fetch {
    * This is only used by the `Builder` class.
    */
   constructor(
-    readonly method: HTTPMethod,
+    /**
+     * API call's HTTP Method
+     */
+    private readonly method: HTTPMethod,
 
     /**
      * ### Warning
@@ -117,9 +115,7 @@ export class Fetch {
      * calling `useDefaultHeaders` method to keep the method indempotent.
      */
     private readonly defaultHeaders: Array<Header>
-  ) {
-    this.#method = method;
-  }
+  ) {}
 
   /**
    * Method to get the full generated URL. Use to get the full URL after
@@ -483,7 +479,7 @@ export class Fetch {
       // Apply with spread, since final object is the same `RequestInit` type
       ...this.#options,
 
-      method: this.#method,
+      method: this.method,
 
       // Header generation process
       //
