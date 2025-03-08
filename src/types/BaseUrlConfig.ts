@@ -32,3 +32,8 @@ export type BaseUrlConfig = {
    */
   readonly defaultHeaders?: Array<Header>;
 };
+
+/**
+ * Extends `BaseUrlConfig` to make every field required
+ */
+export type BaseUrlConfigWithOptionalDefaults = Required<BaseUrlConfig>;
