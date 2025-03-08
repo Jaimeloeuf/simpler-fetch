@@ -4,13 +4,16 @@ import { MethodBuilder } from "./MethodBuilder";
 
 export class SimplerFetch<
   const BaseUrlConfigs extends Record<string, BaseUrlConfig>,
+  const SimplerFetchConfig extends {
+    baseUrlConfigs: BaseUrlConfigs;
+  },
   const BaseUrlIdentifiers extends keyof BaseUrlConfigs = keyof BaseUrlConfigs
 > {
   readonly #urlIdToMethodBuilder = new Map<BaseUrlIdentifiers, MethodBuilder>();
 
-  constructor(baseUrlConfigs: BaseUrlConfigs) {
+  constructor(config: SimplerFetchConfig) {
     for (const [baseUrlIdentifier, baseUrlConfig] of Object.entries(
-      baseUrlConfigs
+      config.baseUrlConfigs
     ) as Array<[BaseUrlIdentifiers, BaseUrlConfigs[BaseUrlIdentifiers]]>) {
       this.#urlIdToMethodBuilder.set(
         baseUrlIdentifier,
