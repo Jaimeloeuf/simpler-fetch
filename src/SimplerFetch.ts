@@ -5,6 +5,12 @@ import { MethodBuilder } from "./MethodBuilder";
 export class SimplerFetch<
   const SimplerFetchConfig extends {
     baseUrlConfigs: Record<string, BaseUrlConfig>;
+
+    /**
+     * Set given identifier as the default baseUrlConfig to use so that you
+     * can easily use this default mapping in your API calls.
+     */
+    defaultBaseUrlIdentifier?: keyof SimplerFetchConfig["baseUrlConfigs"];
   },
   const BaseUrlIdentifiers extends keyof SimplerFetchConfig["baseUrlConfigs"] = keyof SimplerFetchConfig["baseUrlConfigs"]
 > {
@@ -28,6 +34,9 @@ export class SimplerFetch<
         })
       );
     }
+
+    this.#defaultBaseUrlIdentifier =
+      config.defaultBaseUrlIdentifier as BaseUrlIdentifiers;
   }
 
   useBaseUrl(identifier: BaseUrlIdentifiers) {
@@ -39,17 +48,6 @@ export class SimplerFetch<
    * Private property used to track default base URL identifier set by user.
    */
   #defaultBaseUrlIdentifier?: BaseUrlIdentifiers;
-
-  /**
-   * Set a particular identifier and baseUrl mapping as the default mapping to
-   * use so that you can easily use this default mapping in your API calls.
-   *
-   * When called this overrides any previously set default baseUrl mapping, and
-   * this method should ideally only be ever called once in your whole app.
-   */
-  setDefaultBaseUrl(identifier: BaseUrlIdentifiers) {
-    this.#defaultBaseUrlIdentifier = identifier;
-  }
 
   /**
    * Use the default baseUrl set with `setDefaultBaseUrl`.
