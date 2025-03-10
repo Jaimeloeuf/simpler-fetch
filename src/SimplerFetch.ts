@@ -10,7 +10,7 @@ export class SimplerFetch<
 > {
   readonly #urlIdToMethodBuilder = new Map<BaseUrlIdentifiers, MethodBuilder>();
 
-  constructor(config: SimplerFetchConfig) {
+  constructor(public readonly config: SimplerFetchConfig) {
     for (const [baseUrlIdentifier, baseUrlConfig] of Object.entries(
       config.baseUrlConfigs
     ) as Array<
