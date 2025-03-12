@@ -61,6 +61,11 @@ export class SimplerFetch<
       throw new sfError("sf: Default identifier not set");
     }
 
-    return this.useBaseUrl(this.#defaultBaseUrlIdentifier) as any;
+    // Needs casting to ensure that it can work with the generic type.
+    return this.useBaseUrl(
+      this.#defaultBaseUrlIdentifier
+    ) as "defaultBaseUrlIdentifier" extends keyof SimplerFetchConfig
+      ? MethodBuilder
+      : never;
   }
 }
