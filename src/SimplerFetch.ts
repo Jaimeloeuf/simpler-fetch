@@ -14,6 +14,9 @@ export class SimplerFetch<
   },
   const BaseUrlIdentifiers extends keyof SimplerFetchConfig["baseUrlConfigs"] = keyof SimplerFetchConfig["baseUrlConfigs"]
 > {
+  /**
+   * Private property mapping urlId (Base URL Identifiers) to `MethodBuilder`.
+   */
   readonly #urlIdToMethodBuilder = new Map<BaseUrlIdentifiers, MethodBuilder>();
 
   /**
