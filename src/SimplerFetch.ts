@@ -16,6 +16,11 @@ export class SimplerFetch<
 > {
   readonly #urlIdToMethodBuilder = new Map<BaseUrlIdentifiers, MethodBuilder>();
 
+  /**
+   * Private property used to track default base URL identifier set by user.
+   */
+  readonly #defaultBaseUrlIdentifier?: BaseUrlIdentifiers;
+
   constructor(public readonly config: SimplerFetchConfig) {
     for (const [baseUrlIdentifier, baseUrlConfig] of Object.entries(
       config.baseUrlConfigs
@@ -43,11 +48,6 @@ export class SimplerFetch<
     // @todo Explain why we can use non-null assertion here
     return this.#urlIdToMethodBuilder.get(identifier)!;
   }
-
-  /**
-   * Private property used to track default base URL identifier set by user.
-   */
-  readonly #defaultBaseUrlIdentifier?: BaseUrlIdentifiers;
 
   /**
    * Use the default baseUrl set with `setDefaultBaseUrl`.
