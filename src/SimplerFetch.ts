@@ -51,7 +51,10 @@ export class SimplerFetch<
    * Use a base URL specified in the constructor.
    */
   useBaseUrl(identifier: BaseUrlIdentifiers) {
-    // @todo Explain why we can use non-null assertion here
+    // Non-null assertion operator can be safely used here as TS already
+    // typechecks to ensure that the identifier passed in is a valid generic
+    // `BaseUrlIdentifiers` string literal. This will only fail if user is not
+    // using TS which is a case that we are not covering.
     return this.#urlIdToMethodBuilder.get(identifier)!;
   }
 
