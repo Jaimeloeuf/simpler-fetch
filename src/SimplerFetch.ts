@@ -47,7 +47,7 @@ export class SimplerFetch<
   /**
    * Private property used to track default base URL identifier set by user.
    */
-  #defaultBaseUrlIdentifier?: BaseUrlIdentifiers;
+  readonly #defaultBaseUrlIdentifier?: BaseUrlIdentifiers;
 
   /**
    * Use the default baseUrl set with `setDefaultBaseUrl`.
