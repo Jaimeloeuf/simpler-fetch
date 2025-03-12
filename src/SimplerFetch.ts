@@ -52,11 +52,15 @@ export class SimplerFetch<
   /**
    * Use the default baseUrl set with `setDefaultBaseUrl`.
    */
-  useDefaultBaseUrl() {
+  // The generic return type at compile time ensures whether user can access the
+  // default base URL MethodBuilder.
+  useDefaultBaseUrl(): "defaultBaseUrlIdentifier" extends keyof SimplerFetchConfig
+    ? MethodBuilder
+    : never {
     if (this.#defaultBaseUrlIdentifier === undefined) {
       throw new sfError("sf: Default identifier not set");
     }
 
-    return this.useBaseUrl(this.#defaultBaseUrlIdentifier);
+    return this.useBaseUrl(this.#defaultBaseUrlIdentifier) as any;
   }
 }
