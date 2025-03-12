@@ -47,6 +47,9 @@ export class SimplerFetch<
       config.defaultBaseUrlIdentifier as BaseUrlIdentifiers;
   }
 
+  /**
+   * Use a base URL specified in the constructor.
+   */
   useBaseUrl(identifier: BaseUrlIdentifiers) {
     // @todo Explain why we can use non-null assertion here
     return this.#urlIdToMethodBuilder.get(identifier)!;
