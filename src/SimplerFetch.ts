@@ -1,4 +1,4 @@
-import type { BaseUrlConfig } from "./types/BaseUrlConfig";
+import type { BaseUrlConfig } from "./types";
 import { sfError } from "./errors";
 import { MethodBuilder } from "./MethodBuilder";
 
