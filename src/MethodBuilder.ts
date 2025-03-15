@@ -15,24 +15,8 @@ export class MethodBuilder {
       this.baseUrlConfig.url + path,
 
       // Pass default options object and default headers array as references
-      // to the new Fetch instance, so that library users can use the Fetch
-      // methods `useDefaultOptions` and `useDefaultHeaders` to update the
-      // options object or headers array to use the default values.
-      //
-      // Passing as reference is safe since these containers and the inner
-      // content will not be mutated by the Fetch instance.
-      //
-      // Even if the default values are mutated before the API call is ran and
-      // finalized, it is still fine, since all modification to the default
-      // values through the `setDefaultOptions` and `setDefaultHeaders` methods
-      // replaces the entire object/array, meaning that the Fetch instance will
-      // still hold the reference to the original container value and not be
-      // affected by the change. This the reason why those methods cannot be
-      // modified, they must replace the original container value instead of
-      // extending/merging them which will cause default values in the already
-      // created Fetch instance to be modified dynamically, potentially causing
-      // bugs that might have security risks, e.g. modifying the credentials
-      // property on the options object dynamically.
+      // to the new Fetch instance. Passing reference is safe since these
+      // containers and its inner content will not be mutated by `Fetch`.
       this.baseUrlConfig.defaultOptions,
       this.baseUrlConfig.defaultHeaders
     );
