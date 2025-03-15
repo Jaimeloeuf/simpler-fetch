@@ -81,4 +81,22 @@ export class SimplerFetch<
       ? MethodBuilder
       : never;
   }
+
+  /**
+   * Use a Full URL string (with API path) to make an API call without using any
+   * base URL.
+   *
+   * This method should be used when making one off API calls without having to
+   * configure a base URL and its options. Usually used when you need to make an
+   * API call to another domain, e.g. integrating with third party APIs.
+   */
+  useFullUrl = (fullUrlString: string) =>
+    new MethodBuilder({
+      url: fullUrlString,
+
+      // A single use API call will always have empty default options/headers
+      // since it cannot be used/reused again by definition.
+      defaultOptions: {},
+      defaultHeaders: [],
+    });
 }
