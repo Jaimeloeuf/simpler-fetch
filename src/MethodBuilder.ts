@@ -1,6 +1,11 @@
 import { Fetch } from "./Fetch";
 import type { BaseUrlConfigWithOptionalDefaults, HTTPMethod } from "./types";
 
+/**
+ * Class used by `SimplerFetch` to ensure that users chain their fetch call /
+ * use the builder pattern in a specific order, where the HTTP Method is
+ * specified first before any of the other configs / options.
+ */
 export class MethodBuilder {
   constructor(
     private readonly baseUrlConfig: BaseUrlConfigWithOptionalDefaults
