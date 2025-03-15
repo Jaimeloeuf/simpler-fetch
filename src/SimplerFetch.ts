@@ -25,6 +25,10 @@ export class SimplerFetch<
   readonly #defaultBaseUrlIdentifier?: BaseUrlIdentifiers;
 
   constructor(public readonly config: SimplerFetchConfig) {
+    // Instead of creating a new `MethodBuilder` instance on every single call
+    // to `useBaseUrl` method, a single `MethodBuilder` instance is created for
+    // each baseUrlConfig on `SimplerFetch` creation for caching/optimisation
+    // purposes. This is fine since `MethodBuilder` is idempotent.
     for (const [baseUrlIdentifier, baseUrlConfig] of Object.entries(
       config.baseUrlConfigs
     ) as Array<
