@@ -6,7 +6,19 @@ import type { BaseUrlConfigWithOptionalDefaults, HTTPMethod } from "./types";
  * use the builder pattern in a specific order, where the HTTP Method is
  * specified first before any of the other configs / options.
  */
-export class MethodBuilder {
+export class MethodBuilder<
+  /**
+   * Is the `MethodBuilder` being used with a base URL or a full URL?
+   */
+  const IsFullUrl extends boolean = false,
+  /**
+   * Path will either be string for base URL use, or never/undefined when using
+   * a full URL.
+   */
+  const Path extends IsFullUrl extends true
+    ? never
+    : string = IsFullUrl extends true ? never : string
+> {
   constructor(
     private readonly baseUrlConfig: BaseUrlConfigWithOptionalDefaults
   ) {}
@@ -27,23 +39,23 @@ export class MethodBuilder {
     );
 
   /** Construct a new `Fetch` instance to make a `HEAD` API call */
-  HEAD = (path?: string) => this.#CreateFetch("HEAD", path);
+  HEAD = (path?: Path) => this.#CreateFetch("HEAD", path);
 
   /** Construct a new `Fetch` instance to make a `OPTIONS` API call */
-  OPTIONS = (path?: string) => this.#CreateFetch("OPTIONS", path);
+  OPTIONS = (path?: Path) => this.#CreateFetch("OPTIONS", path);
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
-  GET = (path?: string) => this.#CreateFetch("GET", path);
+  GET = (path?: Path) => this.#CreateFetch("GET", path);
 
   /** Construct a new `Fetch` instance to make a `POST` API call */
-  POST = (path?: string) => this.#CreateFetch("POST", path);
+  POST = (path?: Path) => this.#CreateFetch("POST", path);
 
   /** Construct a new `Fetch` instance to make a `PUT` API call */
-  PUT = (path?: string) => this.#CreateFetch("PUT", path);
+  PUT = (path?: Path) => this.#CreateFetch("PUT", path);
 
   /** Construct a new `Fetch` instance to make a `PATCH` API call */
-  PATCH = (path?: string) => this.#CreateFetch("PATCH", path);
+  PATCH = (path?: Path) => this.#CreateFetch("PATCH", path);
 
   /** Construct a new `Fetch` instance to make a `DELETE` API call */
-  DEL = (path?: string) => this.#CreateFetch("DELETE", path);
+  DEL = (path?: Path) => this.#CreateFetch("DELETE", path);
 }

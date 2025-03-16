@@ -90,7 +90,9 @@ export class SimplerFetch<
    * API call to another domain, e.g. integrating with third party APIs.
    */
   useFullUrl = (fullUrlString: string) =>
-    new MethodBuilder({
+    // Set generic type `IsFullUrl` to true to ensure that users are not allowed
+    // to set `path` values, instead they have to set the full URL string here.
+    new MethodBuilder<true>({
       url: fullUrlString,
 
       // A single use API call will always have empty default options/headers
