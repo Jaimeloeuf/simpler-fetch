@@ -28,7 +28,7 @@
  * class MyCustomError extends Error {}
  *
  * const [err, res] = await sf
- *     .useOnce("https://example.com/test")
+ *     .useFullUrl("https://example.com/test")
  *     .GET()
  *     .useHeader(async () => { throw new MyCustomError("some failure"); })
  *     .runJSON();

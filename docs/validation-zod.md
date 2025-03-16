@@ -29,7 +29,7 @@ async function callAPI() {
   const validator = zodToValidator(zodParser);
 
   const [err, res] = await sf
-    .useOnce("https://jsonplaceholder.typicode.com/todos/1")
+    .useFullUrl("https://jsonplaceholder.typicode.com/todos/1")
     .GET()
     .runJSON<Todo>(validator);
 

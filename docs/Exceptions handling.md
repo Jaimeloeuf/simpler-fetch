@@ -157,7 +157,7 @@ async function getData() {
   // Exceptions are ALWAYS returned, they are NEVER THROWN!!!
   // Therefore, you do not need any try/catch blocks and can write code sequentially
   const [err, res] = await sf
-    .useOnce("https://example.com/api")
+    .useFullUrl("https://example.com/api")
     .GET()
     .runJSON<MyResponse>(validator); // Typed response with optional runtime validation
 

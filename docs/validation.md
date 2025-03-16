@@ -22,7 +22,7 @@ async function callAPI() {
     typeof obj.completed === "boolean";
 
   const [err, res] = await sf
-    .useOnce("https://jsonplaceholder.typicode.com/todos/1")
+    .useFullUrl("https://jsonplaceholder.typicode.com/todos/1")
     .GET()
     .runJSON<Todo>(validator);
 
@@ -54,7 +54,7 @@ async function callAPI() {
   const validator = (obj: any): obj is Todo => true;
 
   const [err, res] = await sf
-    .useOnce("https://jsonplaceholder.typicode.com/todos/1")
+    .useFullUrl("https://jsonplaceholder.typicode.com/todos/1")
     .GET()
     .runJSON<Todo>(validator);
 

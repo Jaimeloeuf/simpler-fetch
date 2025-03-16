@@ -55,7 +55,7 @@ import { sf } from "simpler-fetch";
 async function getExample() {
     const [err, res] = await sf
         // Make a one off API call to this URL without any base Urls
-        .useOnce("https://jsonplaceholder.typicode.com/todos/1")
+        .useFullUrl("https://jsonplaceholder.typicode.com/todos/1")
         .GET()
         .runJSON();
 
@@ -66,7 +66,7 @@ async function getExample() {
 async function postExample() {
     const [err, res] = await sf
         // Make a one off API call to this URL without any base Urls
-        .useOnce("https://jsonplaceholder.typicode.com/posts")
+        .useFullUrl("https://jsonplaceholder.typicode.com/posts")
         .POST()
         .useHeader({ someAuthenticationToken: "superSecureTokenString" })
         .bodyJSON({ title: "foo", body: "bar", userId: 1 })

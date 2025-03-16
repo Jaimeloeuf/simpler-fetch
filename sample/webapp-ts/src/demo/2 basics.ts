@@ -27,7 +27,7 @@ export async function basics() {
 
     async () => {
       const [err, res] = await sf
-        .useOnce("https://jsonplaceholder.typicode.com/todos/1")
+        .useFullUrl("https://jsonplaceholder.typicode.com/todos/1")
         .GET()
         .runJSON();
 
