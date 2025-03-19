@@ -1,4 +1,5 @@
-import { sf, TimeoutException } from "simpler-fetch";
+import { sf } from "./1 configure.js";
+import { TimeoutException } from "simpler-fetch";
 import { printGroup } from "../utils.js";
 
 export async function customTimeout() {
@@ -10,7 +11,7 @@ export async function customTimeout() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/delay")
         .timeoutAfter(10)
         .runJSON();
@@ -31,7 +32,7 @@ export async function customTimeout() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/delay")
         .timeoutAfter(1000)
         .runJSON();
