@@ -1,4 +1,5 @@
-import { sf, HeaderException } from "simpler-fetch";
+import { sf } from "./1 configure.js";
+import { HeaderException } from "simpler-fetch";
 import { printGroup } from "../utils.js";
 
 export async function headers() {
@@ -7,7 +8,7 @@ export async function headers() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test")
         // Hardcoded header object
         .useHeader({ someAuthenticationToken: "superSecureTokenString" })
@@ -29,7 +30,7 @@ export async function headers() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test")
         .useHeader(async () => {
           throw new Error("custom Header Function failed");
@@ -52,7 +53,7 @@ export async function headers() {
     ],
 
     async () => {
-      const [err, res] = await sf.useDefaultBaseUrl().GET("/test").runJSON();
+      const [err, res] = await sf.useBaseUrl("v1").GET("/test").runJSON();
 
       if (err === null)
         console.log(
@@ -67,7 +68,7 @@ export async function headers() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test")
         .useDefaultHeaders()
         .useHeader(() => ({
