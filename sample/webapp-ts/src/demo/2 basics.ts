@@ -1,22 +1,12 @@
-import { sf } from "simpler-fetch";
+import { sf } from "./1 configure.js";
 import { printGroup } from "../utils.js";
 
 export async function basics() {
   await printGroup(
-    "API call with the default base Url",
+    "API call with a base Url",
 
     async () => {
-      const [err, res] = await sf.useDefaultBaseUrl().GET("/test").runJSON();
-
-      console.log(res, err);
-    }
-  );
-
-  await printGroup(
-    "API call with a non default base Url",
-
-    async () => {
-      const [err, res] = await sf.useBaseUrl("v2").GET("/test").runJSON();
+      const [err, res] = await sf.useBaseUrl("v1").GET("/test").runJSON();
 
       console.log(res, err);
     }
