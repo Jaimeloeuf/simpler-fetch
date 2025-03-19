@@ -1,4 +1,4 @@
-import { sf } from "simpler-fetch";
+import { sf } from "./1 configure.js";
 import { printGroup } from "../utils.js";
 
 export async function postRequest() {
@@ -10,7 +10,7 @@ export async function postRequest() {
       type BodyContentType = { some: string };
 
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .POST("/test")
         .bodyJSON<BodyContentType>({ some: "data" })
         .runJSON();
@@ -26,7 +26,7 @@ export async function postRequest() {
     ],
 
     async () => {
-      const [err, res] = await sf.useDefaultBaseUrl().POST("/test").runJSON();
+      const [err, res] = await sf.useBaseUrl("v1").POST("/test").runJSON();
 
       console.log(res, err);
     }
