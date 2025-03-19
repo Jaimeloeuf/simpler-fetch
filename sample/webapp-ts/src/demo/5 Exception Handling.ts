@@ -1,4 +1,4 @@
-import { sf } from "simpler-fetch";
+import { sf } from "./1 configure.js";
 import { printGroup } from "../utils.js";
 
 export async function exceptionHandling() {
