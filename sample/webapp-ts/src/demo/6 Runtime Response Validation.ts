@@ -1,4 +1,5 @@
-import { sf, ValidationException, zodToValidator } from "simpler-fetch";
+import { sf } from "./1 configure.js";
+import { ValidationException, zodToValidator } from "simpler-fetch";
 
 // Used for the response validation example
 import { ZodError, z } from "zod";
@@ -16,7 +17,7 @@ export async function responseValidation() {
         typeof (data as any)?.someCustomData === "boolean";
 
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/response-validation/correct")
         .runJSON<ExpectedResponseType>(validator);
 
@@ -33,7 +34,7 @@ export async function responseValidation() {
         (data as any)?.someCustomData === false;
 
       const [err, _res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/response-validation/incorrect")
         .runJSON<ExpectedResponseType>(validator);
 
@@ -58,7 +59,7 @@ export async function responseValidation() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/response-validation/correct")
 
         // The generic here is optional since it can infer the response type from
@@ -82,7 +83,7 @@ export async function responseValidation() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/response-validation/incorrect")
 
         // The generic here is optional since it can infer the response type from
