@@ -1,4 +1,4 @@
-import { sf } from "./1 configure.js";
+import { sf } from "../sf.js";
 import { HeaderException } from "simpler-fetch";
 import { printGroup } from "../utils.js";
 

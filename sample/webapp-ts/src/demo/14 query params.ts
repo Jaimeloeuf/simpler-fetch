@@ -1,4 +1,4 @@
-import { sf } from "./1 configure.js";
+import { sf } from "../sf.js";
 import { printGroup } from "../utils.js";
 
 export async function queryParams() {

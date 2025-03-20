@@ -1,4 +1,4 @@
-import { sf } from "./1 configure.js";
+import { sf } from "../sf.js";
 import { ValidationException, zodToValidator } from "simpler-fetch";
 
 // Used for the response validation example
