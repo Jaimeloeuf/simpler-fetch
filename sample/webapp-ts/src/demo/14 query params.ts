@@ -1,5 +1,4 @@
-import { sf } from "simpler-fetch";
-import { baseIdentifier } from "./0 Base Identifiers.js";
+import { sf } from "./1 configure.js";
 import { printGroup } from "../utils.js";
 
 export async function queryParams() {
@@ -8,7 +7,7 @@ export async function queryParams() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test?query=something")
         .runJSON();
 
@@ -24,7 +23,7 @@ export async function queryParams() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test")
         .useQuery<{ query: string }>({ query: "something" })
         .runJSON();
@@ -41,7 +40,7 @@ export async function queryParams() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test?query=something")
         .useQuery<{ secondQuery: string }>({ secondQuery: "something-else" })
         .runJSON();
@@ -60,7 +59,7 @@ export async function queryParams() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test?query=something")
         .useQuery<{ query: string }>({ query: "something-else" })
         .runJSON();
