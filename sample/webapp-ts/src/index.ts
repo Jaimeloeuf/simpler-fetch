@@ -9,7 +9,6 @@ import { customTimeout } from "./demo/7 Custom Timeout.js";
 import { customOptions } from "./demo/8 Custom Options.js";
 import { exceptionTypeNarrowing } from "./demo/10 Exception type narrowing.js";
 import { lazyLoading } from "./demo/11 Lazy Loading.js";
-import { overrideDefaultValues } from "./demo/12 Override default values.js";
 import { otherResponseDataTypes } from "./demo/13 Other response data types.js";
 import { queryParams } from "./demo/14 query params.js";
 
@@ -34,8 +33,6 @@ import { printGroup } from "./utils.js";
   await printGroup("Error Type Narrowing", exceptionTypeNarrowing);
 
   await printGroup("Lazy Loading", lazyLoading);
-
-  await printGroup("Safely override default values", overrideDefaultValues);
 
   await printGroup("Other Response data types", otherResponseDataTypes);
 
