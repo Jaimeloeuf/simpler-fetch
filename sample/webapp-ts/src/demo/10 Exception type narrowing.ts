@@ -1,4 +1,5 @@
-import { sf, HeaderException } from "simpler-fetch";
+import { sf } from "./1 configure.js";
+import { HeaderException } from "simpler-fetch";
 import { printGroup } from "../utils.js";
 
 export async function exceptionTypeNarrowing() {
@@ -9,7 +10,7 @@ export async function exceptionTypeNarrowing() {
       class MyCustomError extends Error {}
 
       const [err] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test")
         .useHeader(async () => {
           throw new MyCustomError("some error");
