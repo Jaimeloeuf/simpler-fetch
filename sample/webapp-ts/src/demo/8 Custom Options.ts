@@ -1,4 +1,4 @@
-import { sf } from "simpler-fetch";
+import { sf } from "./1 configure.js";
 import { printGroup } from "../utils.js";
 
 export async function customOptions() {
@@ -7,7 +7,7 @@ export async function customOptions() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/test")
         .useOptions({ credentials: "omit" })
         .runJSON();
