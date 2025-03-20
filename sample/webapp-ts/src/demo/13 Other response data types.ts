@@ -1,4 +1,4 @@
-import { sf, ValidationException } from "simpler-fetch";
+import { sf } from "./1 configure.js";
 import { printGroup } from "../utils.js";
 
 export async function otherResponseDataTypes() {
@@ -7,7 +7,7 @@ export async function otherResponseDataTypes() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/datatype/text")
         .runText();
 
@@ -20,7 +20,7 @@ export async function otherResponseDataTypes() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/datatype/blob")
         .runBlob();
 
@@ -33,7 +33,7 @@ export async function otherResponseDataTypes() {
 
     async () => {
       // const [err, res] = await sf
-      //   .useDefaultBaseUrl()
+      //   .useBaseUrl("v1")
       //   .GET("/datatype/formdata")
       //   .runFormData();
 
@@ -48,7 +48,7 @@ export async function otherResponseDataTypes() {
 
     async () => {
       const [err, res] = await sf
-        .useDefaultBaseUrl()
+        .useBaseUrl("v1")
         .GET("/datatype/arraybuffer")
         .runArrayBuffer();
 
