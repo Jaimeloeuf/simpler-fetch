@@ -10,7 +10,8 @@ export async function lazyLoading() {
     ],
 
     async () => {
-      const { sf } = await import("simpler-fetch");
+      const { SimplerFetch } = await import("simpler-fetch");
+      const sf = new SimplerFetch({ baseUrlConfigs: {} });
       const [err, res] = await sf
         .useFullUrl("https://jsonplaceholder.typicode.com/todos/1")
         .GET()
