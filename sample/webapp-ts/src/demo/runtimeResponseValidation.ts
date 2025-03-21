@@ -6,7 +6,7 @@ import { ZodError, z } from "zod";
 
 import { printGroup } from "../utils.js";
 
-export async function responseValidation() {
+export default async function () {
   type ExpectedResponseType = { someCustomData: boolean };
 
   await printGroup(

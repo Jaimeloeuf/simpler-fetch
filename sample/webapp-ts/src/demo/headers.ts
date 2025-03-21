@@ -2,7 +2,7 @@ import { sf } from "../sf.js";
 import { HeaderException } from "simpler-fetch";
 import { printGroup } from "../utils.js";
 
-export async function headers() {
+export default async function () {
   await printGroup(
     "API call with the default base Url with headers set in multiple ways",
 

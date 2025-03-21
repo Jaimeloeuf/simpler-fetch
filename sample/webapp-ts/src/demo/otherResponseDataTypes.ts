@@ -1,7 +1,7 @@
 import { sf } from "../sf.js";
 import { printGroup } from "../utils.js";
 
-export async function otherResponseDataTypes() {
+export default async function () {
   await printGroup(
     "runText",
 

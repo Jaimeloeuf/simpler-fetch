@@ -1,7 +1,7 @@
 import { sf } from "../sf.js";
 import { printGroup } from "../utils.js";
 
-export async function postRequest() {
+export default async function () {
   await printGroup(
     "POST data to server with compile time type safety",
 

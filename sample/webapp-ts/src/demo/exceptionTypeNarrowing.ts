@@ -2,7 +2,7 @@ import { sf } from "../sf.js";
 import { HeaderException } from "simpler-fetch";
 import { printGroup } from "../utils.js";
 
-export async function exceptionTypeNarrowing() {
+export default async function () {
   await printGroup(
     "Demo exception type narrowing to figure out the root cause",
 

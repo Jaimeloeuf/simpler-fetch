@@ -2,7 +2,7 @@ import { sf } from "../sf.js";
 import { TimeoutException } from "simpler-fetch";
 import { printGroup } from "../utils.js";
 
-export async function customTimeout() {
+export default async function () {
   await printGroup(
     [
       "Simulates timeout failure with a 0.01 second custom timeout",

@@ -1,6 +1,6 @@
 import { printGroup } from "../utils.js";
 
-export async function lazyLoading() {
+export default async function () {
   await printGroup(
     [
       "Import the API library lazily into your application.",

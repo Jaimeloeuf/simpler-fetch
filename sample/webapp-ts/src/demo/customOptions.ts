@@ -1,7 +1,7 @@
 import { sf } from "../sf.js";
 import { printGroup } from "../utils.js";
 
-export async function customOptions() {
+export default async function () {
   await printGroup(
     "Demo to show how to set Options object for the API call",
 

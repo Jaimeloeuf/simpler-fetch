@@ -1,35 +1,57 @@
-/* Demo modules */
-import { basics } from "./demo/basics.js";
-import { postRequest } from "./demo/postRequest.js";
-import { headers } from "./demo/headers.js";
-import { exceptionHandling } from "./demo/exceptionHandling.js";
-import { responseValidation } from "./demo/runtimeResponseValidation.js";
-import { customTimeout } from "./demo/customTimeout.js";
-import { customOptions } from "./demo/customOptions.js";
-import { exceptionTypeNarrowing } from "./demo/exceptionTypeNarrowing.js";
-import { lazyLoading } from "./demo/lazyLoading.js";
-import { otherResponseDataTypes } from "./demo/otherResponseDataTypes.js";
-import { queryParams } from "./demo/queryParams.js";
-
-/* Utilities */
 import { printGroup } from "./utils.js";
 
 (async function () {
-  const demoModules = [
-    { title: "Basic use", fn: basics },
-    { title: "Simple POST requests", fn: postRequest },
-    { title: "Working with Headers", fn: headers },
-    { title: "Error Handling", fn: exceptionHandling },
-    { title: "Runtime Response Validation", fn: responseValidation },
-    { title: "Custom Timeout", fn: customTimeout },
-    { title: "Custom Options", fn: customOptions },
-    { title: "Error Type Narrowing", fn: exceptionTypeNarrowing },
-    { title: "Lazy Loading", fn: lazyLoading },
-    { title: "Other Response data types", fn: otherResponseDataTypes },
-    { title: "Query Params", fn: queryParams },
+  const demoModules: Array<{
+    title: string;
+    module: Promise<{ default: any }>;
+  }> = [
+    {
+      title: "Basic use",
+      module: import("./demo/basics.js"),
+    },
+    {
+      title: "Simple POST requests",
+      module: import("./demo/postRequest.js"),
+    },
+    {
+      title: "Working with Headers",
+      module: import("./demo/headers.js"),
+    },
+    {
+      title: "Error Handling",
+      module: import("./demo/exceptionHandling.js"),
+    },
+    {
+      title: "Runtime Response Validation",
+      module: import("./demo/runtimeResponseValidation.js"),
+    },
+    {
+      title: "Custom Timeout",
+      module: import("./demo/customTimeout.js"),
+    },
+    {
+      title: "Custom Options",
+      module: import("./demo/customOptions.js"),
+    },
+    {
+      title: "Error Type Narrowing",
+      module: import("./demo/exceptionTypeNarrowing.js"),
+    },
+    {
+      title: "Lazy Loading",
+      module: import("./demo/lazyLoading.js"),
+    },
+    {
+      title: "Other Response data types",
+      module: import("./demo/otherResponseDataTypes.js"),
+    },
+    {
+      title: "Query Params",
+      module: import("./demo/queryParams.js"),
+    },
   ];
 
   for (const demoModule of demoModules) {
-    await printGroup(demoModule.title, demoModule.fn);
+    await printGroup(demoModule.title, (await demoModule.module).default);
   }
 })();

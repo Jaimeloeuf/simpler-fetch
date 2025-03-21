@@ -1,7 +1,7 @@
 import { sf } from "../sf.js";
 import { printGroup } from "../utils.js";
 
-export async function exceptionHandling() {
+export default async function () {
   await printGroup(
     [
       "API call will purposely fail to showcase exception handling",

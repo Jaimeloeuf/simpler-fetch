@@ -1,7 +1,7 @@
 import { sf } from "../sf.js";
 import { printGroup } from "../utils.js";
 
-export async function queryParams() {
+export default async function () {
   await printGroup(
     "Using query params in API URL Path string directly",
 

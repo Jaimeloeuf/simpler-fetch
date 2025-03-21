@@ -1,7 +1,7 @@
 import { sf } from "../sf.js";
 import { printGroup } from "../utils.js";
 
-export async function basics() {
+export default async function () {
   await printGroup(
     "API call with a base Url",
 
