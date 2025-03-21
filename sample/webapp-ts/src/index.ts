@@ -1,5 +1,3 @@
-import { printGroup } from "./utils.js";
-
 const demoModules: Array<{
   title: string;
   module: Promise<{
@@ -55,21 +53,25 @@ const demoModules: Array<{
   },
 ];
 
-// Execute all the demo modules and print their results in groups
-for (const demoModule of demoModules) {
-  const demos = (await demoModule.module).default;
+async function runDemo() {
+  // Execute all the demo modules and print their results in groups
+  for (const demoModule of demoModules) {
+    const demos = (await demoModule.module).default;
 
-  console.groupCollapsed(demoModule.title);
+    console.groupCollapsed(demoModule.title);
 
-  for (const demo of demos) {
-    const demoTitle = Array.isArray(demo.title)
-      ? demo.title.join("\n")
-      : demo.title;
+    for (const demo of demos) {
+      const demoTitle = Array.isArray(demo.title)
+        ? demo.title.join("\n")
+        : demo.title;
 
-    console.groupCollapsed(demoTitle);
-    await demo.fn();
+      console.groupCollapsed(demoTitle);
+      await demo.fn();
+      console.groupEnd();
+    }
+
     console.groupEnd();
   }
-
-  console.groupEnd();
 }
+
+runDemo();
