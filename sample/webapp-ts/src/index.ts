@@ -58,9 +58,12 @@ const demoModules: Array<{
 // Execute all the demo modules and print their results in groups
 for (const demoModule of demoModules) {
   const demos = (await demoModule.module).default;
-  await printGroup(demoModule.title, async function () {
-    for (const demo of demos) {
-      await printGroup(demo.title, demo.fn);
-    }
-  });
+
+  console.groupCollapsed(demoModule.title);
+
+  for (const demo of demos) {
+    await printGroup(demo.title, demo.fn);
+  }
+
+  console.groupEnd();
 }
