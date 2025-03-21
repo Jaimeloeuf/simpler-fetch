@@ -62,7 +62,13 @@ for (const demoModule of demoModules) {
   console.groupCollapsed(demoModule.title);
 
   for (const demo of demos) {
-    await printGroup(demo.title, demo.fn);
+    const demoTitle = Array.isArray(demo.title)
+      ? demo.title.join("\n")
+      : demo.title;
+
+    console.groupCollapsed(demoTitle);
+    await demo.fn();
+    console.groupEnd();
   }
 
   console.groupEnd();
