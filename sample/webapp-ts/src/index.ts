@@ -1,16 +1,15 @@
 /* Demo modules */
-import "./demo/1 configure.js";
-import { basics } from "./demo/2 basics.js";
-import { postRequest } from "./demo/3 POST.js";
-import { headers } from "./demo/4 Headers.js";
-import { exceptionHandling } from "./demo/5 Exception Handling.js";
-import { responseValidation } from "./demo/6 Runtime Response Validation.js";
-import { customTimeout } from "./demo/7 Custom Timeout.js";
-import { customOptions } from "./demo/8 Custom Options.js";
-import { exceptionTypeNarrowing } from "./demo/10 Exception type narrowing.js";
-import { lazyLoading } from "./demo/11 Lazy Loading.js";
-import { otherResponseDataTypes } from "./demo/13 Other response data types.js";
-import { queryParams } from "./demo/14 query params.js";
+import { basics } from "./demo/basics.js";
+import { postRequest } from "./demo/postRequest.js";
+import { headers } from "./demo/headers.js";
+import { exceptionHandling } from "./demo/exceptionHandling.js";
+import { responseValidation } from "./demo/runtimeResponseValidation.js";
+import { customTimeout } from "./demo/customTimeout.js";
+import { customOptions } from "./demo/customOptions.js";
+import { exceptionTypeNarrowing } from "./demo/exceptionTypeNarrowing.js";
+import { lazyLoading } from "./demo/lazyLoading.js";
+import { otherResponseDataTypes } from "./demo/otherResponseDataTypes.js";
+import { queryParams } from "./demo/queryParams.js";
 
 /* Utilities */
 import { printGroup } from "./utils.js";
