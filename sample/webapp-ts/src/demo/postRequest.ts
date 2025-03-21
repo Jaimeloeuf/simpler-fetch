@@ -1,11 +1,9 @@
 import { sf } from "../sf.js";
-import { printGroup } from "../utils.js";
 
-export default async function () {
-  await printGroup(
-    "POST data to server with compile time type safety",
-
-    async () => {
+export default [
+  {
+    title: "POST data to server with compile time type safety",
+    async fn() {
       /** Example type used for type checking the `bodyJSON` input */
       type BodyContentType = { some: string };
 
@@ -16,19 +14,17 @@ export default async function () {
         .runJSON();
 
       console.log(res, err);
-    }
-  );
-
-  await printGroup(
-    [
+    },
+  },
+  {
+    title: [
       "POST to an API without sending any data in the request body",
       "E.g. when using POST request to trigger RPC endpoints without any values",
     ],
-
-    async () => {
+    async fn() {
       const [err, res] = await sf.useBaseUrl("v1").POST("/test").runJSON();
 
       console.log(res, err);
-    }
-  );
-}
+    },
+  },
+];

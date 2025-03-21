@@ -1,11 +1,9 @@
 import { sf } from "../sf.js";
-import { printGroup } from "../utils.js";
 
-export default async function () {
-  await printGroup(
-    "Demo to show how to set Options object for the API call",
-
-    async () => {
+export default [
+  {
+    title: "Demo to show how to set Options object for the API call",
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/test")
@@ -13,6 +11,6 @@ export default async function () {
         .runJSON();
 
       console.log(res, err);
-    }
-  );
-}
+    },
+  },
+];

@@ -1,12 +1,10 @@
 import { sf } from "../sf.js";
 import { HeaderException } from "simpler-fetch";
-import { printGroup } from "../utils.js";
 
-export default async function () {
-  await printGroup(
-    "Demo exception type narrowing to figure out the root cause",
-
-    async () => {
+export default [
+  {
+    title: "Demo exception type narrowing to figure out the root cause",
+    async fn() {
       class MyCustomError extends Error {}
 
       const [err] = await sf
@@ -28,6 +26,6 @@ export default async function () {
           }
         }
       }
-    }
-  );
-}
+    },
+  },
+];

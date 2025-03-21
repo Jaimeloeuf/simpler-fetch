@@ -1,12 +1,11 @@
 import { sf } from "../sf.js";
 import { HeaderException } from "simpler-fetch";
-import { printGroup } from "../utils.js";
 
-export default async function () {
-  await printGroup(
-    "API call with the default base Url with headers set in multiple ways",
-
-    async () => {
+export default [
+  {
+    title:
+      "API call with the default base Url with headers set in multiple ways",
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/test")
@@ -19,16 +18,14 @@ export default async function () {
         .runJSON();
 
       console.log(res, err);
-    }
-  );
-
-  await printGroup(
-    [
+    },
+  },
+  {
+    title: [
       "API call where header function throws an error to show it bubbling up",
       "The error will be caught and returned as `err`",
     ],
-
-    async () => {
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/test")
@@ -42,17 +39,15 @@ export default async function () {
       if (err instanceof HeaderException) {
         console.error(err?.error);
       }
-    }
-  );
-
-  await printGroup(
-    [
+    },
+  },
+  {
+    title: [
       "API call to demonstrate getting the Response Headers back",
       "API service is configured to allow client to access all Response",
       "Headers instead of just the safe headers only.",
     ],
-
-    async () => {
+    async fn() {
       const [err, res] = await sf.useBaseUrl("v1").GET("/test").runJSON();
 
       if (err === null)
@@ -60,13 +55,12 @@ export default async function () {
           Array.from(res.headers.entries()).map((header) => header),
           err
         );
-    }
-  );
+    },
+  },
 
-  await printGroup(
-    "Show case this example of overriding the header",
-
-    async () => {
+  {
+    title: "Show case this example of overriding the header",
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/test")
@@ -77,6 +71,6 @@ export default async function () {
         .runJSON();
 
       console.log(res, err);
-    }
-  );
-}
+    },
+  },
+];

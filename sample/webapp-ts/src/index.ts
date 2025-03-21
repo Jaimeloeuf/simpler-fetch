@@ -2,7 +2,12 @@ import { printGroup } from "./utils.js";
 
 const demoModules: Array<{
   title: string;
-  module: Promise<{ default: any }>;
+  module: Promise<{
+    default: Array<{
+      title: string | Array<string>;
+      fn: () => Promise<void>;
+    }>;
+  }>;
 }> = [
   {
     title: "Basic use",
@@ -50,6 +55,12 @@ const demoModules: Array<{
   },
 ];
 
+// Execute all the demo modules and print their results in groups
 for (const demoModule of demoModules) {
-  await printGroup(demoModule.title, (await demoModule.module).default);
+  const demos = (await demoModule.module).default;
+  await printGroup(demoModule.title, async function () {
+    for (const demo of demos) {
+      await printGroup(demo.title, demo.fn);
+    }
+  });
 }

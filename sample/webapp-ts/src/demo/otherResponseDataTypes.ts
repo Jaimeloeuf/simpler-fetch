@@ -1,37 +1,31 @@
 import { sf } from "../sf.js";
-import { printGroup } from "../utils.js";
 
-export default async function () {
-  await printGroup(
-    "runText",
-
-    async () => {
+export default [
+  {
+    title: "runText",
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/datatype/text")
         .runText();
 
       console.log(res, err);
-    }
-  );
-
-  await printGroup(
-    "runBlob",
-
-    async () => {
+    },
+  },
+  {
+    title: "runBlob",
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/datatype/blob")
         .runBlob();
 
       console.log(res, err);
-    }
-  );
-
-  await printGroup(
-    "runFormData",
-
-    async () => {
+    },
+  },
+  {
+    title: "runFormData",
+    async fn() {
       // const [err, res] = await sf
       //   .useBaseUrl("v1")
       //   .GET("/datatype/formdata")
@@ -40,19 +34,17 @@ export default async function () {
       // console.log(res, err);
 
       console.log("No examples currently since this doesnt have much use.");
-    }
-  );
-
-  await printGroup(
-    "runArrayBuffer",
-
-    async () => {
+    },
+  },
+  {
+    title: "runArrayBuffer",
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/datatype/arraybuffer")
         .runArrayBuffer();
 
       console.log(res, err);
-    }
-  );
-}
+    },
+  },
+];

@@ -1,15 +1,13 @@
 import { sf } from "../sf.js";
 import { TimeoutException } from "simpler-fetch";
-import { printGroup } from "../utils.js";
 
-export default async function () {
-  await printGroup(
-    [
+export default [
+  {
+    title: [
       "Simulates timeout failure with a 0.01 second custom timeout",
       "where this will timeout before the API responds in 0.5 seconds",
     ],
-
-    async () => {
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/delay")
@@ -21,16 +19,14 @@ export default async function () {
         `Error is 'TimeoutException'`,
         err instanceof TimeoutException
       );
-    }
-  );
-
-  await printGroup(
-    [
+    },
+  },
+  {
+    title: [
       "Simulates no error with a 1 second custom timeout",
       "where this will not timeout since the API responds in 0.5 seconds",
     ],
-
-    async () => {
+    async fn() {
       const [err, res] = await sf
         .useBaseUrl("v1")
         .GET("/delay")
@@ -38,6 +34,6 @@ export default async function () {
         .runJSON();
 
       console.log(res, err);
-    }
-  );
-}
+    },
+  },
+];

@@ -1,15 +1,13 @@
 import { sf } from "../sf.js";
-import { printGroup } from "../utils.js";
 
-export default async function () {
-  await printGroup(
-    [
+export default [
+  {
+    title: [
       "API call will purposely fail to showcase exception handling",
       "You can see that the network failure exception is returned rather than thrown",
       "This allows you to handle the exception sequentially rather than relying on try/catch",
     ],
-
-    async () => {
+    async fn() {
       // API call to a definitely not available site to simulate an API call failure
       const [err, res] = await sf
         .useFullUrl(
@@ -19,6 +17,6 @@ export default async function () {
         .runJSON();
 
       console.log(res, err);
-    }
-  );
-}
+    },
+  },
+];

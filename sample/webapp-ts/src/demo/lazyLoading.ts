@@ -1,15 +1,12 @@
-import { printGroup } from "../utils.js";
-
-export default async function () {
-  await printGroup(
-    [
+export default [
+  {
+    title: [
       "Import the API library lazily into your application.",
       "Only do this if your entire application only needs this library for a",
       "small number of API calls only such as a landing page's contact form.",
       "For all other purposes, it is easier to do a top level import first.",
     ],
-
-    async () => {
+    async fn() {
       const { SimplerFetch } = await import("simpler-fetch");
       const sf = new SimplerFetch({ baseUrlConfigs: {} });
       const [err, res] = await sf
@@ -18,6 +15,6 @@ export default async function () {
         .runJSON();
 
       console.log(res, err);
-    }
-  );
-}
+    },
+  },
+];
