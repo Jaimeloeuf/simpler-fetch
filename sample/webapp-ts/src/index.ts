@@ -15,25 +15,21 @@ import { queryParams } from "./demo/queryParams.js";
 import { printGroup } from "./utils.js";
 
 (async function () {
-  await printGroup("Basic use", basics);
+  const demoModules = [
+    { title: "Basic use", fn: basics },
+    { title: "Simple POST requests", fn: postRequest },
+    { title: "Working with Headers", fn: headers },
+    { title: "Error Handling", fn: exceptionHandling },
+    { title: "Runtime Response Validation", fn: responseValidation },
+    { title: "Custom Timeout", fn: customTimeout },
+    { title: "Custom Options", fn: customOptions },
+    { title: "Error Type Narrowing", fn: exceptionTypeNarrowing },
+    { title: "Lazy Loading", fn: lazyLoading },
+    { title: "Other Response data types", fn: otherResponseDataTypes },
+    { title: "Query Params", fn: queryParams },
+  ];
 
-  await printGroup("Simple POST requests", postRequest);
-
-  await printGroup("Working with Headers", headers);
-
-  await printGroup("Error Handling", exceptionHandling);
-
-  await printGroup("Runtime Response Validation", responseValidation);
-
-  await printGroup("Custom Timeout", customTimeout);
-
-  await printGroup("Custom Options", customOptions);
-
-  await printGroup("Error Type Narrowing", exceptionTypeNarrowing);
-
-  await printGroup("Lazy Loading", lazyLoading);
-
-  await printGroup("Other Response data types", otherResponseDataTypes);
-
-  await printGroup("Query Params", queryParams);
+  for (const demoModule of demoModules) {
+    await printGroup(demoModule.title, demoModule.fn);
+  }
 })();
