@@ -1,6 +1,11 @@
 import type { BaseUrlConfig } from "./types";
 import { MethodBuilder } from "./MethodBuilder";
 
+/**
+ * `SimplerFetch` is used to create an Object Oriented `fetch api` abstraction
+ * to give users an easy to use chainable interface (builder pattern) to build
+ * their API calls.
+ */
 export class SimplerFetch<
   const SimplerFetchConfig extends {
     baseUrlConfigs: Record<string, BaseUrlConfig>;
