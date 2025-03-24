@@ -8,7 +8,7 @@ import { MethodBuilder } from "./MethodBuilder";
  */
 export class SimplerFetch<
   const SimplerFetchConfig extends {
-    baseUrlConfigs: Record<string, BaseUrlConfig>;
+    baseUrlConfigs?: Record<string, BaseUrlConfig>;
   },
   const BaseUrlIdentifiers extends keyof SimplerFetchConfig["baseUrlConfigs"] = keyof SimplerFetchConfig["baseUrlConfigs"]
 > {
@@ -18,26 +18,23 @@ export class SimplerFetch<
   readonly #urlIdToMethodBuilder = new Map<BaseUrlIdentifiers, MethodBuilder>();
 
   constructor(public readonly config: SimplerFetchConfig) {
-    // Instead of creating a new `MethodBuilder` instance on every single call
-    // to `useBaseUrl` method, a single `MethodBuilder` instance is created for
-    // each baseUrlConfig on `SimplerFetch` creation for caching/optimisation
-    // purposes. This is fine since `MethodBuilder` is idempotent.
-    for (const [baseUrlIdentifier, baseUrlConfig] of Object.entries(
-      config.baseUrlConfigs
-    ) as Array<
-      [
-        BaseUrlIdentifiers,
-        SimplerFetchConfig["baseUrlConfigs"][BaseUrlIdentifiers]
-      ]
-    >) {
-      this.#urlIdToMethodBuilder.set(
-        baseUrlIdentifier,
-        new MethodBuilder({
-          url: baseUrlConfig.url,
-          defaultOptions: baseUrlConfig.defaultOptions ?? {},
-          defaultHeaders: baseUrlConfig.defaultHeaders ?? [],
-        })
-      );
+    if (config.baseUrlConfigs !== undefined) {
+      // Instead of creating a new `MethodBuilder` instance on every single call
+      // to `useBaseUrl` method, a single `MethodBuilder` instance is created for
+      // each baseUrlConfig on `SimplerFetch` creation for caching/optimisation
+      // purposes. This is fine since `MethodBuilder` is idempotent.
+      for (const [baseUrlIdentifier, baseUrlConfig] of Object.entries(
+        config.baseUrlConfigs
+      ) as Array<[BaseUrlIdentifiers, BaseUrlConfig]>) {
+        this.#urlIdToMethodBuilder.set(
+          baseUrlIdentifier,
+          new MethodBuilder({
+            url: baseUrlConfig.url,
+            defaultOptions: baseUrlConfig.defaultOptions ?? {},
+            defaultHeaders: baseUrlConfig.defaultHeaders ?? [],
+          })
+        );
+      }
     }
   }
 
