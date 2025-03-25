@@ -40,10 +40,6 @@ const demoModules: Array<{
     module: import("./demo/exceptionTypeNarrowing.js"),
   },
   {
-    title: "Lazy Loading",
-    module: import("./demo/lazyLoading.js"),
-  },
-  {
     title: "Other Response data types",
     module: import("./demo/otherResponseDataTypes.js"),
   },
