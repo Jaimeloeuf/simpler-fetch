@@ -534,8 +534,7 @@ export class Fetch {
    *
    * ### Method 'safety'
    * This calls `#fetch` which might throw an exception when something goes
-   * wrong, and this also throws an exception if the request timed out. So any
-   * use of this method should be wrapped with the `safe` function.
+   * wrong, so use of this method should be wrapped with the `safe` function.
    *
    * ### Return type
    * See documentation for `#fetch` method for more info on the return type.
@@ -554,70 +553,38 @@ export class Fetch {
     // Create new timeout using the custom timeout milliseconds value, and save
     // the timeoutID so that the timer can be cleared to skip this callback if
     // the API returns before the timeout.
+    //
+    // As TS notes, the `this.#abortController` variable could be changed and
+    // became  undefined/null between the time that this setTimeout callback
+    // function is defined and when this is triggered. Since there is no other
+    // code that will modify this variable, its value can be safely assumed to
+    // not be deleted when this callback is called, which means that the
+    // non-null assertion operator can be used. However just to be extra safe,
+    // an optional chaining operator is used instead, so in the event where it
+    // is somehow undefined/null, this will not error out.
+    //
+    // If `this.#fetch` method call throws an exception that is not caused by
+    // this timeout, for e.g. an exception caused by DNS failure, the call to
+    // `clearTimeout` will be skipped and this abort method will still be
+    // called even if the API call has already errored out. However this is
+    // fine since calling abort after the API call completes will just be
+    // ignored and will not throw a new error.
     const timeoutID = setTimeout(
-      // On timeout, abort API call with a custom reason using the timeout value
-      // specified by the library user.
-      //
-      // As TS notes, the `this.#abortController` variable could be changed and
-      // became  undefined/null between the time that this setTimeout callback
-      // function is defined and when this is triggered. Since there is no other
-      // code that will modify this variable, its value can be safely assumed to
-      // not be deleted when this callback is called, which means that the
-      // non-null assertion operator can be used. However just to be extra safe,
-      // an optional chaining operator is used instead, so in the event where it
-      // is somehow undefined/null, this will not error out.
-      //
-      // If `this.#fetch` method call throws an exception that is not caused by
-      // this timeout, for e.g. an exception caused by DNS failure, the call to
-      // `clearTimeout` will be skipped since the catch block re-throws any
-      // exception it gets. That means that this abort method will still be
-      // called even if the API call has already errored out. However this is
-      // fine since calling abort after the API call completes will just be
-      // ignored and will not throw a new error.
       () =>
         this.#abortController?.abort(
-          `${this.#timeoutInMilliseconds}ms time out exceeded`
+          new TimeoutException(
+            `${this.#timeoutInMilliseconds}ms time out exceeded`
+          )
         ),
-
       this.#timeoutInMilliseconds
     );
 
-    const res = await this.#fetch().catch((err) => {
-      // If the exception is caused by the abort signal, throw new exception,
-      // Else, re-throw original exception to let method caller handle it.
-      if (
-        err instanceof DOMException &&
-        err.name === "AbortError" &&
-        // This can be thought of as an almost redundant check, since the first
-        // 2 conditions should already ensure that it is an `AbortError`. This
-        // checks just makes sure that the AbortError is in fact caused by the
-        // internal `#abortController` used for custom timeouts rather than a
-        // abort controller that was somehow passed in via the options object.
-        //
-        // This also ensures `.signal.reason` is properly typed after narrowing
-        // the abortController's type with this control flow conditional.
-        this.#abortController?.signal.aborted
-      )
-        // Throw new exception with abort reason as message instead of the
-        // generic 'DOMException'. If abort reason is somehow empty, default to
-        // `err.message` to prevent throwing an empty exception.
-        //
-        // Use custom named class instead of the generic Error class so that
-        // users can check failure cause with `instanceof` operator.
-        throw new TimeoutException(
-          this.#abortController.signal.reason ?? err.message
-        );
-
-      // If it is not an abort error, throw err to let it bubble up as it is.
-      throw err;
-    });
+    const res = await this.#fetch();
 
     // What if the fetch call errors out and this clearTimeout is not called?
-    //
     // If `this.#fetch` method call throws an Error that is not caused by the
     // abort signal, e.g. an error caused by DNS failure, this `clearTimeout`
-    // call will be skipped since the custom catch block re-throws any error
-    // it gets. That means that the timeout callback will still call the abort
+    // call will be skipped and the timeout callback will still call the abort
     // method even if the API call has already errored out. However that is fine
     // since calling abort after the API call completes will just be ignored and
     // will not cause a new error.
