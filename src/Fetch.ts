@@ -250,7 +250,7 @@ export class Fetch {
    * cannot override the body value set by any of the 'body' methods.
    *
    * Which is why:
-   * - If you want to set request body, use `.body` or `.bodyJSON` method.
+   * - If you want to set request body, use `.setRequestBody` or `.bodyJSON` method.
    * - If you need to set a request header, use the `.useHeader` method.
    * - If you want to set HTTP request method, use a static method on `Builder`
    *
@@ -344,7 +344,7 @@ export class Fetch {
    * const [err, res] = await sf
    *   .useDefaultBaseUrl()
    *   .POST("/api")
-   *   .body<FormData>(myValue) // TS will enforce that myValue is FormData
+   *   .setRequestBody<FormData>(myValue) // TS will enforce that myValue is FormData
    *   .runJSON();
    * ```
    * The above code sets the body type for type safety.
@@ -368,7 +368,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  body<RequestBodyType = any>(
+  setRequestBody<RequestBodyType = any>(
     body: RequestBodyType,
     optionalContentType?: string
   ): Fetch {
@@ -407,11 +407,11 @@ export class Fetch {
    * method with an empty object when using a method like `POST` as `fetch` and
    * API services will just treat it as an empty object by default.
    *
-   * ### Why not just use the `body` method?
+   * ### Why not just use the `setRequestBody` method?
    * Since JSON is the most popular methods of communication over HTTP, this
    * method helps users to write less code by stringifying their JS object and
    * setting content-type header to 'application/json', instead of requiring
-   * library users to write `.body(JSON.stringify(data), "application/json")`
+   * library users to write `.setRequestBody(JSON.stringify(data), "application/json")`
    * every single time they want to send JSON data to their API servers.
    * This also allows library users to specify type of data object using the
    * method generic for type checking.
@@ -440,7 +440,7 @@ export class Fetch {
     // guess most content-type, because once object is stringified, the data
     // will be a string and fetch will guess that it is 'text/plain' rather than
     // 'application/json'.
-    return this.body(JSON.stringify(data), "application/json");
+    return this.setRequestBody(JSON.stringify(data), "application/json");
   }
 
   /**
@@ -474,7 +474,7 @@ export class Fetch {
       //
       // From this order, we can see that the values in `options` object cannot
       // override HTTP method set in the constructor, headers set with the
-      // `useHeader` method and `body` set by any of the body methods.
+      // `useHeader` method and `body` set by any of the setRequestBody methods.
 
       // Apply with spread, since final object is the same `RequestInit` type
       ...this.#options,
