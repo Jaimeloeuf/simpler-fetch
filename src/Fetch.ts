@@ -399,11 +399,7 @@ export class Fetch {
   }
 
   /**
-   * @param data Any data type that is of 'application/json' type and can be
-   * stringified by `JSON.stringify`.
-   *
-   * ### About
-   * Method that stringifies a JSON stringifiable data type to use as the
+   * This method stringifies a JSON stringifiable data type to use as the
    * request body, and sets the content-type to 'application/json'.
    *
    * ### What data type can be passed in?
@@ -444,6 +440,10 @@ export class Fetch {
    * @returns Returns the current instance to let you chain method calls
    */
   setRequestBodyWithJsonData<JsonRequestBodyType = JsonTypeAlias>(
+    /**
+     * Any data type that is of 'application/json' type and can be stringified
+     * by `JSON.stringify`.
+     */
     data: JsonRequestBodyType
   ): Fetch {
     // Content-type needs to be set manually even though `fetch` is able to
