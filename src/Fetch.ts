@@ -6,6 +6,7 @@ import type {
   ApiResponse,
   ResponseParser,
 } from "./types";
+import { sfError } from "./errors";
 import {
   TimeoutException,
   HeaderException,
@@ -375,6 +376,10 @@ export class Fetch {
     body: RequestBodyType,
     optionalContentType?: string
   ): Fetch {
+    if (this.#body !== undefined) {
+      throw new sfError(`'setRequestBody' can only be called once`);
+    }
+
     // Only add in the content-type header if user chooses to set it,
     // Ref:
     // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
