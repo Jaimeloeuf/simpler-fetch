@@ -385,8 +385,9 @@ export class Fetch {
     // This means that if none is passed in, fetch API's implementation will
     // guess and set the content-type automatically, which is why this method
     // parameter is optional.
-    if (optionalContentType)
+    if (optionalContentType) {
       this.useHeader({ "Content-Type": optionalContentType });
+    }
 
     this.#body = body;
     return this;
