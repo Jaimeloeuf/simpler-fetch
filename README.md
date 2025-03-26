@@ -69,7 +69,7 @@ async function postExample() {
         .useFullUrl("https://jsonplaceholder.typicode.com/posts")
         .POST()
         .useHeader({ someAuthenticationToken: "superSecureTokenString" })
-        .bodyJSON({ title: "foo", body: "bar", userId: 1 })
+        .setRequestBodyWithJsonData({ title: "foo", body: "bar", userId: 1 })
         .runJSON();
 
     console.log(res, err);
@@ -94,7 +94,7 @@ const [err, res] = await sf
     .useHeader(async () => ({ asyncAuthToken: await Promise.resolve("secret") }))
     // Can also just directly pass in a header object. Header method can be called multiple times
     .useHeader({ someAuthenticationToken: "superSecureTokenString" })
-    .bodyJSON({ test: "true", anotherTest: "testing" })
+    .setRequestBodyWithJsonData({ test: "true", anotherTest: "testing" })
     .runJSON();
 
 console.log(res, err);

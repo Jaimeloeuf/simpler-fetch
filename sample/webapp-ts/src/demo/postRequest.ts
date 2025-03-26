@@ -4,13 +4,13 @@ export default [
   {
     title: "POST data to server with compile time type safety",
     async fn() {
-      /** Example type used for type checking the `bodyJSON` input */
+      /** Example type used to type check `setRequestBodyWithJsonData` arg */
       type BodyContentType = { some: string };
 
       const [err, res] = await sf
         .useBaseUrl("v1")
         .POST("/test")
-        .bodyJSON<BodyContentType>({ some: "data" })
+        .setRequestBodyWithJsonData<BodyContentType>({ some: "data" })
         .runJSON();
 
       console.log(res, err);
