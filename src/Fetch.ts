@@ -250,7 +250,8 @@ export class Fetch {
    * cannot override the body value set by any of the 'body' methods.
    *
    * Which is why:
-   * - If you want to set request body, use `.setRequestBody` or `.bodyJSON` method.
+   * - If you want to set request body, use `setRequestBody` or
+   *   `setRequestBodyWithJsonData` method.
    * - If you need to set a request header, use the `.useHeader` method.
    * - If you want to set HTTP request method, use a static method on `Builder`
    *
@@ -318,23 +319,25 @@ export class Fetch {
    * Set request body to be sent to server for HTTP methods such as POST/PUT.
    *
    * ### When to use this method?
-   * For most users who want to send JSON data to the server, see the `bodyJSON`
-   * method instead. For other types of data like `FormData`, `Blob`, `streams`
-   * just pass it into this method as the `body` parameter and the content type
-   * will be automatically detected / set by the `fetch` function.
+   * For most users who want to send JSON data to the server, see the
+   * `setRequestBodyWithJsonData` method instead. For other types of data like
+   * `FormData`, `Blob`, `streams` just pass it into this method as the `body`
+   * parameter and the content type will be automatically detected / set by the
+   * native `fetch` function.
    *
-   * ### Why have both `body` and `bodyJSON` method?
-   * The reason for this method instead of just having `bodyJSON` only is
-   * because the library cannot always just assume that library users only use
-   * JSON data, and have to support data types like FormData, Blob and etc...
-   * However the problem is that when content-type is not set, `fetch` will try
-   * to guess it, but when body is the results of `JSON.stringify(this.#body)`,
-   * fetch will guess the content-type to be text/plain and the browser will
-   * treat it as a safe CORS request, which means that for that request there
-   * will be no pre-flight request sent. Which means that the browser prevents
-   * certain headers from being used, which might cause an issue, and also the
-   * server may not always respond correctly because they assume they got
-   * text/plain even though your API endpoint is for application/json.
+   * ### Why have both `setRequestBody` and `setRequestBodyWithJsonData` method?
+   * The reason for this method instead of just having
+   * `setRequestBodyWithJsonData` only is because the library cannot always just
+   * assume that library users only use JSON data, and have to support data
+   * types like FormData, Blob and etc... However the problem is that when
+   * content-type is not set, `fetch` will try to guess it, but when body is the
+   * results of `JSON.stringify(this.#body)`, fetch will guess the content-type
+   * to be text/plain and the browser will treat it as a safe CORS request,
+   * which means that for that request there will be no pre-flight request sent.
+   * Which means that the browser prevents certain headers from being used,
+   * which might cause issues, and also the server may not always respond
+   * correctly because they assume they got text/plain even though your API
+   * endpoint is for application/json.
    *
    * The type of `body` value can be anything, as you can pass in any value that
    * the `fetch` API's `RequestInit`'s body property accepts.
@@ -420,7 +423,8 @@ export class Fetch {
    * ```typescript
    * const [err, res] = await sf
    *   .POST("/api")
-   *   .bodyJSON<IReqBody>(val) // TS will enforce that val must be IReqBody
+   *   // TS will enforce that val must be ReqBodyType
+   *   .setRequestBodyWithJsonData<ReqBodyType>(val)
    *   .run();
    * ```
    * The above code sets the body type for type safety.
@@ -433,7 +437,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  bodyJSON<JsonRequestBodyType = JsonTypeAlias>(
+  setRequestBodyWithJsonData<JsonRequestBodyType = JsonTypeAlias>(
     data: JsonRequestBodyType
   ): Fetch {
     // Content-type needs to be set manually even though `fetch` is able to
@@ -514,8 +518,9 @@ export class Fetch {
 
       // Because fetch's body property accepts many different types, instead
       // of doing transformations like JSON.stringify here, this library relies
-      // on helper methods like `bodyJSON` to set body as JSON data type, and to
-      // also set the content-type and do any transformations as needed.
+      // on helper methods like `setRequestBodyWithJsonData` to set body as JSON
+      // data type, and to also set the content-type and do any transformations
+      // as needed.
       //
       // See #body prop's docs on its type
       body: this.#body,
