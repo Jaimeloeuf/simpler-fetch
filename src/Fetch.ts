@@ -380,6 +380,15 @@ export class Fetch {
       throw new sfError(`'setRequestBody' can only be called once`);
     }
 
+    // This check is not strictly needed since the native `fetch` function will
+    // throw a "TypeError: Failed to execute 'fetch' on 'Window': Request with
+    // GET/HEAD method cannot have body.". However by doing the check ourselves
+    // we can throw it as an Error that forces users to deal with it before
+    // making the API call since this is a programming bug.
+    if (this.method === "GET" || this.method === "HEAD") {
+      throw new sfError(`Request with ${this.method} method cannot have body`);
+    }
+
     // Only add in the content-type header if user chooses to set it,
     // Ref:
     // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
