@@ -160,7 +160,7 @@ export class Fetch {
       string,
       string | undefined
     >
-  >(queryParams: T): Fetch {
+  >(queryParams: T) {
     // Remove all undefined values so that the default type can accept optional
     // values without having undefined be in the final generated query params.
     Object.keys(queryParams).forEach(
@@ -183,7 +183,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useDefaultOptions(): Fetch {
+  useDefaultOptions() {
     // Create new object for `this.#options` by combining the properties
     // `this.#defaultOptions` is spread first so that the API specific
     // options can override the default options.
@@ -226,7 +226,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useDefaultHeaders(): Fetch {
+  useDefaultHeaders() {
     // `unshift` instead of `push`, because headers set first should be
     // overwritten by headers set later in `#fetch` header generation process.
     this.#headers.unshift(...this.defaultHeaders);
@@ -268,7 +268,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useOptions(options: RequestInit): Fetch {
+  useOptions(options: RequestInit) {
     // Use Object.assign to mutate original object instead of creating a new one
     // Spread syntax is not used since it transpiles to more bytes
     // this.#options = { ...this.#options, ...options };
@@ -297,7 +297,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  useHeader(...headers: [Header, ...Header[]]): Fetch {
+  useHeader(...headers: [Header, ...Header[]]) {
     this.#headers.push(...headers);
     return this;
   }
@@ -308,7 +308,7 @@ export class Fetch {
    *
    * @returns Returns the current instance to let you chain method calls
    */
-  timeoutAfter(timeoutInMilliseconds: number): Fetch {
+  timeoutAfter(timeoutInMilliseconds: number) {
     this.#timeoutInMilliseconds = timeoutInMilliseconds;
     this.#abortController = new AbortController();
     return this;
@@ -375,7 +375,7 @@ export class Fetch {
   setRequestBody<RequestBodyType = any>(
     body: RequestBodyType,
     optionalContentType?: string
-  ): Fetch {
+  ) {
     if (this.#body !== undefined) {
       throw new sfError(`'setRequestBody' can only be called once`);
     }
@@ -454,7 +454,7 @@ export class Fetch {
      * by `JSON.stringify`.
      */
     data: JsonRequestBodyType
-  ): Fetch {
+  ) {
     // Content-type needs to be set manually even though `fetch` is able to
     // guess most content-type, because once object is stringified, the data
     // will be a string and fetch will guess that it is 'text/plain' rather than
