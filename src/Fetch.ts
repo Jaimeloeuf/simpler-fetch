@@ -314,8 +314,6 @@ export class Fetch {
     return this;
   }
 
-  /* All methods for setting body starts with the word 'body' */
-
   /**
    * Set request body to be sent to server for HTTP methods such as POST/PUT.
    *
