@@ -538,9 +538,9 @@ export class Fetch {
       // See #body prop's docs on its type
       body: this.#body,
 
-      // Using optional chaining as `#abortController` may be undefined if not
-      // library user did not set a custom timeout with `timeoutAfter` method,
-      // if so, just let it be undefined and it will just be ignored.
+      // Using optional chaining as `#abortController` may be undefined if user
+      // did not set a custom timeout with `timeoutAfter` method, if so, just
+      // let it be undefined and it will just be ignored.
       signal: this.#abortController?.signal,
     });
 
