@@ -561,7 +561,7 @@ export class Fetch {
    * implement timeout, whatever that is returned from `#fetch` is directly
    * returned to this method's caller.
    */
-  async #run(): Promise<Response> | never {
+  async #fetchWithOptionalTimeout(): Promise<Response> | never {
     // If no custom timeout specified, run `#fetch` and return directly.
     if (this.#abortController === undefined) {
       return this.#fetch();
@@ -636,7 +636,7 @@ export class Fetch {
   run() {
     // Need to wrap the call to the `this.#run` method in an anonymous arrow
     // function so that the `this` binding is preserved when running the method.
-    return safe(() => this.#run());
+    return safe(() => this.#fetchWithOptionalTimeout());
   }
 
   /**
@@ -696,7 +696,7 @@ export class Fetch {
     optionalErrorResponseParser?: ResponseParser<ErrorType>
   ) {
     return safe(async () => {
-      const res = await this.#run();
+      const res = await this.#fetchWithOptionalTimeout();
 
       if (res.ok) {
         // Assume data to be generic `SuccessType` without validation so even if
