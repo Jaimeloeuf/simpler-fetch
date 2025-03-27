@@ -714,7 +714,7 @@ export class Fetch {
         // Only run validation if a validator is passed in
         // User's validator can throw an exception, which will be safely bubbled
         // up to them if they want to receive a custom exception instead.
-        // Throwing a custom named class instead of the generic Error class so
+        // Throwing ValidationException instead of the generic Error class so
         // that users can check failure cause with `instanceof` operator.
         if (
           optionalResponseValidator !== undefined &&
