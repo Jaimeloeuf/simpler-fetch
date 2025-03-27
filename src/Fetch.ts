@@ -479,8 +479,8 @@ export class Fetch {
    * itself, because checking for control flow is not enforced / not possible
    * with TS. Therefore this union with `never` is just used for documentation.
    */
-  async #fetch(): Promise<Response> | never {
-    return fetch(this.getUrl(), {
+  #fetch = async (): Promise<Response> | never =>
+    fetch(this.getUrl(), {
       // Properties are set following the order of specificity:
       // 1. `RequestInit` options object is applied first
       // 2. HTTP method, which cannot be overwritten by `options`
@@ -543,7 +543,6 @@ export class Fetch {
       // if so, just let it be undefined and it will just be ignored.
       signal: this.#abortController?.signal,
     });
-  }
 
   /**
    * ### About
