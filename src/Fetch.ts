@@ -688,7 +688,7 @@ export class Fetch {
    * which means it will follow the redirect to the final API end point and only
    * then is the `ok` value set with the final HTTP response code.
    */
-  #runner<SuccessType, ErrorType = SuccessType>(
+  #runner<SuccessType, ErrorType>(
     responseParser: ResponseParser<SuccessType>,
     optionalResponseValidator?: Validator<SuccessType>,
     optionalErrorResponseParser?: ResponseParser<ErrorType>
