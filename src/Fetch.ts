@@ -480,8 +480,6 @@ export class Fetch {
    * with TS. Therefore this union with `never` is just used for documentation.
    */
   async #fetch(): Promise<Response> | never {
-    // This library assumes `fetch` exists in the global scope and does not
-    // check for it, if it does not exists please load a `fetch` polyfill first!
     return fetch(this.getUrl(), {
       // Properties are set following the order of specificity:
       // 1. `RequestInit` options object is applied first
