@@ -436,7 +436,7 @@ export class Fetch {
    *   .POST("/api")
    *   // TS will enforce that val must be ReqBodyType
    *   .setRequestBodyWithJsonData<ReqBodyType>(val)
-   *   .run();
+   *   .runAndGetRawResponse();
    * ```
    * The above code sets the body type for type safety.
    *
@@ -626,14 +626,14 @@ export class Fetch {
    *
    * @example Call API and handle any exception sequentially in the same scope
    * ```typescript
-   * const [err, res] = await sf.useDefaultBaseUrl().GET("/api").run();
+   * const [err, res] = await sf.useDefaultBaseUrl().GET("/api").runAndGetRawResponse();
    *
    * if (err) return console.log("API Call failed!");
    *
    * console.log("Res:", res); // Type narrowed to be the Response object
    * ```
    */
-  run() {
+  runAndGetRawResponse() {
     // Need to wrap the call to the `this.#run` method in an anonymous arrow
     // function so that the `this` binding is preserved when running the method.
     return safe(() => this.#fetchWithOptionalTimeout());
