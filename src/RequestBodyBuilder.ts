@@ -1,5 +1,4 @@
 import type { Header, HTTPMethod, JsonTypeAlias } from "./types";
-import { sfError } from "./errors";
 
 /**
  * Builder pattern class for users to set request body.
@@ -130,15 +129,6 @@ export class RequestBodyBuilder {
     body: RequestBodyType,
     optionalContentType?: string
   ) {
-    // This check is not strictly needed since the native `fetch` function will
-    // throw a "TypeError: Failed to execute 'fetch' on 'Window': Request with
-    // GET/HEAD method cannot have body.". However by doing the check ourselves
-    // we can throw it as an Error that forces users to deal with it before
-    // making the API call since this is a programming bug.
-    if (this.method === "GET" || this.method === "HEAD") {
-      throw new sfError(`Request with ${this.method} method cannot have body`);
-    }
-
     return this.#CreateResponseParserAndValidatorBuilder(
       body,
       optionalContentType

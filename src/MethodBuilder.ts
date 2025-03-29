@@ -23,8 +23,8 @@ export class MethodBuilder<
     private readonly baseUrlConfig: BaseUrlConfigWithOptionalDefaults
   ) {}
 
-  #CreateRequestBodyBuilder = (method: HTTPMethod, path: string = "") =>
-    new RequestBodyBuilder(
+  #CreateRequestBodyBuilder(method: HTTPMethod, path: string = "") {
+    const requestBodyBuilder = new RequestBodyBuilder(
       method,
       this.baseUrlConfig.url + path,
 
@@ -34,6 +34,15 @@ export class MethodBuilder<
       this.baseUrlConfig.defaultOptions,
       this.baseUrlConfig.defaultHeaders
     );
+
+    // Since GET/HEAD methods cannot have a body, skip the request body builder
+    // steps immediately.
+    if (method === "GET" || method === "HEAD") {
+      return requestBodyBuilder.noRequestBody();
+    }
+
+    return requestBodyBuilder;
+  }
 
   /** Construct a new `Fetch` instance to make a `HEAD` API call */
   HEAD = (path?: Path) => this.#CreateRequestBodyBuilder("HEAD", path);
