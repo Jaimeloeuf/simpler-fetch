@@ -43,32 +43,6 @@ export class RequestBodyBuilder {
     private readonly defaultHeaders: Array<Header>
   ) {}
 
-  #CreateResponseParserAndValidatorBuilder(
-    /**
-     * The `body` field will be used for the `body` property of `fetch` call.
-     *
-     * Due to the huge variety of argument types accepted by `BodyInit | null` and
-     * the lack of a standard TypeScript interface/type describing it, this is
-     * explicitly typed as `any`, which means that this type is basically anything
-     *  that can be serialized by JSON.stringify and also any child types of
-     * `BodyInit | null`.
-     *
-     * References:
-     * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description
-     * - https://tc39.es/ecma262/#sec-json.stringify
-     */
-    body?: any,
-    optionalContentType?: string
-  ) {
-  }
-
-  /**
-   * If the API request has no request body
-   */
-  noRequestBody() {
-    return this.#CreateResponseParserAndValidatorBuilder();
-  }
-
   /**
    * Set request body to be sent to server for HTTP methods such as POST/PUT.
    *
@@ -126,14 +100,22 @@ export class RequestBodyBuilder {
    * @returns Returns the current instance to let you chain method calls
    */
   setRequestBody<RequestBodyType = any>(
+    /**
+     * The `body` field will be used for the `body` property of `fetch` call.
+     *
+     * Due to the huge variety of argument types accepted by `BodyInit | null` and
+     * the lack of a standard TypeScript interface/type describing it, this is
+     * explicitly typed as `any`, which means that this type is basically anything
+     *  that can be serialized by JSON.stringify and also any child types of
+     * `BodyInit | null`.
+     *
+     * References:
+     * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description
+     * - https://tc39.es/ecma262/#sec-json.stringify
+     */
     body: RequestBodyType,
     optionalContentType?: string
-  ) {
-    return this.#CreateResponseParserAndValidatorBuilder(
-      body,
-      optionalContentType
-    );
-  }
+  ) {}
 
   /**
    * This method stringifies a JSON stringifiable data type to use as the
@@ -188,5 +170,12 @@ export class RequestBodyBuilder {
     // will be a string and fetch will guess that it is 'text/plain' rather than
     // 'application/json'.
     return this.setRequestBody(JSON.stringify(data), "application/json");
+  }
+
+  /**
+   * If the API request has no request body
+   */
+  noRequestBody() {
+    return this.setRequestBody(undefined);
   }
 }
