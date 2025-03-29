@@ -30,37 +30,78 @@ export class ResponseParserAndValidatorBuilder {
     );
   }
 
+  /**
+   * Parse `fetch` response as text using `res => res.text()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseAsText(responseValidator?: Validator<string>) {
     return this.#ResponseExceptionParserAndValidatorBuilder<string>(
       (res) => res.text(),
       responseValidator
     );
   }
+
+  /**
+   * Parse `fetch` response as text using `(res) => res.blob()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseAsBlob(responseValidator?: Validator<Blob>) {
     return this.#ResponseExceptionParserAndValidatorBuilder<Blob>(
       (res) => res.blob(),
       responseValidator
     );
   }
+
+  /**
+   * Parse `fetch` response as text using `(res) => res.formData()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseAsFormData(responseValidator?: Validator<FormData>) {
     return this.#ResponseExceptionParserAndValidatorBuilder<FormData>(
       (res) => res.formData(),
       responseValidator
     );
   }
+
+  /**
+   * Parse `fetch` response as text using `(res) => res.arrayBuffer()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseAsArrayBuffer(responseValidator?: Validator<ArrayBuffer>) {
     return this.#ResponseExceptionParserAndValidatorBuilder<ArrayBuffer>(
       (res) => res.arrayBuffer(),
       responseValidator
     );
   }
+
+  /**
+   * Parse `fetch` response as text using `(res) => res.json()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseAsJson<jsonData = any>(responseValidator?: Validator<jsonData>) {
     return this.#ResponseExceptionParserAndValidatorBuilder<jsonData>(
       jsonParser,
       responseValidator
     );
   }
-  parseResponseAsVoid() {
+
+  /**
+   * Dont parse response.
+   *
+   * Use this if you dont care about the response at all, for example if you
+   * just want to trigger a fire and forget API call and ignore the response.
+   */
+  dontParseResponse() {
     return this.#ResponseExceptionParserAndValidatorBuilder(
       async (_res) => undefined
     );
