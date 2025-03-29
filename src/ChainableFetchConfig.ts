@@ -49,6 +49,14 @@ export type ChainableFetchConfig = {
   body?: any;
 
   optionalContentType?: string;
+
+  responseParser?: ResponseParser<unknown>;
+
+  responseExceptionParser?: ResponseParser<unknown>;
+
+  responseValidator?: Validator<unknown> | undefined;
+
+  responseExceptionValidator?: Validator<unknown> | undefined;
 };
 
 type ExpectedFetchConfig<NonOptionalFields extends keyof ChainableFetchConfig> =
@@ -62,5 +70,16 @@ export type ExpectedFetchConfig_for_RequestBodyBuilder = ExpectedFetchConfig<
 
 export type ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder =
   ExpectedFetchConfig<
-    keyof ExpectedFetchConfig_for_RequestBodyBuilder | "body"
+    "url" | "path" | "method" | "defaultOptions" | "defaultHeaders" | "body"
+  >;
+
+export type ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder =
+  ExpectedFetchConfig<
+    | "url"
+    | "path"
+    | "method"
+    | "defaultOptions"
+    | "defaultHeaders"
+    | "body"
+    | "responseParser"
   >;
