@@ -1,4 +1,8 @@
-import type { Header, HTTPMethod, JsonTypeAlias } from "./types";
+import type { JsonTypeAlias } from "./types";
+import type {
+  ExpectedFetchConfig_for_RequestBodyBuilder,
+  ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder,
+} from "./ChainableFetchConfig";
 import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorBuilder";
 
 /**
@@ -7,41 +11,9 @@ import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorB
 export class RequestBodyBuilder {
   /**
    * Low level constructor API that should not be used by library users.
-   * This is only used by the `MethodBuilder` class.
    */
   constructor(
-    /**
-     * API call's HTTP Method
-     */
-    private readonly method: HTTPMethod,
-
-    /**
-     * ### Warning
-     * This should not be accessed directly, use `getUrl` method instead.
-     *
-     * This is the full URL path of the API endpoint to make the request, which
-     * can either be a relative or absolute URL path accepted by `fetch`. Note
-     * that this may not contain all the Query Params yet since users can set
-     * more with `useQuery` method instead of setting it all as strings in path.
-     */
-    private readonly url: string,
-
-    /**
-     * Instance variable to hold the default `RequestInit` options object for the
-     * specified base url, which is only used if the library user chooses to use
-     * the default options object using the `useDefaultOptions` method.
-     */
-    private readonly defaultOptions: RequestInit,
-
-    /**
-     * Instance variable to hold the default `headers` array for the specified
-     * base Url, which is only used if the library user chooses to use the default
-     * headers using the `useDefaultHeaders` method.
-     *
-     * This is not `readonly` since this will be reset to an empty array after
-     * calling `useDefaultHeaders` method to keep the method indempotent.
-     */
-    private readonly defaultHeaders: Array<Header>
+    private readonly chainableFetchConfig: ExpectedFetchConfig_for_RequestBodyBuilder
   ) {}
 
   /**
@@ -101,30 +73,9 @@ export class RequestBodyBuilder {
    * @returns Returns the current instance to let you chain method calls
    */
   setRequestBody<RequestBodyType = any>(
-    /**
-     * The `body` field will be used for the `body` property of `fetch` call.
-     *
-     * Due to the huge variety of argument types accepted by `BodyInit | null` and
-     * the lack of a standard TypeScript interface/type describing it, this is
-     * explicitly typed as `any`, which means that this type is basically anything
-     *  that can be serialized by JSON.stringify and also any child types of
-     * `BodyInit | null`.
-     *
-     * References:
-     * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description
-     * - https://tc39.es/ecma262/#sec-json.stringify
-     */
     body: RequestBodyType,
     optionalContentType?: string
   ) {
-    return new ResponseParserAndValidatorBuilder(
-      this.method,
-      this.url,
-      this.defaultOptions,
-      this.defaultHeaders,
-      body,
-      optionalContentType
-    );
   }
 
   /**

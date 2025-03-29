@@ -30,16 +30,11 @@ export class MethodBuilder<
       ? ResponseParserAndValidatorBuilder
       : RequestBodyBuilder
   >(method: HTTPMethodUsed, path: string = ""): ReturnedBuilder {
-    const requestBodyBuilder = new RequestBodyBuilder(
+    const requestBodyBuilder = new RequestBodyBuilder({
+      ...this.baseUrlConfig,
+      path,
       method,
-      this.baseUrlConfig.url + path,
-
-      // Pass default options object and default headers array as references
-      // to the new Fetch instance. Passing reference is safe since these
-      // containers and its inner content will not be mutated by `Fetch`.
-      this.baseUrlConfig.defaultOptions,
-      this.baseUrlConfig.defaultHeaders
-    );
+    });
 
     // Since GET/HEAD methods cannot have a body, skip the request body builder
     // steps immediately.
