@@ -83,3 +83,14 @@ export type ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder =
     | "body"
     | "responseParser"
   >;
+
+export type ExpectedFetchConfig_for_Fetch = ExpectedFetchConfig<
+  | "url"
+  | "path"
+  | "method"
+  | "defaultOptions"
+  | "defaultHeaders"
+  | "body"
+  | "responseParser"
+  | "responseExceptionParser"
+>;
