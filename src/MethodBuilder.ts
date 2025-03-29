@@ -1,4 +1,5 @@
 import { RequestBodyBuilder } from "./RequestBodyBuilder";
+import type { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorBuilder";
 import type { BaseUrlConfigWithOptionalDefaults, HTTPMethod } from "./types";
 
 /**
@@ -23,7 +24,12 @@ export class MethodBuilder<
     private readonly baseUrlConfig: BaseUrlConfigWithOptionalDefaults
   ) {}
 
-  #CreateRequestBodyBuilder(method: HTTPMethod, path: string = "") {
+  #CreateRequestBodyBuilder<
+    const HTTPMethodUsed extends HTTPMethod,
+    const ReturnedBuilder extends HTTPMethodUsed extends "GET" | "HEAD"
+      ? ResponseParserAndValidatorBuilder
+      : RequestBodyBuilder
+  >(method: HTTPMethodUsed, path: string = ""): ReturnedBuilder {
     const requestBodyBuilder = new RequestBodyBuilder(
       method,
       this.baseUrlConfig.url + path,
@@ -38,10 +44,10 @@ export class MethodBuilder<
     // Since GET/HEAD methods cannot have a body, skip the request body builder
     // steps immediately.
     if (method === "GET" || method === "HEAD") {
-      return requestBodyBuilder.noRequestBody();
+      return requestBodyBuilder.noRequestBody() as ReturnedBuilder;
     }
 
-    return requestBodyBuilder;
+    return requestBodyBuilder as ReturnedBuilder;
   }
 
   /** Construct a new `Fetch` instance to make a `HEAD` API call */
