@@ -11,7 +11,7 @@ export class ResponseParserAndValidatorBuilder {
    * Low level constructor API that should not be used by library users.
    */
   constructor(
-    private readonly chainableFetchConfig: ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder
+    private readonly config: ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder
   ) {}
 
   #ResponseExceptionParserAndValidatorBuilder<SuccessType>(
