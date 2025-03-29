@@ -76,6 +76,12 @@ export class RequestBodyBuilder {
     body: RequestBodyType,
     optionalContentType?: string
   ) {
+    this.chainableFetchConfig.body = body;
+    this.chainableFetchConfig.optionalContentType = optionalContentType;
+    return new ResponseParserAndValidatorBuilder(
+      this
+        .chainableFetchConfig as ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder
+    );
   }
 
   /**
