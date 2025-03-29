@@ -1,4 +1,4 @@
-import { Fetch } from "./Fetch";
+import { RequestBodyBuilder } from "./RequestBodyBuilder";
 import type { BaseUrlConfigWithOptionalDefaults, HTTPMethod } from "./types";
 
 /**
@@ -23,11 +23,8 @@ export class MethodBuilder<
     private readonly baseUrlConfig: BaseUrlConfigWithOptionalDefaults
   ) {}
 
-  /**
-   * Standard API for creating a new `Fetch` instance
-   */
-  #CreateFetch = (method: HTTPMethod, path: string = "") =>
-    new Fetch(
+  #CreateRequestBodyBuilder = (method: HTTPMethod, path: string = "") =>
+    new RequestBodyBuilder(
       method,
       this.baseUrlConfig.url + path,
 
@@ -39,23 +36,23 @@ export class MethodBuilder<
     );
 
   /** Construct a new `Fetch` instance to make a `HEAD` API call */
-  HEAD = (path?: Path) => this.#CreateFetch("HEAD", path);
+  HEAD = (path?: Path) => this.#CreateRequestBodyBuilder("HEAD", path);
 
   /** Construct a new `Fetch` instance to make a `OPTIONS` API call */
-  OPTIONS = (path?: Path) => this.#CreateFetch("OPTIONS", path);
+  OPTIONS = (path?: Path) => this.#CreateRequestBodyBuilder("OPTIONS", path);
 
   /** Construct a new `Fetch` instance to make a `GET` API call */
-  GET = (path?: Path) => this.#CreateFetch("GET", path);
+  GET = (path?: Path) => this.#CreateRequestBodyBuilder("GET", path);
 
   /** Construct a new `Fetch` instance to make a `POST` API call */
-  POST = (path?: Path) => this.#CreateFetch("POST", path);
+  POST = (path?: Path) => this.#CreateRequestBodyBuilder("POST", path);
 
   /** Construct a new `Fetch` instance to make a `PUT` API call */
-  PUT = (path?: Path) => this.#CreateFetch("PUT", path);
+  PUT = (path?: Path) => this.#CreateRequestBodyBuilder("PUT", path);
 
   /** Construct a new `Fetch` instance to make a `PATCH` API call */
-  PATCH = (path?: Path) => this.#CreateFetch("PATCH", path);
+  PATCH = (path?: Path) => this.#CreateRequestBodyBuilder("PATCH", path);
 
   /** Construct a new `Fetch` instance to make a `DELETE` API call */
-  DEL = (path?: Path) => this.#CreateFetch("DELETE", path);
+  DEL = (path?: Path) => this.#CreateRequestBodyBuilder("DELETE", path);
 }
