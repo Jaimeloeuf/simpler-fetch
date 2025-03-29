@@ -1,5 +1,9 @@
 import type { Validator, ResponseParser } from "./types";
-import type { ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder } from "./ChainableFetchConfig";
+import type {
+  ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder,
+  ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder,
+} from "./ChainableFetchConfig";
+import { ResponseExceptionParserAndValidatorBuilder } from "./ResponseExceptionParserAndValidatorBuilder";
 import { jsonParser } from "./utils";
 
 /**
@@ -18,6 +22,12 @@ export class ResponseParserAndValidatorBuilder {
     responseParser: ResponseParser<SuccessType>,
     responseValidator?: Validator<SuccessType>
   ) {
+    this.config.responseParser = responseParser;
+    this.config.responseValidator = responseValidator;
+    return new ResponseExceptionParserAndValidatorBuilder<SuccessType>(
+      this
+        .config as ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder
+    );
   }
 
   parseResponseAsText(responseValidator?: Validator<string>) {
