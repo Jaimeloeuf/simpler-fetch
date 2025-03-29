@@ -22,6 +22,11 @@ export class ResponseExceptionParserAndValidatorBuilder<SuccessType> {
     responseExceptionParser: ResponseParser<ErrorType>,
     responseExceptionValidator?: Validator<ErrorType>
   ) {
+    this.config.responseExceptionParser = responseExceptionParser;
+    this.config.responseExceptionValidator = responseExceptionValidator;
+    return new Fetch<SuccessType, ErrorType>(
+      this.config as ExpectedFetchConfig_for_Fetch
+    );
   }
 
   parseResponseExceptionAsText(responseValidator?: Validator<string>) {
