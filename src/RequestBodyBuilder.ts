@@ -1,4 +1,5 @@
 import type { Header, HTTPMethod, JsonTypeAlias } from "./types";
+import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorBuilder";
 
 /**
  * Builder pattern class for users to set request body.
@@ -115,7 +116,16 @@ export class RequestBodyBuilder {
      */
     body: RequestBodyType,
     optionalContentType?: string
-  ) {}
+  ) {
+    return new ResponseParserAndValidatorBuilder(
+      this.method,
+      this.url,
+      this.defaultOptions,
+      this.defaultHeaders,
+      body,
+      optionalContentType
+    );
+  }
 
   /**
    * This method stringifies a JSON stringifiable data type to use as the
