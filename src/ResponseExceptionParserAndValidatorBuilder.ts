@@ -3,7 +3,6 @@ import type {
   ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder,
   ExpectedFetchConfig_for_Fetch,
 } from "./ChainableFetchConfig";
-import { jsonParser } from "./utils";
 import { Fetch } from "./NewFetch";
 
 /**
@@ -86,7 +85,10 @@ export class ResponseExceptionParserAndValidatorBuilder<SuccessType> {
   parseResponseExceptionAsJson<JsonResponse = any>(
     responseValidator?: Validator<JsonResponse>
   ) {
-    return this.#CreateFetch<JsonResponse>(jsonParser, responseValidator);
+    return this.#CreateFetch<JsonResponse>(
+      (res) => res.json(),
+      responseValidator
+    );
   }
 
   /**
