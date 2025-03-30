@@ -29,18 +29,45 @@ export class ResponseExceptionParserAndValidatorBuilder<SuccessType> {
     );
   }
 
+  /**
+   * Parse `fetch` response as string using `res => res.text()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseExceptionAsText(responseValidator?: Validator<string>) {
     return this.#CreateFetch<string>((res) => res.text(), responseValidator);
   }
+
+  /**
+   * Parse `fetch` response as Blob using `(res) => res.blob()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseExceptionAsBlob(responseValidator?: Validator<Blob>) {
     return this.#CreateFetch<Blob>((res) => res.blob(), responseValidator);
   }
+
+  /**
+   * Parse `fetch` response as FormData using `(res) => res.formData()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseExceptionAsFormData(responseValidator?: Validator<FormData>) {
     return this.#CreateFetch<FormData>(
       (res) => res.formData(),
       responseValidator
     );
   }
+
+  /**
+   * Parse `fetch` response as ArrayBuffer using `(res) => res.arrayBuffer()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
   parseResponseExceptionAsArrayBuffer(
     responseValidator?: Validator<ArrayBuffer>
   ) {
@@ -49,12 +76,26 @@ export class ResponseExceptionParserAndValidatorBuilder<SuccessType> {
       responseValidator
     );
   }
-  parseResponseExceptionAsJson<jsonData = any>(
-    responseValidator?: Validator<jsonData>
+
+  /**
+   * Parse `fetch` response as JsonResponse using `(res) => res.json()`.
+   *
+   * You can optionally set a validator to validate that the response result is
+   * correct at runtime.
+   */
+  parseResponseExceptionAsJson<JsonResponse = any>(
+    responseValidator?: Validator<JsonResponse>
   ) {
-    return this.#CreateFetch<jsonData>(jsonParser, responseValidator);
+    return this.#CreateFetch<JsonResponse>(jsonParser, responseValidator);
   }
-  parseResponseExceptionAsVoid() {
+
+  /**
+   * Dont parse response exception.
+   *
+   * Use this if you dont care about the response at all, for example if you
+   * just want to trigger a fire and forget API call and ignore the response.
+   */
+  dontParseResponseException() {
     return this.#CreateFetch(async (_res) => undefined);
   }
 }
