@@ -30,7 +30,7 @@ export class ResponseParserAndValidatorBuilder {
   }
 
   /**
-   * Parse `fetch` response as text using `res => res.text()`.
+   * Parse `fetch` response as string using `res => res.text()`.
    *
    * You can optionally set a validator to validate that the response result is
    * correct at runtime.
@@ -43,7 +43,7 @@ export class ResponseParserAndValidatorBuilder {
   }
 
   /**
-   * Parse `fetch` response as text using `(res) => res.blob()`.
+   * Parse `fetch` response as Blob using `(res) => res.blob()`.
    *
    * You can optionally set a validator to validate that the response result is
    * correct at runtime.
@@ -56,7 +56,7 @@ export class ResponseParserAndValidatorBuilder {
   }
 
   /**
-   * Parse `fetch` response as text using `(res) => res.formData()`.
+   * Parse `fetch` response as FormData using `(res) => res.formData()`.
    *
    * You can optionally set a validator to validate that the response result is
    * correct at runtime.
@@ -69,7 +69,7 @@ export class ResponseParserAndValidatorBuilder {
   }
 
   /**
-   * Parse `fetch` response as text using `(res) => res.arrayBuffer()`.
+   * Parse `fetch` response as ArrayBuffer using `(res) => res.arrayBuffer()`.
    *
    * You can optionally set a validator to validate that the response result is
    * correct at runtime.
@@ -82,13 +82,15 @@ export class ResponseParserAndValidatorBuilder {
   }
 
   /**
-   * Parse `fetch` response as text using `(res) => res.json()`.
+   * Parse `fetch` response as JsonResponse using `(res) => res.json()`.
    *
    * You can optionally set a validator to validate that the response result is
    * correct at runtime.
    */
-  parseResponseAsJson<jsonData = any>(responseValidator?: Validator<jsonData>) {
-    return this.#ResponseExceptionParserAndValidatorBuilder<jsonData>(
+  parseResponseAsJson<JsonResponse = any>(
+    responseValidator?: Validator<JsonResponse>
+  ) {
+    return this.#ResponseExceptionParserAndValidatorBuilder<JsonResponse>(
       (res) => res.json(),
       responseValidator
     );
