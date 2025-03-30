@@ -12,6 +12,11 @@ export type ChainableFetchConfig = {
   path?: string;
 
   /**
+   * URL Query Params
+   */
+  queryParams?: Record<string, string>;
+
+  /**
    * API call's HTTP Method
    */
   method?: HTTPMethod;
@@ -65,6 +70,10 @@ type ExpectedFetchConfig<NonOptionalFields extends keyof ChainableFetchConfig> =
   };
 
 export type ExpectedFetchConfig_for_UrlBuilder = ExpectedFetchConfig<"method">;
+
+export type ExpectedFetchConfig_for_PathBuilder = ExpectedFetchConfig<
+  "method" | "url"
+>;
 
 export type ExpectedFetchConfig_for_RequestBodyBuilder = ExpectedFetchConfig<
   "url" | "path" | "method" | "defaultOptions" | "defaultHeaders"
