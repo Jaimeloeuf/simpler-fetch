@@ -64,6 +64,8 @@ type ExpectedFetchConfig<NonOptionalFields extends keyof ChainableFetchConfig> =
     [K in NonOptionalFields]-?: Exclude<ChainableFetchConfig[K], undefined>;
   };
 
+export type ExpectedFetchConfig_for_UrlBuilder = ExpectedFetchConfig<"method">;
+
 export type ExpectedFetchConfig_for_RequestBodyBuilder = ExpectedFetchConfig<
   "url" | "path" | "method" | "defaultOptions" | "defaultHeaders"
 >;
