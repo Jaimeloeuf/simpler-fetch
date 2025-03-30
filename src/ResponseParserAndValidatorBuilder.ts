@@ -4,7 +4,6 @@ import type {
   ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder,
 } from "./ChainableFetchConfig";
 import { ResponseExceptionParserAndValidatorBuilder } from "./ResponseExceptionParserAndValidatorBuilder";
-import { jsonParser } from "./utils";
 
 /**
  * Builder pattern class for users to set response parser and response's
@@ -90,7 +89,7 @@ export class ResponseParserAndValidatorBuilder {
    */
   parseResponseAsJson<jsonData = any>(responseValidator?: Validator<jsonData>) {
     return this.#ResponseExceptionParserAndValidatorBuilder<jsonData>(
-      jsonParser,
+      (res) => res.json(),
       responseValidator
     );
   }
