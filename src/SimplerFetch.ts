@@ -1,5 +1,5 @@
 import type { BaseUrlConfig, HTTPMethod } from "./types";
-import { UrlWithSavedBaseUrlBuilder } from "./UrlWithSavedBaseUrlBuilder";
+import { UrlBuilder } from "./UrlBuilder";
 
 /**
  * `SimplerFetch` is used to create an Object Oriented `fetch api` abstraction
@@ -19,7 +19,7 @@ export class SimplerFetch<
   #ChainToUrlBuilder = <const HTTPMethodUsed extends HTTPMethod>(
     method: HTTPMethodUsed
   ) =>
-    new UrlWithSavedBaseUrlBuilder<BaseUrlIdentifiers, HTTPMethodUsed>(
+    new UrlBuilder<BaseUrlIdentifiers, HTTPMethodUsed>(
       // Create a new object that will be the chainable fetch config object
       // threaded through all the Builder class instances.
       { method },
