@@ -8,7 +8,9 @@ import { PathAndQueryParamsBuilder } from "./PathAndQueryParamsBuilder";
 /**
  * Builder pattern class for users to use a custom URL.
  */
-export class UrlBuilder<const HTTPMethodUsed extends HTTPMethod> {
+export class UrlBuilderWithoutSavedBaseUrl<
+  const HTTPMethodUsed extends HTTPMethod
+> {
   constructor(private readonly config: ExpectedFetchConfig_for_UrlBuilder) {}
 
   /**
