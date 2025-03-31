@@ -9,9 +9,6 @@ import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorB
  * Builder pattern class for users to set request body.
  */
 export class RequestBodyBuilder {
-  /**
-   * Low level constructor API that should not be used by library users.
-   */
   constructor(
     private readonly config: ExpectedFetchConfig_for_RequestBodyBuilder
   ) {}
@@ -44,14 +41,10 @@ export class RequestBodyBuilder {
    * the `fetch` API's `RequestInit`'s body property accepts.
    *
    * ### Using generics for TS Type Safety
+   * In the example below, TS will enforce that `myValue` is `FormDataType`
    * ```typescript
-   * const [err, res] = await sf
-   *   .useDefaultBaseUrl()
-   *   .POST("/api")
-   *   .setRequestBody<FormData>(myValue) // TS will enforce that myValue is FormData
-   *   .runJSON();
+   * .setRequestBody<FormDataType>(myValue)
    * ```
-   * The above code sets the body type for type safety.
    *
    * For TS users, the body type is a generic type variable even though its
    * default type for it is `any` so that you can use it to restrict the type
@@ -93,7 +86,7 @@ export class RequestBodyBuilder {
    * [MDN link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#description)
    *
    * ### What if you have no data to send?
-   * Even though there is no default arguement, you do not have to call this
+   * Even though there is no default argument, you do not have to call this
    * method with an empty object when using a method like `POST` as `fetch` and
    * API services will just treat it as an empty object by default.
    *
@@ -107,14 +100,10 @@ export class RequestBodyBuilder {
    * method generic for type checking.
    *
    * ### Using generics for TS Type Safety
+   * In the example below, TS will enforce that `val` is `ReqBodyType`
    * ```typescript
-   * const [err, res] = await sf
-   *   .POST("/api")
-   *   // TS will enforce that val must be ReqBodyType
-   *   .setRequestBodyWithJsonData<ReqBodyType>(val)
-   *   .run();
+   * .setRequestBodyWithJsonData<ReqBodyType>(val)
    * ```
-   * The above code sets the body type for type safety.
    *
    * For TS users, the data parameter is a generic type even though its default
    * type is `any` so that you can use it to restrict the type passed into the
@@ -131,15 +120,15 @@ export class RequestBodyBuilder {
      */
     data: JsonRequestBodyType
   ) {
-    // Content-type needs to be set manually even though `fetch` is able to
-    // guess most content-type, because once object is stringified, the data
-    // will be a string and fetch will guess that it is 'text/plain' rather than
-    // 'application/json'.
+    // Content-type must be set manually even though `fetch` can guess most
+    // content-type, because once `data` is stringified, the data is string type
+    // and fetch will assume it is 'text/plain' rather than 'application/json'.
     return this.setRequestBody(JSON.stringify(data), "application/json");
   }
 
   /**
-   * If the API request has no request body
+   * If API request has no request body. Only applicable for HTTP Methods other
+   * than HEAD/GET since these 2 methods do not support request body by default.
    */
   noRequestBody() {
     return this.setRequestBody(undefined);
