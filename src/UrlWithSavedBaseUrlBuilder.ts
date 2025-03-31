@@ -9,7 +9,7 @@ import { PathAndQueryParamsBuilder } from "./PathAndQueryParamsBuilder";
  * Builder pattern class for users to use a saved base URL or a custom URL.
  */
 export class UrlWithSavedBaseUrlBuilder<
-  const BaseUrlIdentifiers extends string,
+  const BaseUrlIdentifiers extends string | number | symbol,
   const HTTPMethodUsed extends HTTPMethod
 > {
   constructor(
