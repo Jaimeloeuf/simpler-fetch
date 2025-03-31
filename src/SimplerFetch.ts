@@ -1,6 +1,5 @@
 import type { BaseUrlConfig, HTTPMethod } from "./types";
-import { UrlBuilder } from "./UrlBuilder";
-import { MethodBuilder } from "./MethodBuilder";
+import { UrlWithSavedBaseUrlBuilder } from "./UrlWithSavedBaseUrlBuilder";
 
 /**
  * `SimplerFetch` is used to create an Object Oriented `fetch api` abstraction
@@ -11,73 +10,23 @@ export class SimplerFetch<
   const SimplerFetchConfig extends {
     baseUrlConfigs?: Record<string, BaseUrlConfig>;
   },
-  const BaseUrlIdentifiers extends keyof SimplerFetchConfig["baseUrlConfigs"] = keyof SimplerFetchConfig["baseUrlConfigs"]
+  const BaseUrlIdentifiers extends "baseUrlConfigs" extends keyof SimplerFetchConfig
+    ? keyof SimplerFetchConfig["baseUrlConfigs"]
+    : never
 > {
-  /**
-   * Private property mapping urlId (Base URL Identifiers) to `MethodBuilder`.
-   */
-  readonly #urlIdToMethodBuilder = new Map<BaseUrlIdentifiers, MethodBuilder>();
-
-  constructor(public readonly config: SimplerFetchConfig) {
-    if (config.baseUrlConfigs !== undefined) {
-      // Instead of creating a new `MethodBuilder` instance on every single call
-      // to `useBaseUrl` method, a single `MethodBuilder` instance is created for
-      // each baseUrlConfig on `SimplerFetch` creation for caching/optimisation
-      // purposes. This is fine since `MethodBuilder` is idempotent.
-      for (const [baseUrlIdentifier, baseUrlConfig] of Object.entries(
-        config.baseUrlConfigs
-      ) as Array<[BaseUrlIdentifiers, BaseUrlConfig]>) {
-        this.#urlIdToMethodBuilder.set(
-          baseUrlIdentifier,
-          new MethodBuilder({
-            url: baseUrlConfig.url,
-            defaultOptions: baseUrlConfig.defaultOptions ?? {},
-            defaultHeaders: baseUrlConfig.defaultHeaders ?? [],
-          })
-        );
-      }
-    }
-  }
-
-  /**
-   * Use a base URL specified in the constructor.
-   */
-  useBaseUrl = (identifier: BaseUrlIdentifiers) =>
-    // Non-null assertion operator can be safely used here as TS already
-    // typechecks to ensure that the identifier passed in is a valid generic
-    // `BaseUrlIdentifiers` string literal. This will only fail if user is not
-    // using TS which is a case that we are not covering.
-    this.#urlIdToMethodBuilder.get(identifier)!;
-
-  /**
-   * Use a Full URL string (with API path) to make an API call without using any
-   * base URL.
-   *
-   * This method should be used when making one off API calls without having to
-   * configure a base URL and its options. Usually used when you need to make an
-   * API call to another domain, e.g. integrating with third party APIs.
-   */
-  useFullUrl = (fullUrlString: string) =>
-    // Set generic type `IsFullUrl` to true to ensure that users are not allowed
-    // to set `path` values, instead they have to set the full URL string here.
-    new MethodBuilder<true>({
-      url: fullUrlString,
-
-      // A single use API call will always have empty default options/headers
-      // since it cannot be used/reused again by definition.
-      defaultOptions: {},
-      defaultHeaders: [],
-    });
+  constructor(public readonly config: SimplerFetchConfig) {}
 
   #ChainToUrlBuilder = <const HTTPMethodUsed extends HTTPMethod>(
     method: HTTPMethodUsed
   ) =>
-    new UrlBuilder<BaseUrlIdentifiers, HTTPMethodUsed>(
-      this.#urlIdToMethodBuilder,
-
+    new UrlWithSavedBaseUrlBuilder<BaseUrlIdentifiers, HTTPMethodUsed>(
       // Create a new object that will be the chainable fetch config object
       // threaded through all the Builder class instances.
-      { method }
+      { method },
+      this.config.baseUrlConfigs as Exclude<
+        SimplerFetchConfig["baseUrlConfigs"],
+        undefined
+      >
     );
 
   /** Make a `HEAD` API call */
