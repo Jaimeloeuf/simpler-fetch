@@ -1,15 +1,22 @@
+import type { HTTPMethod } from "./types";
 import type {
   ExpectedFetchConfig_for_PathBuilder,
   ExpectedFetchConfig_for_RequestBodyBuilder,
+  ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder,
 } from "./ChainableFetchConfig";
 import { RequestBodyBuilder } from "./RequestBodyBuilder";
+import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorBuilder";
 
 /**
  * Builder pattern class for users to set their API path and URL query params.
  */
 export class PathAndQueryParamsBuilder<
-  const BaseUrlIdentifiers
-  // const HTTPMethodUsed extends HTTPMethod
+  const HTTPMethodUsed extends HTTPMethod,
+  const ReturnedBuilder extends HTTPMethodUsed extends "GET" | "HEAD"
+    ? ResponseParserAndValidatorBuilder
+    : RequestBodyBuilder = HTTPMethodUsed extends "GET" | "HEAD"
+    ? ResponseParserAndValidatorBuilder
+    : RequestBodyBuilder
 > {
   constructor(private readonly config: ExpectedFetchConfig_for_PathBuilder) {}
 
@@ -22,7 +29,7 @@ export class PathAndQueryParamsBuilder<
       string,
       string | undefined
     >
-  >(path: string, queryParams?: QueryParams) {
+  >(path: string, queryParams?: QueryParams): ReturnedBuilder {
     this.config.path = path;
 
     if (queryParams !== undefined) {
@@ -37,8 +44,13 @@ export class PathAndQueryParamsBuilder<
       this.config.queryParams = queryParams as Record<string, string>;
     }
 
-    return new RequestBodyBuilder(
-      this.config as ExpectedFetchConfig_for_RequestBodyBuilder
-    );
+    return this.config.method === "GET" || this.config.method === "HEAD"
+      ? (new ResponseParserAndValidatorBuilder(
+          this
+            .config as ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder
+        ) as ReturnedBuilder)
+      : (new RequestBodyBuilder(
+          this.config as ExpectedFetchConfig_for_RequestBodyBuilder
+        ) as ReturnedBuilder);
   }
 }
