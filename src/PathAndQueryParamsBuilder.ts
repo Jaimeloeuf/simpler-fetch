@@ -44,13 +44,14 @@ export class PathAndQueryParamsBuilder<
       this.config.queryParams = queryParams as Record<string, string>;
     }
 
-    return this.config.method in ["GET", "HEAD"]
-      ? (new ResponseParserAndValidatorBuilder(
-          this
-            .config as ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder
-        ) as ReturnedBuilder)
-      : (new RequestBodyBuilder(
-          this.config as ExpectedFetchConfig_for_RequestBodyBuilder
-        ) as ReturnedBuilder);
+    return new (this.config.method in ["GET", "HEAD"]
+      ? ResponseParserAndValidatorBuilder
+      : RequestBodyBuilder)(
+      // Type can be a union of both so that it will work regardless of the
+      // actual Builder class being chained, but it is fine since the only thing
+      // different between them is `body` which can already be `any` type.
+      this.config as ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder &
+        ExpectedFetchConfig_for_RequestBodyBuilder
+    ) as ReturnedBuilder;
   }
 }
