@@ -39,6 +39,27 @@ export type ChainableFetchConfig = {
   defaultHeaders?: Array<Header>;
 
   /**
+   * `RequestInit` type options passed to the `fetch` function.
+   */
+  options?: RequestInit;
+
+  /**
+   * An array of `Header` to be reduced into a single Headers object before
+   * being used in this instance's API call.
+   */
+  headers?: Array<Header>;
+
+  /**
+   * Optional `AbortController` used for custom timeouts.
+   */
+  abortController?: AbortController;
+
+  /**
+   * Optional timeout milliseconds for custom timeouts.
+   */
+  timeoutInMilliseconds?: number;
+
+  /**
    * The `body` field will be used for the `body` property of `fetch` call.
    *
    * Due to the huge variety of argument types accepted by `BodyInit | null` and
@@ -104,4 +125,6 @@ export type ExpectedFetchConfig_for_Fetch = ExpectedFetchConfig<
   | "body"
   | "responseParser"
   | "responseExceptionParser"
+  | "options"
+  | "headers"
 >;

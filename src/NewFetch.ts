@@ -16,46 +16,6 @@ import { safe } from "./utils/internal";
  * constructed using the `Builder` class.
  */
 export class Fetch<SuccessType, ErrorType> {
-  /* Private Instance variables that are only accessible internally */
-
-  /**
-   * Instance variable for Query Params.
-   *
-   * This is not `readonly` since `useQuery` method will write to this variable.
-   */
-  #queryParams?: Record<string, string>;
-
-  /**
-   * Instance variable to set the `RequestInit` type options passed to the
-   * `fetch` function.
-   *
-   * This is not `readonly` since a call to `useDefaultOptions` method will
-   * cause a new options object to be created and assigned to this variable.
-   */
-  #options: RequestInit = {};
-
-  /**
-   * An array of `Header` to be reduced into a single Headers object before
-   * being used in this instance's API call.
-   *
-   * This cannot be optional because in the `useHeader` method, it assumes that
-   * `this.#headers` is already an array and inside the `#fetch` method it also
-   * assumes that it is already an array by default when calling `map` on this.
-   *
-   * This is readonly since only the content of this headers array can be changed.
-   */
-  readonly #headers: Array<Header> = [];
-
-  /**
-   * Optional `AbortController` used for custom timeout set in `timeoutAfter()`
-   */
-  #abortController?: AbortController;
-
-  /**
-   * Optional timeout milliseconds for custom timeout set in `timeoutAfter()`
-   */
-  #timeoutInMilliseconds?: number;
-
   /**
    * Low level constructor API that should not be used by library users.
    * This is only used by the `MethodBuilder` class.
@@ -71,7 +31,7 @@ export class Fetch<SuccessType, ErrorType> {
    */
   getUrl(): string {
     // If not query params specified, return URL directly.
-    if (this.#queryParams === undefined) {
+    if (this.config.queryParams === undefined) {
       return this.config.url;
     }
 
@@ -82,7 +42,7 @@ export class Fetch<SuccessType, ErrorType> {
     // via the constructor and query params set using the `useQuery` method.
     const newQueryParams = new URLSearchParams([
       ...Array.from(url.searchParams.entries()),
-      ...Object.entries(this.#queryParams),
+      ...Object.entries(this.config.queryParams),
     ]).toString();
 
     return `${url.origin}${url.pathname}?${newQueryParams}`;
@@ -114,7 +74,7 @@ export class Fetch<SuccessType, ErrorType> {
 
     // Type cast needed here since TSC cannot infer the removal of undefined
     // values from the Record type.
-    this.#queryParams = queryParams as Record<string, string>;
+    this.config.queryParams = queryParams as Record<string, string>;
 
     return this;
   }
@@ -129,10 +89,13 @@ export class Fetch<SuccessType, ErrorType> {
    * @returns Returns the current instance to let you chain method calls
    */
   useDefaultOptions() {
-    // Create new object for `this.#options` by combining the properties
-    // `this.#defaultOptions` is spread first so that the API specific
-    // options can override the default options.
-    this.#options = { ...this.config.defaultOptions, ...this.#options };
+    // Create new object for `options` by combining the properties.
+    // `defaultOptions` is spread first so that the API specific options can
+    // override the default options.
+    this.config.options = {
+      ...this.config.defaultOptions,
+      ...this.config.options,
+    };
 
     // Alternative method using `Object.assign` transpiles to more bytes.
     //
@@ -174,7 +137,7 @@ export class Fetch<SuccessType, ErrorType> {
   useDefaultHeaders() {
     // `unshift` instead of `push`, because headers set first should be
     // overwritten by headers set later in `#fetch` header generation process.
-    this.#headers.unshift(...this.config.defaultHeaders);
+    this.config.headers.unshift(...this.config.defaultHeaders);
 
     // Deleting default headers by setting it to [] so that this method is
     // indempotent, making subsequent calls to `unshift` a no-op.
@@ -217,7 +180,7 @@ export class Fetch<SuccessType, ErrorType> {
     // Use Object.assign to mutate original object instead of creating a new one
     // Spread syntax is not used since it transpiles to more bytes
     // this.#options = { ...this.#options, ...options };
-    Object.assign(this.#options, options);
+    Object.assign(this.config.options, options);
     return this;
   }
 
@@ -243,7 +206,7 @@ export class Fetch<SuccessType, ErrorType> {
    * @returns Returns the current instance to let you chain method calls
    */
   useHeader(...headers: [Header, ...Header[]]) {
-    this.#headers.push(...headers);
+    this.config.headers.push(...headers);
     return this;
   }
 
@@ -254,8 +217,8 @@ export class Fetch<SuccessType, ErrorType> {
    * @returns Returns the current instance to let you chain method calls
    */
   timeoutAfter(timeoutInMilliseconds: number) {
-    this.#timeoutInMilliseconds = timeoutInMilliseconds;
-    this.#abortController = new AbortController();
+    this.config.timeoutInMilliseconds = timeoutInMilliseconds;
+    this.config.abortController = new AbortController();
     return this;
   }
 
@@ -291,7 +254,7 @@ export class Fetch<SuccessType, ErrorType> {
       // `useHeader` method and `body` set by any of the setRequestBody methods.
 
       // Apply with spread, since final object is the same `RequestInit` type
-      ...this.#options,
+      ...this.config.options,
 
       method: this.config.method,
 
@@ -317,7 +280,7 @@ export class Fetch<SuccessType, ErrorType> {
       // bubbled up to the library user through the `safe` function wrapper.
       headers: (
         await Promise.all(
-          this.#headers.map((header) =>
+          this.config.headers.map((header) =>
             typeof header === "function" ? header() : header
           )
         ).catch((err) => {
@@ -338,7 +301,7 @@ export class Fetch<SuccessType, ErrorType> {
       // Using optional chaining as `#abortController` may be undefined if user
       // did not set a custom timeout with `timeoutAfter` method, if so, just
       // let it be undefined and it will just be ignored.
-      signal: this.#abortController?.signal,
+      signal: this.config.abortController?.signal,
     });
 
   /**
@@ -360,7 +323,7 @@ export class Fetch<SuccessType, ErrorType> {
    */
   async #fetchWithOptionalTimeout(): Promise<Response> | never {
     // If no custom timeout specified, run `#fetch` and return directly.
-    if (this.#abortController === undefined) {
+    if (this.config.abortController === undefined) {
       return this.#fetch();
     }
 
@@ -385,12 +348,12 @@ export class Fetch<SuccessType, ErrorType> {
     // ignored and will not throw a new error.
     const timeoutID = setTimeout(
       () =>
-        this.#abortController?.abort(
+        this.config.abortController?.abort(
           new TimeoutException(
-            `${this.#timeoutInMilliseconds}ms time out exceeded`
+            `${this.config.timeoutInMilliseconds}ms time out exceeded`
           )
         ),
-      this.#timeoutInMilliseconds
+      this.config.timeoutInMilliseconds
     );
 
     const res = await this.#fetch();
