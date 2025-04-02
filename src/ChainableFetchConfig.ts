@@ -41,13 +41,13 @@ export type ChainableFetchConfig = {
   /**
    * `RequestInit` type options passed to the `fetch` function.
    */
-  options?: RequestInit;
+  options: RequestInit;
 
   /**
    * An array of `Header` to be reduced into a single Headers object before
    * being used in this instance's API call.
    */
-  headers?: Array<Header>;
+  headers: Array<Header>;
 
   /**
    * Optional `AbortController` used for custom timeouts.
@@ -116,6 +116,18 @@ export type ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder =
     | "responseParser"
   >;
 
+export type ExpectedFetchConfig_for_OtherFetchConfigBuilder =
+  ExpectedFetchConfig<
+    | "url"
+    | "path"
+    | "method"
+    | "defaultOptions"
+    | "defaultHeaders"
+    | "body"
+    | "responseParser"
+    | "responseExceptionParser"
+  >;
+
 export type ExpectedFetchConfig_for_Fetch = ExpectedFetchConfig<
   | "url"
   | "path"
@@ -125,6 +137,4 @@ export type ExpectedFetchConfig_for_Fetch = ExpectedFetchConfig<
   | "body"
   | "responseParser"
   | "responseExceptionParser"
-  | "options"
-  | "headers"
 >;

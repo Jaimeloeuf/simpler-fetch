@@ -21,8 +21,13 @@ export class SimplerFetch<
   ) =>
     new UrlBuilder<BaseUrlIdentifiers, HTTPMethodUsed>(
       // Create a new object that will be the chainable fetch config object
-      // threaded through all the Builder class instances.
-      { method },
+      // threaded through all the Builder class instances, and fill it in with
+      // any required default values too.
+      {
+        method,
+        options: {},
+        headers: [],
+      },
       this.config.baseUrlConfigs as Exclude<
         SimplerFetchConfig["baseUrlConfigs"],
         undefined

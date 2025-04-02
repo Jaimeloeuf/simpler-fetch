@@ -1,9 +1,9 @@
 import type { Validator, ResponseParser } from "./types";
 import type {
   ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder,
-  ExpectedFetchConfig_for_Fetch,
+  ExpectedFetchConfig_for_OtherFetchConfigBuilder,
 } from "./ChainableFetchConfig";
-import { Fetch } from "./NewFetch";
+import { OtherFetchConfigBuilder } from "./OtherFetchConfigBuilder";
 
 /**
  * Builder pattern class for users to set response parser and response's
@@ -23,8 +23,8 @@ export class ResponseExceptionParserAndValidatorBuilder<SuccessType> {
   ) {
     this.config.responseExceptionParser = responseExceptionParser;
     this.config.responseExceptionValidator = responseExceptionValidator;
-    return new Fetch<SuccessType, ErrorType>(
-      this.config as ExpectedFetchConfig_for_Fetch
+    return new OtherFetchConfigBuilder<SuccessType, ErrorType>(
+      this.config as ExpectedFetchConfig_for_OtherFetchConfigBuilder
     );
   }
 
