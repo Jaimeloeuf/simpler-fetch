@@ -44,7 +44,7 @@ export class PathAndQueryParamsBuilder<
       this.config.queryParams = queryParams as Record<string, string>;
     }
 
-    return new (this.config.method in ["GET", "HEAD"]
+    return new (this.config.method === "GET" || this.config.method === "HEAD"
       ? ResponseParserAndValidatorBuilder
       : RequestBodyBuilder)(
       // Type can be a union of both so that it will work regardless of the
