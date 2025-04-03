@@ -11,12 +11,7 @@ import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorB
  * Builder pattern class for users to set their API path and URL query params.
  */
 export class PathAndQueryParamsBuilder<
-  const HTTPMethodUsed extends HTTPMethod,
-  const ReturnedBuilder extends HTTPMethodUsed extends "GET" | "HEAD"
-    ? ResponseParserAndValidatorBuilder
-    : RequestBodyBuilder = HTTPMethodUsed extends "GET" | "HEAD"
-    ? ResponseParserAndValidatorBuilder
-    : RequestBodyBuilder
+  const HTTPMethodUsed extends HTTPMethod
 > {
   constructor(private readonly config: ExpectedFetchConfig_for_PathBuilder) {}
 
@@ -28,7 +23,12 @@ export class PathAndQueryParamsBuilder<
     QueryParams extends Record<string, string | undefined> = Record<
       string,
       string | undefined
-    >
+    >,
+    const ReturnedBuilder extends HTTPMethodUsed extends "GET" | "HEAD"
+      ? ResponseParserAndValidatorBuilder
+      : RequestBodyBuilder = HTTPMethodUsed extends "GET" | "HEAD"
+      ? ResponseParserAndValidatorBuilder
+      : RequestBodyBuilder
   >(path: string, queryParams?: QueryParams): ReturnedBuilder {
     this.config.path = path;
 
