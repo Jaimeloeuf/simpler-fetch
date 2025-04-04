@@ -19,6 +19,15 @@ export class PathAndQueryParamsBuilder<
     return this.pathWithQueryParams(path, undefined);
   }
 
+  /**
+   * Set the API path and Query Params.
+   *
+   * Note that any query params set here will be merged/added to any existing
+   * query params set via the URL Path string directly, and query params set
+   * here will appear **after** the existing query params.
+   *
+   * Any query param object property that is undefined will also be deleted.
+   */
   pathWithQueryParams<
     QueryParams extends Record<string, string | undefined> = Record<
       string,

@@ -15,37 +15,6 @@ export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
   ) {}
 
   /**
-   * Method to add Query Params to the final URL.
-   *
-   * Note that any query params set here will be merged/added to any existing
-   * query params set via the URL Path string directly, and query params set
-   * here will appear **after** the existing query params.
-   *
-   * The query params are also lazily merged, either when the fetch call is just
-   * about to run and it calls `getUrl`, or if library user calls `getUrl`.
-   *
-   * @returns Returns the current instance to let you chain method calls
-   */
-  useQuery<
-    T extends Record<string, string | undefined> = Record<
-      string,
-      string | undefined
-    >
-  >(queryParams: T) {
-    // Remove all undefined values so that the default type can accept optional
-    // values without having undefined be in the final generated query params.
-    Object.keys(queryParams).forEach(
-      (key) => queryParams[key] === undefined && delete queryParams[key]
-    );
-
-    // Type cast needed here since TSC cannot infer the removal of undefined
-    // values from the Record type.
-    this.config.queryParams = queryParams as Record<string, string>;
-
-    return this;
-  }
-
-  /**
    * Method to use default `RequestInit` object of the selected base Url for
    * this specific API call.
    *
