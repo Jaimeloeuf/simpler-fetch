@@ -29,7 +29,7 @@ export class Fetch<SuccessType, ErrorType> {
    *
    * This will generate the full URL including any search params used.
    */
-  getUrl(): string {
+  getUrl() {
     // If not query params specified, return URL directly.
     if (this.config.queryParams === undefined) {
       return this.config.url;
