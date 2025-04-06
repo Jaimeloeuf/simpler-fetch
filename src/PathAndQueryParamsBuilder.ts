@@ -15,6 +15,9 @@ export class PathAndQueryParamsBuilder<
 > {
   constructor(private readonly config: ExpectedFetchConfig_for_PathBuilder) {}
 
+  /**
+   * Set the API path.
+   */
   path(path: string) {
     return this.pathWithQueryParams(path, undefined);
   }
