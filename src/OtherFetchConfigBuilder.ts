@@ -4,6 +4,7 @@ import type {
   ExpectedFetchConfig_for_Fetch,
 } from "./ChainableFetchConfig";
 import { Fetch } from "./NewFetch";
+import { sfError } from "./errors";
 
 /**
  * Builder pattern class for users to configure other options like timeout and
@@ -13,6 +14,8 @@ export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
   constructor(
     private readonly config: ExpectedFetchConfig_for_OtherFetchConfigBuilder
   ) {}
+
+  #isDefaultOptionsApplied: boolean = false;
 
   /**
    * Method to use default `RequestInit` object of the selected base Url for
@@ -24,6 +27,12 @@ export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
    * @returns Returns the current instance to let you chain method calls
    */
   useDefaultOptionsForBaseUrl() {
+    if (this.#isDefaultOptionsApplied) {
+      throw new sfError(
+        `'${OtherFetchConfigBuilder.prototype.useDefaultOptionsForBaseUrl.name}' can only be called once`
+      );
+    }
+
     // Create new object for `options` by combining the properties.
     // `defaultOptions` is spread first so that the API specific options can
     // override the default options.
@@ -32,31 +41,7 @@ export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
       ...this.config.options,
     };
 
-    // Alternative method using `Object.assign` transpiles to more bytes.
-    //
-    // Object.assign overwrite properties in target object if source(s) have
-    // properties of the same key. Later sources' properties also overwrite
-    // earlier ones. Since Fetch instance specific options should be able to
-    // override default options, default options has to come first in the list
-    // of sources. Since default options should not be modified, both the
-    // sources should be combined together and have their properties copied into
-    // a new empty object, before the new object is returned, and set as the new
-    // `#options` object.
-    // this.#options = Object.assign({}, this.#defaultOptions, this.#options);
-
-    // Delete default options by setting it to {} so that this method is
-    // indempotent, making subsequent spread calls effectively a no-op.
-    //
-    // However, this is technically not needed, since the options above are
-    // indempotent in the sense that it will always generate the same options
-    // object even after the first time, as the `#options` object will contain
-    // all the keys that were only set in `#defaultOptions` after the first use.
-    // The only difference is that, by setting it to {}, it will technically be
-    // more efficient since it does not need to do any extra computation,
-    // however it will increase the library size, and the library users are not
-    // expected to call this more than once anyways, so this is not used.
-    // this.#defaultOptions = {};
-
+    this.#isDefaultOptionsApplied = true;
     return this;
   }
 
