@@ -93,10 +93,10 @@ type ExpectedFetchConfig<NonOptionalFields extends keyof ChainableFetchConfig> =
 export type ExpectedFetchConfig_for_UrlBuilder = ExpectedFetchConfig<"method">;
 
 export type ExpectedFetchConfig_for_PathAndQueryParamsBuilder =
-  ExpectedFetchConfig<"method" | "url">;
+  ExpectedFetchConfig<"method" | "url" | "defaultOptions" | "defaultHeaders">;
 
 export type ExpectedFetchConfig_for_RequestBodyBuilder = ExpectedFetchConfig<
-  "url" | "path" | "method" | "defaultOptions" | "defaultHeaders"
+  "method" | "url" | "defaultOptions" | "defaultHeaders" | "path"
 >;
 
 export type ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder =
