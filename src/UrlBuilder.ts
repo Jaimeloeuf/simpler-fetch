@@ -2,7 +2,7 @@ import type { HTTPMethod, BaseUrlConfig } from "./types";
 import type {
   ChainableFetchConfig,
   ExpectedFetchConfig_for_UrlBuilder,
-  ExpectedFetchConfig_for_PathBuilder,
+  ExpectedFetchConfig_for_PathAndQueryParamsBuilder,
 } from "./ChainableFetchConfig";
 import { PathAndQueryParamsBuilder } from "./PathAndQueryParamsBuilder";
 

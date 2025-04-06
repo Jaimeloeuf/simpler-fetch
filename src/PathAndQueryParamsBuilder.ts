@@ -1,6 +1,6 @@
 import type { HTTPMethod } from "./types";
 import type {
-  ExpectedFetchConfig_for_PathBuilder,
+  ExpectedFetchConfig_for_PathAndQueryParamsBuilder,
   ExpectedFetchConfig_for_RequestBodyBuilder,
   ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder,
 } from "./ChainableFetchConfig";
@@ -13,7 +13,9 @@ import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorB
 export class PathAndQueryParamsBuilder<
   const HTTPMethodUsed extends HTTPMethod
 > {
-  constructor(private readonly config: ExpectedFetchConfig_for_PathBuilder) {}
+  constructor(
+    private readonly config: ExpectedFetchConfig_for_PathAndQueryParamsBuilder
+  ) {}
 
   /**
    * Set the API path.
