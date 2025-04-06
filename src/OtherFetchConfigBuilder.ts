@@ -143,6 +143,12 @@ export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
    * @returns Returns the current instance to let you chain method calls
    */
   timeoutAfter(timeoutInMilliseconds: number) {
+    if (this.config.timeoutInMilliseconds !== undefined) {
+      throw new sfError(
+        `'${OtherFetchConfigBuilder.prototype.timeoutAfter.name}' can only be called once`
+      );
+    }
+
     this.config.timeoutInMilliseconds = timeoutInMilliseconds;
     this.config.abortController = new AbortController();
     return this;
