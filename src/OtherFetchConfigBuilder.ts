@@ -82,6 +82,8 @@ export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
     return this;
   }
 
+  #isDefaultHeadersApplied: boolean = false;
+
   /**
    * Method to use default header(s) of the selected base Url for this specific
    * API call.
@@ -92,15 +94,19 @@ export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
    * @returns Returns the current instance to let you chain method calls
    */
   useDefaultHeadersForBaseUrl() {
-    // `unshift` instead of `push`, because headers set first should be
-    // overwritten by headers set later in `#fetch` header generation process.
+    if (this.#isDefaultHeadersApplied) {
+      throw new sfError(
+        `'${OtherFetchConfigBuilder.prototype.useDefaultHeadersForBaseUrl.name}' can only be called once`
+      );
+    }
+
+    // `unshift` instead of `push`, because we want to allow API call specific
+    // headers to override default headers, and headers set first in the array
+    // will be overwritten by headers of the same key set later in the header
+    // object generation process.
     this.config.headers.unshift(...this.config.defaultHeaders);
 
-    // Deleting default headers by setting it to [] so that this method is
-    // indempotent, making subsequent calls to `unshift` a no-op.
-    // @ts-ignore @todo
-    this.defaultHeaders = [];
-
+    this.#isDefaultHeadersApplied = true;
     return this;
   }
 
