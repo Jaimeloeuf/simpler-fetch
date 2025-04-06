@@ -1,5 +1,6 @@
 import type { HTTPMethod, BaseUrlConfig } from "./types";
 import type {
+  ChainableFetchConfig,
   ExpectedFetchConfig_for_UrlBuilder,
   ExpectedFetchConfig_for_PathBuilder,
 } from "./ChainableFetchConfig";
@@ -17,17 +18,34 @@ export class UrlBuilder<
     private readonly baseUrlConfigs: Record<BaseUrlIdentifiers, BaseUrlConfig>
   ) {}
 
+  #ChainToPathAndQueryParamsBuilder(
+    url: Exclude<ChainableFetchConfig["url"], undefined>,
+    defaultOptions: Exclude<
+      ChainableFetchConfig["defaultOptions"],
+      undefined
+    > = {},
+    defaultHeaders: Exclude<
+      ChainableFetchConfig["defaultHeaders"],
+      undefined
+    > = []
+  ) {
+    this.config.url = url;
+    this.config.defaultOptions = defaultOptions;
+    this.config.defaultHeaders = defaultHeaders;
+    return new PathAndQueryParamsBuilder<HTTPMethodUsed>(
+      this.config as ExpectedFetchConfig_for_PathAndQueryParamsBuilder
+    );
+  }
+
   /**
    * Use a base URL that is saved during `SimplerFetch` instance creation.
    */
-  useSavedBaseUrl(identifier: BaseUrlIdentifiers) {
-    this.config.url = this.baseUrlConfigs[identifier].url;
-    this.config.defaultOptions = this.baseUrlConfigs[identifier].defaultOptions;
-    this.config.defaultHeaders = this.baseUrlConfigs[identifier].defaultHeaders;
-    return new PathAndQueryParamsBuilder<HTTPMethodUsed>(
-      this.config as ExpectedFetchConfig_for_PathBuilder
+  useSavedBaseUrl = (identifier: BaseUrlIdentifiers) =>
+    this.#ChainToPathAndQueryParamsBuilder(
+      this.baseUrlConfigs[identifier].url,
+      this.baseUrlConfigs[identifier].defaultOptions,
+      this.baseUrlConfigs[identifier].defaultHeaders
     );
-  }
 
   /**
    * Use given url string as base URL to make an API call.
@@ -36,10 +54,5 @@ export class UrlBuilder<
    * configure a base URL and its options. Usually used when you need to make an
    * API call to another domain, e.g. integrating with third party APIs.
    */
-  useUrl(url: string) {
-    this.config.url = url;
-    return new PathAndQueryParamsBuilder<HTTPMethodUsed>(
-      this.config as ExpectedFetchConfig_for_PathBuilder
-    );
-  }
+  useUrl = (url: string) => this.#ChainToPathAndQueryParamsBuilder(url);
 }
