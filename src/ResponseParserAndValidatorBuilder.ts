@@ -35,9 +35,12 @@ export class ResponseParserAndValidatorBuilder {
    * You can optionally set a validator to validate that the response result is
    * correct at runtime.
    */
-  parseResponseAsText(responseValidator?: Validator<string>) {
-    return this.#ResponseExceptionParserAndValidatorBuilder<string>(
-      (res) => res.text(),
+  parseResponseAsText<const T extends string = string>(
+    responseValidator?: Validator<T>
+  ) {
+    return this.#ResponseExceptionParserAndValidatorBuilder<T>(
+      // @todo There is probably a better way for this
+      (res) => res.text() as any as Promise<T>,
       responseValidator
     );
   }
