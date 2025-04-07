@@ -39,12 +39,12 @@ export class Fetch<SuccessType, ErrorType> {
 
     // Create new query params by merging existing query params in the URL set
     // via the constructor and query params set using the `useQuery` method.
-    const newQueryParams = new URLSearchParams([
+    url.search = new URLSearchParams([
       ...Array.from(url.searchParams.entries()),
       ...Object.entries(this.config.queryParams),
     ]).toString();
 
-    return `${url.origin}${url.pathname}?${newQueryParams}`;
+    return url.href;
   }
 
   /**
