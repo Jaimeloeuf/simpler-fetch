@@ -30,12 +30,12 @@ export class Fetch<SuccessType, ErrorType> {
    * This will generate the full URL including any search params used.
    */
   getUrl() {
+    const url = new URL(this.config.url + this.config.path);
+
     // If not query params specified, return URL directly.
     if (this.config.queryParams === undefined) {
-      return this.config.url + this.config.path;
+      return url.href;
     }
-
-    const url = new URL(this.config.url + this.config.path);
 
     // Create new query params by merging existing query params in the URL set
     // via the constructor and query params set using the `useQuery` method.
