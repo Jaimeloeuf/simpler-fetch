@@ -30,6 +30,10 @@ export class Fetch<SuccessType, ErrorType> {
    * This will generate the full URL including any search params used.
    */
   getUrl() {
+    // Using string concat instead of URL constructor path, base combo like
+    // new URL(this.config.path, this.config.url) allows us to use base URLs
+    // with non empty paths like https://example.com/v1 as using URL constructor
+    // with a path /hello will override and remove the /v1
     const url = new URL(this.config.url + this.config.path);
 
     // If not query params specified, return URL directly.
