@@ -52,6 +52,14 @@ export class RequestBodyBuilder {
    * generic type is set, you know that the value passed in for the `body`
    * parameter cannot be any other type.
    *
+   * ### On why is optionalContentType optional
+   * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#body
+   * Quoting the last line: "... the fetch() function will try to intelligently
+   * determine the content type. A request will automatically set a Content-Type
+   * header if none is set in the dictionary." This means that if none is passed
+   * in, fetch API's implementation will guess and set the content-type
+   * automatically, which is why this parameter is optional.
+   *
    * ### On `optionalContentType`'s type safety
    * Note on `optionalContentType`'s type: Although it is possible to create a
    * union type of all allowed string literals for the content-type header /
