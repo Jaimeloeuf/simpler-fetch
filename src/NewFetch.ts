@@ -34,6 +34,10 @@ export class Fetch<SuccessType, ErrorType> {
     // new URL(this.config.path, this.config.url) allows us to use base URLs
     // with non empty paths like https://example.com/v1 as using URL constructor
     // with a path /hello will override and remove the /v1
+    //
+    // The main reason for using URL constructor instead of just the string
+    // concat and doing manual string manipulation for search params is so that
+    // we can use URL constructor to validate if the concatenated URL is valid.
     const url = new URL(this.config.url + this.config.path);
 
     // If not query params specified, return URL directly.
