@@ -16,4 +16,11 @@ export type ApiResponse<T> = {
    * access this while still having the benefits of the library.
    */
   rawResponse: Response;
+
+  /**
+   * Set to true when the validator for either the ResponseData or
+   * ResponseExceptionData ran, so users can check at run time and be sure
+   * whether the data is really validated or is it potentially garbage.
+   */
+  didValidatorRun: boolean;
 };

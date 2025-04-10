@@ -269,6 +269,9 @@ export class Fetch<ResponseDataType, ResponseExceptionDataType> {
         headers: rawResponse.headers,
         data,
         rawResponse,
+
+        // Assume that as long as validator exists it will be ran
+        didValidatorRun: this.config.responseValidator !== undefined,
       } satisfies ApiResponse<ResponseDataType>;
     }
 
@@ -310,6 +313,9 @@ export class Fetch<ResponseDataType, ResponseExceptionDataType> {
       headers: rawResponse.headers,
       data,
       rawResponse,
+
+      // Assume that as long as validator exists it will be ran
+      didValidatorRun: this.config.responseExceptionValidator !== undefined,
     } satisfies ApiResponse<ResponseExceptionDataType>;
   }
 
