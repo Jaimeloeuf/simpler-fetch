@@ -10,4 +10,10 @@ export type ApiResponse<T> = {
   status: Response["status"];
   headers: Response["headers"];
   data: T;
+
+  /**
+   * The raw `Response` type to serve as an escape hatch for user who wants to
+   * access this while still having the benefits of the library.
+   */
+  rawResponse: Response;
 };

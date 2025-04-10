@@ -231,9 +231,9 @@ export class Fetch<ResponseDataType, ResponseExceptionDataType> {
 
   /**
   async runAndThrowOnException() {
-    const res = await this.#fetchWithOptionalTimeout();
+    const rawResponse = await this.#fetchWithOptionalTimeout();
 
-    if (res.ok) {
+    if (rawResponse.ok) {
       // Assume data to be generic `ResponseDataType` without validation so even
       // if no validator is passed in by the library user, it can be assumed
       // that the data is correctly shaped as `ResponseDataType` on compile.
@@ -247,7 +247,9 @@ export class Fetch<ResponseDataType, ResponseExceptionDataType> {
       // does not properly take place.
       // Reference: https://github.com/microsoft/TypeScript/issues/47144
       //
-      const data = (await this.config.responseParser(res)) as ResponseDataType;
+      const data = (await this.config.responseParser(
+        rawResponse
+      )) as ResponseDataType;
 
       // Only run validation if a validator is passed in
       // User's validator can throw an exception, which will be safely bubbled
@@ -263,9 +265,10 @@ export class Fetch<ResponseDataType, ResponseExceptionDataType> {
 
       return {
         ok: true,
-        status: res.status,
-        headers: res.headers,
+        status: rawResponse.status,
+        headers: rawResponse.headers,
         data,
+        rawResponse,
       } satisfies ApiResponse<ResponseDataType>;
     }
 
@@ -286,7 +289,7 @@ export class Fetch<ResponseDataType, ResponseExceptionDataType> {
     // conversion here does not properly take place.
     // Reference: https://github.com/microsoft/TypeScript/issues/47144
     const data = (await this.config.responseExceptionParser(
-      res
+      rawResponse
     )) as ResponseExceptionDataType;
 
     // Only run validation if a validator is passed in
@@ -303,9 +306,10 @@ export class Fetch<ResponseDataType, ResponseExceptionDataType> {
 
     return {
       ok: false,
-      status: res.status,
-      headers: res.headers,
+      status: rawResponse.status,
+      headers: rawResponse.headers,
       data,
+      rawResponse,
     } satisfies ApiResponse<ResponseExceptionDataType>;
   }
 
