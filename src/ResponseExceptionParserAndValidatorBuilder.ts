@@ -9,7 +9,7 @@ import { OtherFetchConfigBuilder } from "./OtherFetchConfigBuilder";
  * Builder pattern class for users to set response parser and response's
  * optional validator.
  */
-export class ResponseExceptionParserAndValidatorBuilder<SuccessType> {
+export class ResponseExceptionParserAndValidatorBuilder<ResponseDataType> {
   /**
    * Low level constructor API that should not be used by library users.
    */
@@ -23,7 +23,7 @@ export class ResponseExceptionParserAndValidatorBuilder<SuccessType> {
   ) {
     this.config.responseExceptionParser = responseExceptionParser;
     this.config.responseExceptionValidator = responseExceptionValidator;
-    return new OtherFetchConfigBuilder<SuccessType, ErrorType>(
+    return new OtherFetchConfigBuilder<ResponseDataType, ErrorType>(
       this.config as ExpectedFetchConfig_for_OtherFetchConfigBuilder
     );
   }

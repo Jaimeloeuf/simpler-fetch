@@ -15,7 +15,7 @@ import { safe } from "./utils/internal";
  * This **SHOULD NOT** be used by library users directly, this should be
  * constructed using the `Builder` class.
  */
-export class Fetch<SuccessType, ErrorType> {
+export class Fetch<ResponseDataType, ErrorType> {
   /**
    * Low level constructor API that should not be used by library users.
    * This is only used by the `MethodBuilder` class.
@@ -234,20 +234,20 @@ export class Fetch<SuccessType, ErrorType> {
     const res = await this.#fetchWithOptionalTimeout();
 
     if (res.ok) {
-      // Assume data to be generic `SuccessType` without validation so even if
-      // no validator is passed in by the library user, it can be assumed that
-      // the data is correctly shaped as `SuccessType` during compile time.
+      // Assume data to be generic `ResponseDataType` without validation so even
+      // if no validator is passed in by the library user, it can be assumed
+      // that the data is correctly shaped as `ResponseDataType` on compile.
       //
-      // If not annotated with the `SuccessType`, inference works for the most
-      // part, but sometimes the type can end up as `Awaited<SuccessType>`.
-      // This only affects the `runJSON` method where data is inferred as
-      // `Awaited<SuccessType>` instead of `SuccessType`, which is technically
-      // the same type, but confuses library users. This is probably caused by
-      // .json value extraction returning `any` so the conversion here does
-      // not properly take place.
+      // If not annotated with `ResponseDataType`, inference mostly works, but
+      // sometimes the type can end up as `Awaited<ResponseDataType>`. This only
+      // affects the `runJSON` method where data is inferred as
+      // `Awaited<ResponseDataType>` instead of `ResponseDataType`, which is
+      // technically the same type, but confuses library users. This is probably
+      // caused by .json value extraction returning `any` so the conversion here
+      // does not properly take place.
       // Reference: https://github.com/microsoft/TypeScript/issues/47144
       //
-      const data = (await this.config.responseParser(res)) as SuccessType;
+      const data = (await this.config.responseParser(res)) as ResponseDataType;
 
       // Only run validation if a validator is passed in
       // User's validator can throw an exception, which will be safely bubbled
@@ -266,7 +266,7 @@ export class Fetch<SuccessType, ErrorType> {
         status: res.status,
         headers: res.headers,
         data,
-      } satisfies ApiResponse<SuccessType>;
+      } satisfies ApiResponse<ResponseDataType>;
     }
 
     // Parse error data, using `optionalErrorResponseParser` if available,

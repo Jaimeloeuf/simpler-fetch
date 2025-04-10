@@ -10,7 +10,7 @@ import { sfError } from "./errors";
  * Builder pattern class for users to configure other options like timeout and
  * etc... before making the actual fetch API call.
  */
-export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
+export class OtherFetchConfigBuilder<ResponseDataType, ErrorType> {
   constructor(
     private readonly config: ExpectedFetchConfig_for_OtherFetchConfigBuilder
   ) {}
@@ -159,7 +159,7 @@ export class OtherFetchConfigBuilder<SuccessType, ErrorType> {
    * the `Fetch` class for it to actually run the API call.
    */
   finishConfig = () =>
-    new Fetch<SuccessType, ErrorType>(
+    new Fetch<ResponseDataType, ErrorType>(
       this.config as ExpectedFetchConfig_for_Fetch
     );
 }

@@ -17,13 +17,13 @@ export class ResponseParserAndValidatorBuilder {
     private readonly config: ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder
   ) {}
 
-  #ResponseExceptionParserAndValidatorBuilder<SuccessType>(
-    responseParser: ResponseParser<SuccessType>,
-    responseValidator?: Validator<SuccessType>
+  #ResponseExceptionParserAndValidatorBuilder<ResponseDataType>(
+    responseParser: ResponseParser<ResponseDataType>,
+    responseValidator?: Validator<ResponseDataType>
   ) {
     this.config.responseParser = responseParser;
     this.config.responseValidator = responseValidator;
-    return new ResponseExceptionParserAndValidatorBuilder<SuccessType>(
+    return new ResponseExceptionParserAndValidatorBuilder<ResponseDataType>(
       this
         .config as ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder
     );
