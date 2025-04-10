@@ -15,7 +15,7 @@ import { safe } from "./utils/internal";
  * This **SHOULD NOT** be used by library users directly, this should be
  * constructed using the `Builder` class.
  */
-export class Fetch<ResponseDataType, ErrorType> {
+export class Fetch<ResponseDataType, ResponseExceptionDataType> {
   /**
    * Low level constructor API that should not be used by library users.
    * This is only used by the `MethodBuilder` class.
@@ -272,20 +272,22 @@ export class Fetch<ResponseDataType, ErrorType> {
     // Parse error data, using `optionalErrorResponseParser` if available,
     // else default to `responseParser`.
     //
-    // Assume data to be generic `ErrorType` without any validation so that it
-    // can be assumed that the data is correctly shaped as `ErrorType` during
-    // compile time because this library does not support validation for error
-    // response data.
+    // Assume data to be generic `ResponseExceptionDataType` without validation
+    // so even if no validator is passed in by the library user, it can be
+    // assumed that the data is correctly shaped as `ResponseExceptionDataType`
+    // on compile.
     //
-    // Casting to `ErrorType` because even though inference works for the most
-    // part, sometimes the type can end up as `Awaited<ErrorType>`. This only
-    // affects the `runJSON` method where data is inferred as
-    // `Awaited<ErrorType>` instead of `ErrorType`, which is technically the
-    // same type, but confuses library users. This is probably caused by .json
-    // value extraction returning `any` so the conversion here does not
-    // properly take place.
+    // Casting to `ResponseExceptionDataType` because even though inference
+    // mostly works, sometimes the type can end up as `Awaited<ResponseExceptionDataType>`.
+    // This only affects the `runJSON` method where data is inferred as
+    // `Awaited<ResponseExceptionDataType>` instead of `ResponseExceptionDataType`,
+    // which is technically the same type, but confuses library users. This is
+    // probably caused by .json value extraction returning `any` so the
+    // conversion here does not properly take place.
     // Reference: https://github.com/microsoft/TypeScript/issues/47144
-    const data = (await this.config.responseExceptionParser(res)) as ErrorType;
+    const data = (await this.config.responseExceptionParser(
+      res
+    )) as ResponseExceptionDataType;
 
     // Only run validation if a validator is passed in
     // User's validator can throw an exception, which will be safely bubbled
@@ -304,7 +306,7 @@ export class Fetch<ResponseDataType, ErrorType> {
       status: res.status,
       headers: res.headers,
       data,
-    } satisfies ApiResponse<ErrorType>;
+    } satisfies ApiResponse<ResponseExceptionDataType>;
   }
 
   runSafely = () => safe(() => this.runAndThrowOnException());

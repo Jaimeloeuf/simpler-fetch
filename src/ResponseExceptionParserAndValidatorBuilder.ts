@@ -17,15 +17,16 @@ export class ResponseExceptionParserAndValidatorBuilder<ResponseDataType> {
     private readonly config: ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder
   ) {}
 
-  #CreateFetch<ErrorType>(
-    responseExceptionParser: ResponseParser<ErrorType>,
-    responseExceptionValidator?: Validator<ErrorType>
+  #CreateFetch<ResponseExceptionDataType>(
+    responseExceptionParser: ResponseParser<ResponseExceptionDataType>,
+    responseExceptionValidator?: Validator<ResponseExceptionDataType>
   ) {
     this.config.responseExceptionParser = responseExceptionParser;
     this.config.responseExceptionValidator = responseExceptionValidator;
-    return new OtherFetchConfigBuilder<ResponseDataType, ErrorType>(
-      this.config as ExpectedFetchConfig_for_OtherFetchConfigBuilder
-    );
+    return new OtherFetchConfigBuilder<
+      ResponseDataType,
+      ResponseExceptionDataType
+    >(this.config as ExpectedFetchConfig_for_OtherFetchConfigBuilder);
   }
 
   /**
