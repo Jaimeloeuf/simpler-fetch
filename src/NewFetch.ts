@@ -20,8 +20,7 @@ export class Fetch<SuccessType, ErrorType> {
    * Low level constructor API that should not be used by library users.
    * This is only used by the `MethodBuilder` class.
    */
-  constructor(private readonly config: ExpectedFetchConfig_for_Fetch) {
-  }
+  constructor(private readonly config: ExpectedFetchConfig_for_Fetch) {}
 
   /**
    * Method to get the full generated URL. Use to get the full URL after
