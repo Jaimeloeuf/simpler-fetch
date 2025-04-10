@@ -16,7 +16,12 @@ export class OtherFetchConfigBuilder<
 > {
   constructor(
     private readonly config: ExpectedFetchConfig_for_OtherFetchConfigBuilder
-  ) {}
+  ) {
+    // Add in content-type header if user set it previously
+    if (this.config.optionalContentType !== undefined) {
+      this.useHeader({ "Content-Type": this.config.optionalContentType });
+    }
+  }
 
   #isDefaultOptionsApplied: boolean = false;
 
