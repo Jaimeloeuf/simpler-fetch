@@ -34,8 +34,14 @@ export class ResponseExceptionParserAndValidatorBuilder<SuccessType> {
    * You can optionally set a validator to validate that the response result is
    * correct at runtime.
    */
-  parseResponseExceptionAsText(responseValidator?: Validator<string>) {
-    return this.#CreateFetch<string>((res) => res.text(), responseValidator);
+  parseResponseExceptionAsText<const T extends string = string>(
+    responseValidator?: Validator<T>
+  ) {
+    return this.#CreateFetch<T>(
+      // @todo There is probably a better way for this
+      (res) => res.text() as any as Promise<T>,
+      responseValidator
+    );
   }
 
   /**
