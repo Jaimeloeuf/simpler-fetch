@@ -88,8 +88,14 @@ export type ChainableFetchConfig = {
    */
   optionalContentType?: string;
 
+  /**
+   * Parser used to parse response data if `Response.ok` is `true`.
+   */
   responseParser?: ResponseParser<unknown>;
 
+  /**
+   * Parser used to parse response data if `Response.ok` is `false`.
+   */
   responseExceptionParser?: ResponseParser<unknown>;
 
   responseValidator?: Validator<unknown> | undefined;
