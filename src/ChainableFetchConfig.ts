@@ -81,6 +81,11 @@ export type ChainableFetchConfig = {
    */
   body?: any;
 
+  /**
+   * `Content-Type` header value that can optionally be set, either by the user
+   * themselves or by the library when user chooses to use the library to send
+   * JSON request body.
+   */
   optionalContentType?: string;
 
   responseParser?: ResponseParser<unknown>;
