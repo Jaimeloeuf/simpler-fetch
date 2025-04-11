@@ -1,5 +1,11 @@
 import type { Header, HTTPMethod, Validator, ResponseParser } from "./types";
 
+/**
+ * Fetch config object type that will be passed from one builder to the next, so
+ * that the final Fetch class will have all the data it needs to make the API
+ * call. Most types here are optional, and as they get set by each builder, the
+ * type will be changed to non-optional.
+ */
 export type ChainableFetchConfig = {
   /**
    * This is the base URL of the API endpoint to make the request, which
