@@ -137,6 +137,11 @@ export class OtherFetchConfigBuilder<
    * The function parameter forces the caller to pass in at least one argument
    * for this variadic method. See https://stackoverflow.com/a/72286990
    *
+   * ### DO NOT SET "Content-Type" manually
+   * If you set a request body previously using `setRequestBody` or
+   * `setRequestBodyWithJsonData`, the content-type header will be set for you
+   * automatically. Do not set to avoid wrongly overriding it.
+   *
    * @returns Returns the current instance to let you chain method calls
    */
   useHeader(...headers: [Header, ...Header[]]) {
