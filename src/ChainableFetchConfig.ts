@@ -28,17 +28,14 @@ export type ChainableFetchConfig = {
   /**
    * Instance variable to hold the default `RequestInit` options object for the
    * specified base url, which is only used if the library user chooses to use
-   * the default options object using the `useDefaultOptions` method.
+   * the default options object using the `useDefaultOptionsForBaseUrl` method.
    */
   defaultOptions?: RequestInit;
 
   /**
    * Instance variable to hold the default `headers` array for the specified
    * base Url, which is only used if the library user chooses to use the default
-   * headers using the `useDefaultHeaders` method.
-   *
-   * This is not `readonly` since this will be reset to an empty array after
-   * calling `useDefaultHeaders` method to keep the method indempotent.
+   * headers using the `useDefaultHeadersForBaseUrl` method.
    */
   defaultHeaders?: Array<Header>;
 
