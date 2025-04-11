@@ -98,8 +98,16 @@ export type ChainableFetchConfig = {
    */
   responseExceptionParser?: ResponseParser<unknown>;
 
+  /**
+   * Optional validator used to validate response data, for responses whose
+   * `Response.ok` is `true`.
+   */
   responseValidator?: Validator<unknown> | undefined;
 
+  /**
+   * Optional validator used to validate response data, for responses whose
+   * `Response.ok` is `false`.
+   */
   responseExceptionValidator?: Validator<unknown> | undefined;
 };
 
