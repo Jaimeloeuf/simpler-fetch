@@ -11,7 +11,6 @@ if (fetch == null) {
  */
 
 export * from "./SimplerFetch";
-export * from "./sf";
 export * from "./errors";
 export * from "./exceptions";
 export * from "./utils";
