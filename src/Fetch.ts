@@ -230,6 +230,7 @@ export class Fetch<ResponseDataType, ResponseExceptionDataType> {
   }
 
   /**
+   */
   async runAndThrowOnException() {
     const rawResponse = await this.#fetchWithOptionalTimeout();
 

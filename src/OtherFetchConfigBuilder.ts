@@ -3,7 +3,7 @@ import type {
   ExpectedFetchConfig_for_OtherFetchConfigBuilder,
   ExpectedFetchConfig_for_Fetch,
 } from "./ChainableFetchConfig";
-import { Fetch } from "./NewFetch";
+import { Fetch } from "./Fetch";
 import { sfError } from "./errors";
 
 /**
