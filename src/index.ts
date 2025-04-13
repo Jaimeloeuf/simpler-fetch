@@ -1,7 +1,7 @@
 /* Check once if fetch exists on library load */
-import { sfError } from "./errors";
+import { SimplerFetchError } from "./errors";
 if (fetch == null) {
-  throw new sfError(
+  throw new SimplerFetchError(
     "[simpler-fetch] 'fetch' is not defined in global scope please polyfill it first!"
   );
 }

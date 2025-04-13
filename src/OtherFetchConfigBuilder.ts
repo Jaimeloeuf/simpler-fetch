@@ -4,7 +4,7 @@ import type {
   ExpectedFetchConfig_for_Fetch,
 } from "./ChainableFetchConfig";
 import { Fetch } from "./Fetch";
-import { sfError } from "./errors";
+import { SimplerFetchError } from "./errors";
 
 /**
  * Builder pattern class for users to configure other options like timeout and
@@ -36,7 +36,7 @@ export class OtherFetchConfigBuilder<
    */
   useDefaultOptionsForBaseUrl() {
     if (this.#isDefaultOptionsApplied) {
-      throw new sfError(
+      throw new SimplerFetchError(
         `'${OtherFetchConfigBuilder.prototype.useDefaultOptionsForBaseUrl.name}' can only be called once`
       );
     }
@@ -103,7 +103,7 @@ export class OtherFetchConfigBuilder<
    */
   useDefaultHeadersForBaseUrl() {
     if (this.#isDefaultHeadersApplied) {
-      throw new sfError(
+      throw new SimplerFetchError(
         `'${OtherFetchConfigBuilder.prototype.useDefaultHeadersForBaseUrl.name}' can only be called once`
       );
     }
@@ -157,7 +157,7 @@ export class OtherFetchConfigBuilder<
    */
   timeoutAfter(timeoutInMilliseconds: number) {
     if (this.config.timeoutInMilliseconds !== undefined) {
-      throw new sfError(
+      throw new SimplerFetchError(
         `'${OtherFetchConfigBuilder.prototype.timeoutAfter.name}' can only be called once`
       );
     }
