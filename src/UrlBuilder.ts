@@ -1,9 +1,10 @@
-import type { HTTPMethod, BaseUrlConfig } from "./types";
 import type {
   ChainableFetchConfig,
   ExpectedFetchConfig_for_UrlBuilder,
   ExpectedFetchConfig_for_PathAndQueryParamsBuilder,
 } from "./fetch-config";
+import type { HTTPMethod, BaseUrlConfig } from "./types";
+
 import { PathAndQueryParamsBuilder } from "./PathAndQueryParamsBuilder";
 
 /**

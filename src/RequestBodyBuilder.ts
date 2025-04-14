@@ -1,8 +1,9 @@
-import type { JsonTypeAlias } from "./types";
 import type {
   ExpectedFetchConfig_for_RequestBodyBuilder,
   ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder,
 } from "./fetch-config";
+import type { JsonTypeAlias } from "./types";
+
 import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorBuilder";
 
 /**

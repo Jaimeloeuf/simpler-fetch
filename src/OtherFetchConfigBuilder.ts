@@ -1,10 +1,11 @@
-import type { Header } from "./types";
 import type {
   ExpectedFetchConfig_for_OtherFetchConfigBuilder,
   ExpectedFetchConfig_for_Fetch,
 } from "./fetch-config";
-import { Fetch } from "./Fetch";
+import type { Header } from "./types";
+
 import { SimplerFetchError } from "./errors";
+import { Fetch } from "./Fetch";
 
 /**
  * Builder pattern class for users to configure other options like timeout and

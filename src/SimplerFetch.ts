@@ -1,4 +1,5 @@
 import type { BaseUrlConfig, HTTPMethod } from "./types";
+
 import { UrlBuilder } from "./UrlBuilder";
 
 /**

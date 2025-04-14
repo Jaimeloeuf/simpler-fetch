@@ -1,9 +1,10 @@
-import type { HTTPMethod } from "./types";
 import type {
   ExpectedFetchConfig_for_PathAndQueryParamsBuilder,
   ExpectedFetchConfig_for_RequestBodyBuilder,
   ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder,
 } from "./fetch-config";
+import type { HTTPMethod } from "./types";
+
 import { RequestBodyBuilder } from "./RequestBodyBuilder";
 import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorBuilder";
 

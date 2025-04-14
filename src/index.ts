@@ -10,9 +10,9 @@ if (fetch == null) {
  * Barrel file to export everything a library user can access.
  */
 
-export * from "./SimplerFetch";
 export * from "./errors";
 export * from "./exceptions";
+export * from "./SimplerFetch";
+export type * from "./types";
 export * from "./utils/jsonParser";
 export * from "./utils/zodToValidator";
-export type * from "./types";

@@ -1,4 +1,5 @@
 import type { z, ZodType } from "zod";
+
 import type { Validator } from "../types";
 
 /**

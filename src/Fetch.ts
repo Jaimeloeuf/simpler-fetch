@@ -1,5 +1,6 @@
-import type { ApiResponse } from "./types";
 import type { ExpectedFetchConfig_for_Fetch } from "./fetch-config";
+import type { ApiResponse } from "./types";
+
 import {
   TimeoutException,
   HeaderException,
