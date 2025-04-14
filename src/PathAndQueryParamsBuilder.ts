@@ -3,7 +3,7 @@ import type {
   ExpectedFetchConfig_for_PathAndQueryParamsBuilder,
   ExpectedFetchConfig_for_RequestBodyBuilder,
   ExpectedFetchConfig_for_ResponseParserAndValidatorBuilder,
-} from "./ChainableFetchConfig";
+} from "./fetch-config";
 import { RequestBodyBuilder } from "./RequestBodyBuilder";
 import { ResponseParserAndValidatorBuilder } from "./ResponseParserAndValidatorBuilder";
 

@@ -2,7 +2,7 @@ import type { Validator, ResponseParser } from "./types";
 import type {
   ExpectedFetchConfig_for_ResponseExceptionParserAndValidatorBuilder,
   ExpectedFetchConfig_for_OtherFetchConfigBuilder,
-} from "./ChainableFetchConfig";
+} from "./fetch-config";
 import { OtherFetchConfigBuilder } from "./OtherFetchConfigBuilder";
 
 /**

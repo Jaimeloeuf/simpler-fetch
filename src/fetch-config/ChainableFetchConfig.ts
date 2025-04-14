@@ -1,4 +1,4 @@
-import type { Header, HTTPMethod, Validator, ResponseParser } from "./types";
+import type { Header, HTTPMethod, Validator, ResponseParser } from "../types";
 
 /**
  * Fetch config object type that will be passed from one builder to the next, so

@@ -3,7 +3,7 @@ import type {
   ChainableFetchConfig,
   ExpectedFetchConfig_for_UrlBuilder,
   ExpectedFetchConfig_for_PathAndQueryParamsBuilder,
-} from "./ChainableFetchConfig";
+} from "./fetch-config";
 import { PathAndQueryParamsBuilder } from "./PathAndQueryParamsBuilder";
 
 /**

@@ -2,7 +2,7 @@ import type { Header } from "./types";
 import type {
   ExpectedFetchConfig_for_OtherFetchConfigBuilder,
   ExpectedFetchConfig_for_Fetch,
-} from "./ChainableFetchConfig";
+} from "./fetch-config";
 import { Fetch } from "./Fetch";
 import { SimplerFetchError } from "./errors";
 
