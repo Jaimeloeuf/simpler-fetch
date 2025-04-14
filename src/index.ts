@@ -13,5 +13,6 @@ if (fetch == null) {
 export * from "./SimplerFetch";
 export * from "./errors";
 export * from "./exceptions";
-export * from "./utils";
+export * from "./utils/jsonParser";
+export * from "./utils/zodToValidator";
 export type * from "./types";

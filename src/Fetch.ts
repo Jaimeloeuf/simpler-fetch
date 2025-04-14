@@ -5,7 +5,7 @@ import {
   HeaderException,
   ValidationException,
 } from "./exceptions";
-import { safe } from "./utils/internal";
+import { safe } from "./utils/safe";
 
 /**
  * Class used to configure `fetch` request options with the builder pattern

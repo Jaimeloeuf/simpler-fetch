@@ -1,4 +1,4 @@
-import type { RequestException } from "../../types";
+import type { RequestException } from "../types";
 
 /**
  * This function wraps any given function to prevent exceptions from bubbling up

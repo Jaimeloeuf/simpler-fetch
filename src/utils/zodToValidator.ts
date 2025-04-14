@@ -1,5 +1,5 @@
 import type { z, ZodType } from "zod";
-import type { Validator } from "../../types";
+import type { Validator } from "../types";
 
 /**
  * Utility to convert a zod parser to validator function for validating response
